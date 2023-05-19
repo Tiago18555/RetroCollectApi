@@ -10,8 +10,6 @@
         Commodore,
         Apple,
         IBM,
-        Other
-        // Adicione outras opções de fabricantes conforme necessário
+        Other        
     }
-
 }
