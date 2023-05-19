@@ -1,14 +1,9 @@
-﻿using RetroCollect.Models;
+﻿using RetroCollectApi.CrossCutting;
 
 namespace RetroCollectApi.Application.UseCases.UserOperations.CreateUser
 {
     public interface ICreateUserService
     {
-
-    }
-
-    public class CreateUserService : ICreateUserService
-    {
-
+        ResponseModel CreateUser(CreateUserRequestModel createUserRequestModel);
     }
 }

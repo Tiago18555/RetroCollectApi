@@ -4,7 +4,7 @@
     {
         public string Token { get; set; }
         public string RefreshToken { get; set; }
-        public string ExpirationTime { get; set; }
+        public DateTime ExpirationTime { get; set; }
 
         public AuthenticateServiceResponseModel() { }
 
@@ -12,6 +12,13 @@
         {
             this.Token = Token;
         }
+
+        public AuthenticateServiceResponseModel(string Token, DateTime expiration)
+        {
+            this.Token = Token;
+            this.ExpirationTime = expiration;
+        }
+
         public AuthenticateServiceResponseModel(string Token, string RefreshToken)
         {
             this.Token = Token;

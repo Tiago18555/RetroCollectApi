@@ -69,7 +69,7 @@ namespace RetroCollectApi.Application.UseCases.UserOperations.Authenticate
                 {
                     return new AuthenticateServiceResponseModel();
                 }
-                return new AuthenticateServiceResponseModel(GenerateToken(user));
+                return new AuthenticateServiceResponseModel(GenerateToken(user), DateTime.Now.AddDays(7));
 
 
             }
