@@ -8,7 +8,7 @@ using RetroCollect.Data;
 
 #nullable disable
 
-namespace RetroCollect.Migrations
+namespace RetroCollectApi.Migrations
 {
     [DbContext(typeof(DataContext))]
     partial class DataContextModelSnapshot : ModelSnapshot
@@ -24,11 +24,9 @@ namespace RetroCollect.Migrations
 
             modelBuilder.Entity("RetroCollect.Models.Computer", b =>
                 {
-                    b.Property<int>("ComputerId")
+                    b.Property<Guid>("ComputerId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ComputerId"));
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Description")
                         .HasMaxLength(2048)
@@ -55,11 +53,9 @@ namespace RetroCollect.Migrations
 
             modelBuilder.Entity("RetroCollect.Models.Console", b =>
                 {
-                    b.Property<int>("ConsoleId")
+                    b.Property<Guid>("ConsoleId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ConsoleId"));
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Description")
                         .HasMaxLength(2048)
@@ -86,17 +82,15 @@ namespace RetroCollect.Migrations
 
             modelBuilder.Entity("RetroCollect.Models.Game", b =>
                 {
-                    b.Property<int>("GameId")
+                    b.Property<Guid>("GameId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("uuid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("GameId"));
+                    b.Property<Guid>("ComputerId")
+                        .HasColumnType("uuid");
 
-                    b.Property<int>("ComputerId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("ConsoleId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("ConsoleId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Description")
                         .HasMaxLength(2048)
@@ -126,17 +120,15 @@ namespace RetroCollect.Migrations
 
             modelBuilder.Entity("RetroCollect.Models.Rating", b =>
                 {
-                    b.Property<int>("RatingId")
+                    b.Property<Guid>("RatingId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("RatingId"));
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
-                    b.Property<int>("GameId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("GameId")
+                        .HasColumnType("uuid");
 
                     b.Property<int>("RatingValue")
                         .HasColumnType("integer");
@@ -145,10 +137,10 @@ namespace RetroCollect.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("RatingId");
 
@@ -161,14 +153,12 @@ namespace RetroCollect.Migrations
 
             modelBuilder.Entity("RetroCollect.Models.User", b =>
                 {
-                    b.Property<int>("UserId")
+                    b.Property<Guid>("UserId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UserId"));
+                        .HasColumnType("uuid");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Email")
                         .HasMaxLength(255)
@@ -186,7 +176,7 @@ namespace RetroCollect.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<string>("Username")
                         .HasMaxLength(255)
@@ -205,17 +195,15 @@ namespace RetroCollect.Migrations
 
             modelBuilder.Entity("RetroCollect.Models.UserCollection", b =>
                 {
-                    b.Property<int>("UserCollectionId")
+                    b.Property<Guid>("UserCollectionId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UserCollectionId"));
+                        .HasColumnType("uuid");
 
                     b.Property<int>("Condition")
                         .HasColumnType("integer");
 
-                    b.Property<int>("GameId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("GameId")
+                        .HasColumnType("uuid");
 
                     b.Property<string>("Notes")
                         .HasColumnType("text");
@@ -224,10 +212,10 @@ namespace RetroCollect.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime>("PurchaseDate")
-                        .HasColumnType("timestamp with time zone");
+                        .HasColumnType("timestamp without time zone");
 
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("UserCollectionId");
 
@@ -240,17 +228,15 @@ namespace RetroCollect.Migrations
 
             modelBuilder.Entity("RetroCollect.Models.UserComputer", b =>
                 {
-                    b.Property<int>("UserComputerId")
+                    b.Property<Guid>("UserComputerId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("uuid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UserComputerId"));
+                    b.Property<Guid>("ComputerId")
+                        .HasColumnType("uuid");
 
-                    b.Property<int>("ComputerId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("UserComputerId");
 
@@ -263,17 +249,15 @@ namespace RetroCollect.Migrations
 
             modelBuilder.Entity("RetroCollect.Models.UserConsole", b =>
                 {
-                    b.Property<int>("UserConsoleId")
+                    b.Property<Guid>("UserConsoleId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("integer");
+                        .HasColumnType("uuid");
 
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("UserConsoleId"));
+                    b.Property<Guid>("ConsoleId")
+                        .HasColumnType("uuid");
 
-                    b.Property<int>("ConsoleId")
-                        .HasColumnType("integer");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("integer");
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
 
                     b.HasKey("UserConsoleId");
 

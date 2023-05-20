@@ -5,7 +5,7 @@ using RetroCollectApi.CrossCutting;
 using System.IdentityModel.Tokens.Jwt;
 using BCryptNet = BCrypt.Net.BCrypt;
 using System.Text;
-using RetroCollectApi.Repositories.Interfaces;
+using RetroCollectApi.Repositories;
 
 namespace RetroCollectApi.Application.UseCases.UserOperations.Authenticate
 {

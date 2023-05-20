@@ -1,16 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace RetroCollect.Models
+namespace RetroCollectApi.Application.UseCases.UserOperations.ManageUser
 {
-    public class User
+    public class UpdateUserRequestModel
     {
-        [Key]
+        [Required]
         public Guid UserId { get; set; }
 
         [MinLength(3)]
         [MaxLength(255)]
         public string Username { get; set; }
-        public string Password { get; set; }
 
         [MinLength(3)]
         [MaxLength(255)]
@@ -23,11 +22,11 @@ namespace RetroCollect.Models
         [MinLength(3)]
         [MaxLength(255)]
         public string LastName { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
-        public ICollection<UserConsole> UserConsoles { get; set; }
-        public ICollection<UserComputer> UserComputers { get; set; }
-        public ICollection<UserCollection> UserCollections { get; set; }
-        public ICollection<Rating> Ratings { get; set; }
+
+    }
+    public class UpdatePwdRequestModel
+    {
+        [Required]
+        public string Password { get; set; }
     }
 }

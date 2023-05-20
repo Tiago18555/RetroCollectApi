@@ -6,7 +6,7 @@ namespace RetroCollect.Models
     public class Console
     {
         [Key]
-        public int ConsoleId { get; set; }
+        public Guid ConsoleId { get; set; }
 
         [MinLength(3)]
         [MaxLength(255)]

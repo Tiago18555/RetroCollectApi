@@ -1,7 +1,7 @@
 ﻿using RetroCollect.Data;
 using RetroCollect.Models;
 using RetroCollectApi.CrossCutting;
-using RetroCollectApi.Repositories.Interfaces;
+using RetroCollectApi.Repositories;
 using System.Data;
 using BCryptNet = BCrypt.Net.BCrypt;
 

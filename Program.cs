@@ -4,7 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using RetroCollect.Data;
 using RetroCollectApi.Application.UseCases.UserOperations.Authenticate;
 using RetroCollectApi.Application.UseCases.UserOperations.CreateUser;
-using RetroCollectApi.Repositories.Interfaces;
+using RetroCollectApi.Repositories;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);

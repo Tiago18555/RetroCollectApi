@@ -6,9 +6,9 @@ namespace RetroCollect.Models
     public class UserCollection
     {
         [Key]
-        public int UserCollectionId { get; set; } 
-        public int UserId { get; set; }
-        public int GameId { get; set; }
+        public Guid UserCollectionId { get; set; } 
+        public Guid UserId { get; set; }
+        public Guid GameId { get; set; }
         public Condition Condition { get; set; }
         public DateTime PurchaseDate { get; set; }
         public string Notes { get; set; }

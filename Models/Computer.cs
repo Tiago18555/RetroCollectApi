@@ -6,7 +6,7 @@ namespace RetroCollect.Models
     public class Computer
     {
         [Key]
-        public int ComputerId { get; set; }
+        public Guid ComputerId { get; set; }
 
         [MinLength(3)]
         [MaxLength(255)]

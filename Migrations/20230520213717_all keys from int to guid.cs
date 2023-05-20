@@ -1,12 +1,11 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
-using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace RetroCollect.Migrations
+namespace RetroCollectApi.Migrations
 {
-    public partial class initial : Migration
+    public partial class allkeysfrominttoguid : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -14,8 +13,7 @@ namespace RetroCollect.Migrations
                 name: "Computers",
                 columns: table => new
                 {
-                    ComputerId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    ComputerId = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     Manufacturer = table.Column<int>(type: "integer", maxLength: 255, nullable: false),
                     ReleaseYear = table.Column<int>(type: "integer", nullable: false),
@@ -31,8 +29,7 @@ namespace RetroCollect.Migrations
                 name: "Consoles",
                 columns: table => new
                 {
-                    ConsoleId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    ConsoleId = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     Manufacturer = table.Column<int>(type: "integer", maxLength: 255, nullable: false),
                     ReleaseYear = table.Column<int>(type: "integer", nullable: false),
@@ -48,15 +45,14 @@ namespace RetroCollect.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    UserId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
                     Username = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     Password = table.Column<string>(type: "text", nullable: true),
                     Email = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     FirstName = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
                     LastName = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -67,11 +63,10 @@ namespace RetroCollect.Migrations
                 name: "Games",
                 columns: table => new
                 {
-                    GameId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
+                    GameId = table.Column<Guid>(type: "uuid", nullable: false),
                     Title = table.Column<string>(type: "character varying(255)", maxLength: 255, nullable: true),
-                    ConsoleId = table.Column<int>(type: "integer", nullable: false),
-                    ComputerId = table.Column<int>(type: "integer", nullable: false),
+                    ConsoleId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ComputerId = table.Column<Guid>(type: "uuid", nullable: false),
                     ReleaseYear = table.Column<int>(type: "integer", nullable: false),
                     Genre = table.Column<int>(type: "integer", nullable: false),
                     Description = table.Column<string>(type: "character varying(2048)", maxLength: 2048, nullable: true),
@@ -98,10 +93,9 @@ namespace RetroCollect.Migrations
                 name: "UserComputers",
                 columns: table => new
                 {
-                    UserComputerId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<int>(type: "integer", nullable: false),
-                    ComputerId = table.Column<int>(type: "integer", nullable: false)
+                    UserComputerId = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ComputerId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -124,10 +118,9 @@ namespace RetroCollect.Migrations
                 name: "UserConsoles",
                 columns: table => new
                 {
-                    UserConsoleId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<int>(type: "integer", nullable: false),
-                    ConsoleId = table.Column<int>(type: "integer", nullable: false)
+                    UserConsoleId = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    ConsoleId = table.Column<Guid>(type: "uuid", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -150,14 +143,13 @@ namespace RetroCollect.Migrations
                 name: "Ratings",
                 columns: table => new
                 {
-                    RatingId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<int>(type: "integer", nullable: false),
-                    GameId = table.Column<int>(type: "integer", nullable: false),
+                    RatingId = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    GameId = table.Column<Guid>(type: "uuid", nullable: false),
                     RatingValue = table.Column<int>(type: "integer", nullable: false),
                     Review = table.Column<string>(type: "text", nullable: true),
-                    CreatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "timestamp with time zone", nullable: false)
+                    CreatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "timestamp without time zone", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -180,12 +172,11 @@ namespace RetroCollect.Migrations
                 name: "UserCollections",
                 columns: table => new
                 {
-                    UserCollectionId = table.Column<int>(type: "integer", nullable: false)
-                        .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    UserId = table.Column<int>(type: "integer", nullable: false),
-                    GameId = table.Column<int>(type: "integer", nullable: false),
+                    UserCollectionId = table.Column<Guid>(type: "uuid", nullable: false),
+                    UserId = table.Column<Guid>(type: "uuid", nullable: false),
+                    GameId = table.Column<Guid>(type: "uuid", nullable: false),
                     Condition = table.Column<int>(type: "integer", nullable: false),
-                    PurchaseDate = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
+                    PurchaseDate = table.Column<DateTime>(type: "timestamp without time zone", nullable: false),
                     Notes = table.Column<string>(type: "text", nullable: true),
                     OwnershipStatus = table.Column<int>(type: "integer", nullable: false)
                 },

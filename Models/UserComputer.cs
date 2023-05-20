@@ -5,9 +5,9 @@ namespace RetroCollect.Models
     public class UserComputer
     {
         [Key]
-        public int UserComputerId { get; set; }
-        public int UserId { get; set; }
-        public int ComputerId { get; set; }
+        public Guid UserComputerId { get; set; }
+        public Guid UserId { get; set; }
+        public Guid ComputerId { get; set; }
 
         public User User { get; set; }
         public Computer Computer { get; set; }

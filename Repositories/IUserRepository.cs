@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using RetroCollect.Data;
 using RetroCollect.Models;
 
-namespace RetroCollectApi.Repositories.Interfaces
+namespace RetroCollectApi.Repositories
 {
     public interface IUserRepository
     {
@@ -23,8 +23,14 @@ namespace RetroCollectApi.Repositories.Interfaces
         /// <exception cref="InvalidOperationException"></exception>
         User SingleOrDefault(Func<User, bool> predicate);
 
+        /// <exception cref="DbUpdateConcurrencyException"></exception>
+        /// <exception cref="DbUpdateException"></exception>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <returns>The entity found, or <see langword="null" />.</returns>
+        User Update(User user);
+
     }
-    public class UserRepository: IUserRepository
+    public class UserRepository : IUserRepository
     {
         private readonly DataContext _context;
 
@@ -35,10 +41,12 @@ namespace RetroCollectApi.Repositories.Interfaces
 
         public User Add(User user)
         {
-            this._context.Users.Add(user);
+            _context.Users.Add(user);
             _context.SaveChanges();
 
-            return _context.Users.Find(user.UserId);
+            return _context.Users              
+                .Where(x => x.UserId == user.UserId)
+                .FirstOrDefault();
         }
 
         public List<T> GetAll<T>(Func<User, T> predicate)
@@ -55,7 +63,17 @@ namespace RetroCollectApi.Repositories.Interfaces
 
         public User SingleOrDefault(Func<User, bool> predicate)
         {
-            return _context.Users.SingleOrDefault(predicate);
+            return _context.Users.Where(predicate).SingleOrDefault();
+        }
+
+        public User Update(User user)
+        {
+            _context.Users.Update(user);
+            _context.SaveChanges();
+
+            return _context.Users
+                .Where(x => x.UserId == user.UserId)
+                .FirstOrDefault();
         }
     }
 }
