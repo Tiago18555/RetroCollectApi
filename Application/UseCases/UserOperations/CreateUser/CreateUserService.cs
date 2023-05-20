@@ -1,23 +1,25 @@
 ﻿using RetroCollect.Data;
 using RetroCollect.Models;
 using RetroCollectApi.CrossCutting;
+using RetroCollectApi.Repositories.Interfaces;
+using System.Data;
 using BCryptNet = BCrypt.Net.BCrypt;
 
 namespace RetroCollectApi.Application.UseCases.UserOperations.CreateUser
 {
     public class CreateUserService : ICreateUserService
     {
-        private DataContext database { get; set; }
-        public CreateUserService(DataContext dataContext)
+        private IUserRepository repository { get; set; }
+        public CreateUserService(IUserRepository _repository)
         {
-            this.database = dataContext;
+            this.repository = _repository;
         }
 
         public ResponseModel CreateUser(CreateUserRequestModel createUserRequestModel)
         {
             User user = createUserRequestModel.MapObjectTo(new User());
 
-            if(database.Users.Any(x => x.Username == user.Username))
+            if (repository.Any(x => x.Username == createUserRequestModel.Username || x.Email == createUserRequestModel.Email))
             {
                 return GenericResponses.Conflict();
             }
@@ -27,13 +29,13 @@ namespace RetroCollectApi.Application.UseCases.UserOperations.CreateUser
 
             try
             {
-                database.Users.Add(user);
-                database.SaveChanges();
-                database.Entry(user).GetDatabaseValues();
-
-                return user
-                        .MapObjectTo(new CreateUserResponseModel())
-                        .Created();
+                return this.repository.Add(user)
+                    .MapObjectTo(new CreateUserResponseModel())
+                    .Created();
+            }
+            catch (DBConcurrencyException)
+            {
+                return GenericResponses.NotAcceptable("Formato de dados inválido");
             }
             catch (InvalidOperationException)
             {

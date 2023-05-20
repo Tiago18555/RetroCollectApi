@@ -4,6 +4,7 @@ using Microsoft.IdentityModel.Tokens;
 using RetroCollect.Data;
 using RetroCollectApi.Application.UseCases.UserOperations.Authenticate;
 using RetroCollectApi.Application.UseCases.UserOperations.CreateUser;
+using RetroCollectApi.Repositories.Interfaces;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,7 +14,7 @@ var connectionString = configuration.GetConnectionString("Local");
 
 
 //JWT
-var chaveSimetrica = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:SecretKey"]));
+var symmetricalKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:SecretKey"]));
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opt => {
     opt.TokenValidationParameters = new()
     {
@@ -22,16 +23,26 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         ValidateIssuerSigningKey = true,
         ValidIssuer = configuration["Jwt:ValidIssuer"],
         ValidAudience = configuration["Jwt:ValidAudience"],
-        IssuerSigningKey = chaveSimetrica
+        IssuerSigningKey = symmetricalKey
     };
 });
 
 // Add services to the container.
 builder.Services.AddControllers();
 
-//Dependency Injection
+
+#region DEPENDENCY INJECTION SETUP
+
+//Repositories
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+
+//Services
 builder.Services.AddScoped<IAuthenticateService, AuthenticateService>();
 builder.Services.AddScoped<ICreateUserService, CreateUserService>();
+
+#endregion
+
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
@@ -42,7 +53,6 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.EnableAnnotations();
     c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "RetroCollect Api", Version = "v1" });
-
 });
 
 builder.Services.AddAuthorization(options => {
@@ -71,7 +81,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-System.Console.WriteLine(" __  ___ ___ __   _      _   _          ___  _ ___ \r\n )_) )_   )  )_) / )    / ` / ) )   )   )_  / ` )  \r\n/ \\ (__  (  / \\ (_/    (_. (_/ (__ (__ (__ (_. (  \n\n");
+System.Console.WriteLine("\t __  ___ ___ __   _      _   _          ___  _ ___ \r\n\t )_) )_   )  )_) / )    / ` / ) )   )   )_  / ` )  \r\n\t/ \\ (__  (  / \\ (_/    (_. (_/ (__ (__ (__ (_. (  \n\n");
 
 app.Run();
 

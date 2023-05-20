@@ -5,16 +5,17 @@ using RetroCollectApi.CrossCutting;
 using System.IdentityModel.Tokens.Jwt;
 using BCryptNet = BCrypt.Net.BCrypt;
 using System.Text;
+using RetroCollectApi.Repositories.Interfaces;
 
 namespace RetroCollectApi.Application.UseCases.UserOperations.Authenticate
 {
     public class AuthenticateService : IAuthenticateService
     {
-        private DataContext database { get; set; }
         private IConfiguration configuration { get; set; }
-        public AuthenticateService(DataContext dataContext, IConfiguration configuration)
+        private IUserRepository repository { get; set; }
+        public AuthenticateService(IUserRepository _repository, IConfiguration configuration)
         {
-            database = dataContext;
+            this.repository = _repository;
             this.configuration = configuration;
         }
 
@@ -63,7 +64,7 @@ namespace RetroCollectApi.Application.UseCases.UserOperations.Authenticate
             {
                 User user;
 
-                user = database.Users.SingleOrDefault(x => x.Username == authenticateServiceRequestModel.Username);
+                user = repository.SingleOrDefault(x => x.Username == authenticateServiceRequestModel.Username);
 
                 if (user == null || !BCryptNet.Verify(authenticateServiceRequestModel.Password, user.Password))
                 {

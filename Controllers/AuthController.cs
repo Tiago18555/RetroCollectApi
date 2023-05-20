@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using RetroCollectApi.Application.UseCases.UserOperations.Authenticate;
 using Swashbuckle.AspNetCore.Annotations;
@@ -19,10 +20,11 @@ namespace RetroCollectApi.Controllers
         [SwaggerOperation(Summary = "Check the credentials and if is not expired")]
         public ObjectResult ValidateJwtToken()
         {
-            var JwtRes = Authenticate.ValidateJwtToken(Request.Headers["Authorization"]);
+            var result = Authenticate.ValidateJwtToken(Request.Headers["Authorization"]);
 
-            Response.StatusCode = JwtRes.StatusCode;
-            return new ObjectResult(JwtRes);
+            Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
+            Response.StatusCode = result.StatusCode;
+            return new ObjectResult(result);
 
         }
         [HttpPost("login")]
@@ -31,6 +33,7 @@ namespace RetroCollectApi.Controllers
         {
             var result = Authenticate.Login(credentials);
 
+            Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
             Response.StatusCode = result.StatusCode;
             return new ObjectResult(result);
         }
