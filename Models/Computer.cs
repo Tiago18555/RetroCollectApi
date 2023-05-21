@@ -1,4 +1,4 @@
-﻿using RetroCollect.CrossCutting.Enums;
+﻿using RetroCollectApi.CrossCutting.Enums.ForModels;
 using System.ComponentModel.DataAnnotations;
 
 namespace RetroCollect.Models

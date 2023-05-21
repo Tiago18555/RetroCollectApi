@@ -1,4 +1,4 @@
-﻿namespace RetroCollect.CrossCutting.Enums
+﻿namespace RetroCollectApi.CrossCutting.Enums.ForModels
 {
     public enum Manufacturer
     {
@@ -10,6 +10,6 @@
         Commodore,
         Apple,
         IBM,
-        Other        
+        Other
     }
 }

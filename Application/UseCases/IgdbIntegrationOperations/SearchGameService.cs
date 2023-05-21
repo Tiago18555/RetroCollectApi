@@ -1,12 +1,10 @@
 ﻿using Newtonsoft.Json;
 using RetroCollectApi.CrossCutting;
+using RetroCollectApi.CrossCutting.Enums.ForModels;
+using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 
 namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations
 {
-    public interface ISearchGameService
-    {
-        Task<ResponseModel> SearchByTitle(SearchGameRequestModel searchGameRequestModel);
-    }
     public class SearchGameService : ISearchGameService
     {
         private readonly HttpClient httpClient;
@@ -16,21 +14,38 @@ namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations
             httpClient = new HttpClient();
         }
 
-        public async Task<ResponseModel> SearchByTitle(SearchGameRequestModel searchGameRequestModel)
+        public async Task<ResponseModel> SearchBy(string search, string genre, string keyword, string companie, string language, string theme, string releaseyear)
         {
-            if(searchGameRequestModel.Keyword.Length > 48)
-            {
-                return GenericResponses.BadRequest("Palavra chave não pode ser maior que 48 caracteres");
-            }
 
-            var keyword = searchGameRequestModel.Keyword.Trim().Replace("/", "").Replace("\"", "").Replace('\\', '/');
+            var queryParams = new Dictionary<string, string>();
 
 
-            var query = String.Format(
-                $" fields cover.url, cover.image_id, genres.name, genres.url, " +
-                $"keywords.name, keywords.url, name, platforms.name, platforms.url, " +
-                $"rating, storyline, themes.name, themes.url, url; limit 5; search \"{keyword}\";"
-            );
+            if (!string.IsNullOrEmpty(search))
+                queryParams["search"] = search;
+
+            if (!string.IsNullOrEmpty(genre))
+                queryParams["genre"] = genre;
+
+            if (!string.IsNullOrEmpty(keyword))
+                queryParams["keyword"] = keyword;
+
+            if (!string.IsNullOrEmpty(companie))
+                queryParams["companie"] = companie;
+
+            if (!string.IsNullOrEmpty(language))
+                queryParams["language"] = language;
+
+            if (!string.IsNullOrEmpty(theme))
+                queryParams["theme"] = theme;
+
+            if (!string.IsNullOrEmpty(releaseyear))
+                queryParams["releaseyear"] = releaseyear;
+
+
+            var query = queryParams.BuildSearchQuery(50);
+
+            System.Console.WriteLine(query);
+
             var content = new StringContent(query);
 
             // Define o tipo de mídia do conteúdo como texto simples

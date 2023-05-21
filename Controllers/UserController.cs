@@ -53,17 +53,23 @@ namespace RetroCollectApi.Controllers
 
         [HttpGet]
         [SwaggerOperation(
-            Summary = "Register a new user",
-            Description = "Registers a new user in the system."
+            Summary = "Search games",
+            Description = "Search games from IGDB Database"
         )]
-        [SwaggerResponse(200, "User created successfully", typeof(CreateUserResponseModel))]
         [SwaggerResponse(400, "Invalid request")]
         [SwaggerResponse(406, "Invalid format of request")]
-        [SwaggerResponse(409, "Username or Email is already registered")]
         [SwaggerResponse(500, "Internal server error")]
-        public async Task<IActionResult> SearchGame([FromBody] SearchGameRequestModel game)
+            public async Task<IActionResult> SearchGame(
+                [FromQuery] string search,
+                [FromQuery] string genre,
+                [FromQuery] string keyword,
+                [FromQuery] string companie,
+                [FromQuery] string language,
+                [FromQuery] string theme,
+                [FromQuery] string releaseyear
+            )
         {
-            var result = await SearchGameService.SearchByTitle(game);
+            var result = await SearchGameService.SearchBy(search, genre, keyword, companie, language, theme, releaseyear);
 
             Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
             Response.StatusCode = result.StatusCode;

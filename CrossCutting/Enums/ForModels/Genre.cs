@@ -1,4 +1,4 @@
-﻿namespace RetroCollect.CrossCutting.Enums
+﻿namespace RetroCollectApi.CrossCutting.Enums.ForModels
 {
     public enum Genre
     {

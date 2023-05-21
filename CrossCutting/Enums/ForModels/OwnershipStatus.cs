@@ -1,7 +1,7 @@
 ﻿using RetroCollect.Models;
 using System;
 
-namespace RetroCollect.CrossCutting.Enums
+namespace RetroCollectApi.CrossCutting.Enums.ForModels
 {
     public enum OwnershipStatus
     {
