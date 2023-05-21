@@ -5,6 +5,8 @@ VisualStudioVersion = 17.4.33110.190
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RetroCollectApi", "RetroCollectApi.csproj", "{D8B7B1C1-70CB-480B-8BB4-E0C5009F7D6F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RetroCollectApiTests", "..\RetroCollectApiTests\RetroCollectApiTests.csproj", "{CE76F404-69A1-484C-A71B-B8D06A8438D9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{D8B7B1C1-70CB-480B-8BB4-E0C5009F7D6F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D8B7B1C1-70CB-480B-8BB4-E0C5009F7D6F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D8B7B1C1-70CB-480B-8BB4-E0C5009F7D6F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CE76F404-69A1-484C-A71B-B8D06A8438D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CE76F404-69A1-484C-A71B-B8D06A8438D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CE76F404-69A1-484C-A71B-B8D06A8438D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CE76F404-69A1-484C-A71B-B8D06A8438D9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

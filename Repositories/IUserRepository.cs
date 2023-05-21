@@ -1,12 +1,15 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Npgsql.Internal.TypeHandlers;
 using RetroCollect.Data;
 using RetroCollect.Models;
+using System.Linq;
 
 namespace RetroCollectApi.Repositories
 {
     public interface IUserRepository
     {
+        #region Personal info
         /// <exception cref="DbUpdateConcurrencyException"></exception>
         /// <exception cref="DbUpdateException"></exception>
         /// <returns>The entity found, or <see langword="null" />.</returns>
@@ -28,6 +31,16 @@ namespace RetroCollectApi.Repositories
         /// <exception cref="ArgumentNullException"></exception>
         /// <returns>The entity found, or <see langword="null" />.</returns>
         User Update(User user);
+
+        #endregion
+
+        #region User Collections
+
+        List<T> GetAllComputersByUser<T>(Guid userId, Func<UserComputer, T> predicate);
+        List<T> GetAllConsolesByUser<T>(Guid userId, Func<UserConsole, T> predicate);
+        List<T> GetAllCollectionsByUser<T>(Guid userId, Func<UserCollection, T> predicate);
+
+        #endregion
 
     }
     public class UserRepository : IUserRepository
@@ -74,6 +87,36 @@ namespace RetroCollectApi.Repositories
             return _context.Users
                 .Where(x => x.UserId == user.UserId)
                 .FirstOrDefault();
+        }
+
+        public List<T> GetAllComputersByUser<T>(Guid userId, Func<UserComputer, T> predicate)
+        {
+            return _context.UserComputers
+                .Include(x => x.Computer)
+                .AsNoTracking()
+                .Where(x => x.UserId == userId)
+                .Select(predicate)
+                .ToList();
+        }
+
+        public List<T> GetAllConsolesByUser<T>(Guid userId, Func<UserConsole, T> predicate)
+        {
+            return _context.UserConsoles
+                .Include(x => x.Console)
+                .AsNoTracking()
+                .Where(x => x.UserId == userId)
+                .Select(predicate)
+                .ToList();
+        }
+
+        public List<T> GetAllCollectionsByUser<T>(Guid userId, Func<UserCollection, T> predicate)
+        {
+            return _context.UserCollections
+                 .Include(x => x.Game)
+                 .AsNoTracking()
+                 .Where(x => x.UserId == userId)
+                 .Select(predicate)
+                 .ToList();
         }
     }
 }

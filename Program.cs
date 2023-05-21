@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using RetroCollect.Data;
+using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations;
 using RetroCollectApi.Application.UseCases.UserOperations.Authenticate;
 using RetroCollectApi.Application.UseCases.UserOperations.CreateUser;
 using RetroCollectApi.Repositories;
@@ -40,6 +41,7 @@ builder.Services.AddScoped<IUserRepository, UserRepository>();
 //Services
 builder.Services.AddScoped<IAuthenticateService, AuthenticateService>();
 builder.Services.AddScoped<ICreateUserService, CreateUserService>();
+builder.Services.AddScoped<ISearchGameService, SearchGameService>();
 
 #endregion
 

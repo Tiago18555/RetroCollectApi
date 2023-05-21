@@ -7,12 +7,14 @@ namespace RetroCollect.Models
     {
         [Key]
         public Guid UserCollectionId { get; set; } 
-        public Guid UserId { get; set; }
-        public Guid GameId { get; set; }
+
         public Condition Condition { get; set; }
         public DateTime PurchaseDate { get; set; }
         public string Notes { get; set; }
         public OwnershipStatus OwnershipStatus { get; set; }
+
+        public Guid UserId { get; set; }
+        public Guid GameId { get; set; }
         public User User { get; set; }
         public Game Game { get; set; }
     }
