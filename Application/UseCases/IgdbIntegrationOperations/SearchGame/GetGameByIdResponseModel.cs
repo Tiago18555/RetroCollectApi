@@ -1,9 +1,9 @@
 ﻿
 using Newtonsoft.Json;
 
-namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations
+namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchGame
 {
-    public partial class GetGameByIdResponseModel
+    public partial struct GetGameByIdResponseModel
     {
         [JsonProperty("id")]
         public int Id { get; set; }

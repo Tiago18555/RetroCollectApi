@@ -3,7 +3,7 @@ using RetroCollectApi.CrossCutting;
 using RetroCollectApi.CrossCutting.Enums.ForModels;
 using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 
-namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations
+namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchGame
 {
     public class SearchGameService : ISearchGameService
     {
@@ -44,7 +44,7 @@ namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations
 
             var query = queryParams.BuildSearchQuery(50);
 
-            System.Console.WriteLine(query);
+            Console.WriteLine(query);
 
             var content = new StringContent(query);
 
@@ -59,7 +59,7 @@ namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations
             if (response.IsSuccessStatusCode)
             {
                 var responseString = await response.Content.ReadAsStringAsync();
-                System.Console.WriteLine(responseString);
+                Console.WriteLine(responseString);
                 var responseContent = JsonConvert.DeserializeObject<List<SearchGameResponseModel>>(responseString);
                 return responseContent.Ok();
             }

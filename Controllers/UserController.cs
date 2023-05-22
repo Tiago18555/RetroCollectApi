@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
-using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations;
+using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchGame;
 using RetroCollectApi.Application.UseCases.UserOperations.CreateUser;
 using Swashbuckle.AspNetCore.Annotations;
 

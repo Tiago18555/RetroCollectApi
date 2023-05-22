@@ -65,13 +65,18 @@ namespace RetroCollectApi.CrossCutting
                 if (param.Key.ToQueryParam().StartsWith("invalid:"))
                     throw new Exception("Invalid query param.");
 
-                queryOut += $"{param.Key.ToQueryParam()} \"{param.Value}\"; ";
+                queryOut += $"{param.Key.ToQueryParam()} \"{param.Value.CleanKeyword()}\"; ";
             });
 
 
             System.Console.WriteLine($"QUERYOUT = {queryOut}");
 
             return queryOut;
+        }
+
+        public static string CleanKeyword(this string k)
+        {
+            return k.Replace(";", "").Replace("\"", "").Replace("*", "").Replace(",", "").Trim();
         }
     }
 }
