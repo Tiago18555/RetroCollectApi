@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.Shared;
 using RetroCollectApi.CrossCutting;
 using RetroCollectApi.CrossCutting.Enums.ForModels;
 using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
@@ -12,6 +13,31 @@ namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchG
         public SearchGameService()
         {
             httpClient = new HttpClient();
+        }
+
+        public async Task<ResponseModel> GetById(int id)
+        {
+            String query = @"
+                fields artworks.image_id, 
+                category, 
+                collection.name, collection.games.name, 
+                first_release_date, 
+                genres.name, 
+                involved_companies.porting, involved_companies.publisher, involved_companies.company.name, 
+                name, 
+                platforms.name, platforms.platform_logo.image_id, 
+                screenshots.image_id, 
+                storyline, 
+                summary, 
+                themes.name, 
+                url, 
+                videos.name, videos.video_id,
+                websites.url; 
+                where id = " + id.ToString() + ";";
+
+            var res = await httpClient.IgdbPostAsync<List<GetGameByIdResponseModel>>(query, "games");
+
+            return res.Ok();
         }
 
         public async Task<ResponseModel> SearchBy(string search, string genre, string keyword, string companie, string language, string theme, string releaseyear)
@@ -46,27 +72,10 @@ namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchG
 
             Console.WriteLine(query);
 
-            var content = new StringContent(query);
+            var res = await httpClient.IgdbPostAsync<List<SearchGameResponseModel>>(query, "games");
 
-            // Define o tipo de mídia do conteúdo como texto simples
-            content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/plain");
+            return res.Ok();
 
-            httpClient.DefaultRequestHeaders.Add("Client-ID", "7xvfbiwcpi3xzgmwclqxumlsxg7py3");
-            httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer yygovoe0gg64fmec4igxsb9tzcjtg7");
-
-            var response = await httpClient.PostAsync("https://api.igdb.com/v4/games", content);
-
-            if (response.IsSuccessStatusCode)
-            {
-                var responseString = await response.Content.ReadAsStringAsync();
-                Console.WriteLine(responseString);
-                var responseContent = JsonConvert.DeserializeObject<List<SearchGameResponseModel>>(responseString);
-                return responseContent.Ok();
-            }
-            else
-            {
-                throw new Exception($"Erro na requisição: {response.StatusCode}");
-            }
         }
     }
 }

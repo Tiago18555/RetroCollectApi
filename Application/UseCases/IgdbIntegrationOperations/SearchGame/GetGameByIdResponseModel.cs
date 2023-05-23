@@ -1,76 +1,198 @@
 ﻿
 using Newtonsoft.Json;
+using RetroCollectApi.CrossCutting.Enums.IgdbResponse;
+using System.Security.AccessControl;
 
 namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchGame
 {
-    public partial struct GetGameByIdResponseModel
+
+    // Root myDeserializedClass = JsonConvert.DeserializeObject<List<Root>>(myJsonResponse);
+
+    #region ParentObject
+    public struct GetGameByIdResponseModel
     {
         [JsonProperty("id")]
         public int Id { get; set; }
 
-        [JsonProperty("cover")]
-        public Cover Cover { get; set; }
+        [JsonProperty("artworks")]
+        private List<Artwork> Artworks { get; set; }
+
+        public List<string> ArtworkUrls => Artworks.Select(prop => prop.ImageId).ToList();
+
+        [JsonProperty("category")]
+        private int _Category { get; set; }
+        public string Category => Enum.GetName(typeof(GameCategory), _Category);
+
+        [JsonProperty("collection")]
+        public Collection Collection { get; set; }
+
+        [JsonProperty("first_release_date")]
+        public int FirstReleaseDate { get; set; }
 
         [JsonProperty("genres")]
-        public List<Genre> Genres { get; set; }
+        private List<Genre> _Genres { get; set; }
+        public List<string> Genres => _Genres.Select(prop => prop.Name).ToList();
 
-        [JsonProperty("keywords")]
-        public List<Keyword> Keywords { get; set; }
+        [JsonProperty("involved_companies")]
+        public List<InvolvedCompany> InvolvedCompanies { get; set; }
+
+        [JsonProperty("name")]
+        public string Name { get; set; }
 
         [JsonProperty("platforms")]
         public List<Platform> Platforms { get; set; }
 
-        [JsonProperty("themes")]
-        public List<Theme> Themes { get; set; }
-
-        [JsonProperty("name")]
-        public string Name { get; set; }
+        [JsonProperty("screenshots")]
+        private List<Screenshot> _Screenshots { get; set; }
+        public List<string> Screenshots => _Screenshots.Select(prop => prop.ImageId).ToList();
 
         [JsonProperty("storyline")]
         public string Storyline { get; set; }
 
+        [JsonProperty("summary")]
+        public string Summary { get; set; }
+
+        [JsonProperty("themes")]
+        private List<Theme> _Themes { get; set; }
+        public List<string> Themes => _Themes.Select(prop => prop.Name).ToList();
+
         [JsonProperty("url")]
         public string Url { get; set; }
 
-        [JsonProperty("rating")]
-        public double Rating { get; set; }
+        [JsonProperty("videos")]
+        public List<Video> Videos { get; set; }
+
+        [JsonProperty("websites")]
+        private List<Website> _Websites { get; set; }
+        public List<string> Websites => _Websites.Select(prop => prop.Url).ToList();
+    }
+
+    #endregion
+
+    #region Child Objects
+    public struct Artwork
+    {
+        [JsonProperty("id")]
+        public int Id { get; set; }
+
+        [JsonProperty("image_id")]
+        public string ImageId { get; set; }
+    }
+
+    public struct Collection
+    {
+        [JsonProperty("id")]
+        public int Id { get; set; }
+
+        [JsonProperty("games")]
+        public List<Game> Games { get; set; }
+
+        [JsonProperty("name")]
+        public string Name { get; set; }
+    }
+
+    public struct Company
+    {
+        [JsonProperty("id")]
+        public int Id { get; set; }
+
+        [JsonProperty("name")]
+        public string Name { get; set; }
+    }
+
+    public struct Game
+    {
+        [JsonProperty("id")]
+        public int Id { get; set; }
+
+        [JsonProperty("name")]
+        public string Name { get; set; }
     }
 
     public struct Genre
     {
+        [JsonProperty("id")]
+        public int Id { get; set; }
+
         [JsonProperty("name")]
         public string Name { get; set; }
-
-        [JsonProperty("url")]
-        public string Url { get; set; }
     }
-    public struct Keyword
+
+    public struct InvolvedCompany
     {
-        [JsonProperty("name")]
-        public string Name { get; set; }
+        [JsonProperty("id")]
+        public int Id { get; set; }
 
-        [JsonProperty("url")]
-        public string Url { get; set; }
+        [JsonProperty("company")]
+        public Company Company { get; set; }
+
+        [JsonProperty("porting")]
+        public bool Porting { get; set; }
+
+        [JsonProperty("publisher")]
+        public bool Publisher { get; set; }
     }
+
     public struct Platform
     {
+        [JsonProperty("id")]
+        public int Id { get; set; }
+
         [JsonProperty("name")]
         public string Name { get; set; }
 
-        [JsonProperty("url")]
-        public string Url { get; set; }
+        [JsonProperty("platform_logo")]
+        private PlatformLogo _PlatformLogo { get; set; }
+        public string PlatformLogo => _PlatformLogo.ImageId;
     }
+
+    public struct PlatformLogo
+    {
+        [JsonProperty("id")]
+        public int Id { get; set; }
+
+        [JsonProperty("image_id")]
+        public string ImageId { get; set; }
+    }
+    public struct Screenshot
+    {
+        [JsonProperty("id")]
+        public int Id { get; set; }
+
+        [JsonProperty("image_id")]
+        public string ImageId { get; set; }
+    }
+
     public struct Theme
     {
+        [JsonProperty("id")]
+        public int Id { get; set; }
+
         [JsonProperty("name")]
         public string Name { get; set; }
+    }
+
+    public struct Video
+    {
+        [JsonIgnore]
+        [JsonProperty("id")]
+        public int Id { get; set; }
+
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        [JsonProperty("video_id")]
+        public string VideoId { get; set; }
+    }
+
+    public struct Website
+    {
+        [JsonProperty("id")]
+        public int Id { get; set; }
 
         [JsonProperty("url")]
         public string Url { get; set; }
     }
-    public struct Cover
-    {
-        [JsonProperty("image_id")]
-        public string Image_Id { get; set; }
-    }
+
+    #endregion
 }

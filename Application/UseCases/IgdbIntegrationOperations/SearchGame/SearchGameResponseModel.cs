@@ -15,6 +15,11 @@ namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchG
 
         [JsonProperty("first_release_date")]
         public string ReleaseDate { get; set; }
+    }
 
+    public struct Cover
+    {
+        [JsonProperty("image_id")]
+        public string Image_Id { get; set; }
     }
 }

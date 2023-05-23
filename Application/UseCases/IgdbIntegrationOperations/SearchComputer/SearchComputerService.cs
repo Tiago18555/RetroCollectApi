@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchGame;
+using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.Shared;
 using RetroCollectApi.CrossCutting;
 
 namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchComputer
@@ -19,27 +20,9 @@ namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchC
 
             Console.WriteLine(query);
 
-            var content = new StringContent(query);
+            var res = await httpClient.IgdbPostAsync<List<SearchComputerResponseModel>>(query, "platforms");
 
-            // Define o tipo de mídia do conteúdo como texto simples
-            content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/plain");
-
-            httpClient.DefaultRequestHeaders.Add("Client-ID", "7xvfbiwcpi3xzgmwclqxumlsxg7py3");
-            httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer yygovoe0gg64fmec4igxsb9tzcjtg7");
-
-            var response = await httpClient.PostAsync("https://api.igdb.com/v4/platforms", content);
-
-            if (response.IsSuccessStatusCode)
-            {
-                var responseString = await response.Content.ReadAsStringAsync();
-                Console.WriteLine(responseString);
-                var responseContent = JsonConvert.DeserializeObject<List<SearchGameResponseModel>>(responseString);
-                return responseContent.Ok();
-            }
-            else
-            {
-                throw new Exception($"Erro na requisição: {response.StatusCode}");
-            }
+            return res.Ok();
         }
     }
 }

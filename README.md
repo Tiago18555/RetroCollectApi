@@ -16,7 +16,7 @@ RetroCollect is a web application that allows users to manage their collection o
 
 - **Backend**: C# with ASP.NET Web API and Entity Framework.
 - **Frontend**: Angular framework.
-- **Database**: SQL database.
+- **Database**: PostgreSQL database.
 
 ## Getting Started
 

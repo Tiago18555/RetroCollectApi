@@ -1,4 +1,6 @@
 ﻿using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations;
+using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchGame;
+using System.Net.Http;
 
 namespace RetroCollectApi.CrossCutting
 {

@@ -6,5 +6,7 @@ namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchG
     public interface ISearchGameService
     {
         Task<ResponseModel> SearchBy(string name, string genre, string keyword, string companie, string language, string theme, string releaseyear);
+
+        Task<ResponseModel> GetById(int id);
     }
 }
