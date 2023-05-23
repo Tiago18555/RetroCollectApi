@@ -19,7 +19,7 @@ namespace RetroCollectApi.Application.UseCases.UserOperations.ManageUser
             {
                 var foundUser = repository.SingleOrDefault(x => x.UserId == userRequestModel.UserId);
 
-                if (foundUser == null) { return GenericResponses.NotFound("User not found"); }        
+                if (foundUser == null) { return GenericResponses.NotFound("User not found"); }
 
                 var res = this.repository.Update(foundUser.MapAndFill(userRequestModel));
 

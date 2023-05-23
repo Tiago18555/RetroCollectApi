@@ -1,8 +1,5 @@
-﻿using Newtonsoft.Json;
-using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.Shared;
+﻿using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.Shared;
 using RetroCollectApi.CrossCutting;
-using RetroCollectApi.CrossCutting.Enums.ForModels;
-using static Microsoft.Extensions.Logging.EventSource.LoggingEventSource;
 
 namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchGame
 {

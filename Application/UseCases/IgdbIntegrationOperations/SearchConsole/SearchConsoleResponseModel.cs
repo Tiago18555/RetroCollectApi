@@ -15,9 +15,5 @@ namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchC
         private Platform_Logo Platform_Logo { get; set; }
 
         public string LogoUrl => Platform_Logo.Image_Id;
-        public int ReleaseYear => Versions.Pvrd.y;
-
-        [JsonProperty("versions")]
-        private Versions Versions { get; set; }
     }
 }

@@ -1,9 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Npgsql.Internal.TypeHandlers;
+﻿using Microsoft.EntityFrameworkCore;
 using RetroCollect.Data;
 using RetroCollect.Models;
-using System.Linq;
 
 namespace RetroCollectApi.Repositories
 {
@@ -57,7 +54,7 @@ namespace RetroCollectApi.Repositories
             _context.Users.Add(user);
             _context.SaveChanges();
 
-            return _context.Users              
+            return _context.Users
                 .Where(x => x.UserId == user.UserId)
                 .FirstOrDefault();
         }

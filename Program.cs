@@ -19,7 +19,8 @@ var connectionString = configuration.GetConnectionString("Local");
 
 //JWT
 var symmetricalKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:SecretKey"]));
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opt => {
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opt =>
+{
     opt.TokenValidationParameters = new()
     {
         ValidateIssuer = true,
@@ -64,13 +65,15 @@ builder.Services.AddSwaggerGen(c =>
     c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "RetroCollect Api", Version = "v1" });
 });
 
-builder.Services.AddAuthorization(options => {
+builder.Services.AddAuthorization(options =>
+{
     options.AddPolicy("Admin", policy => policy.RequireRole("Admin"));
     options.AddPolicy("User", policy => policy.RequireRole("User"));
 });
 
 
-builder.Services.AddCors(c => {
+builder.Services.AddCors(c =>
+{
     c.AddPolicy("AllowOrigin", options => options.AllowAnyOrigin());
 });
 

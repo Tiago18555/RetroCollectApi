@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using System.Drawing;
 
 namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.Shared
 {

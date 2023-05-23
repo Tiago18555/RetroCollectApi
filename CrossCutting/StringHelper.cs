@@ -1,8 +1,4 @@
-﻿using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations;
-using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchGame;
-using System.Net.Http;
-
-namespace RetroCollectApi.CrossCutting
+﻿namespace RetroCollectApi.CrossCutting
 {
     public static class StringHelper
     {
@@ -60,7 +56,7 @@ namespace RetroCollectApi.CrossCutting
         {
             var queryOut = String.Format($"fields name, first_release_date, cover.image_id; limit {limit}; ");
 
-            if(querys.Count == 0) { return queryOut; }
+            if (querys.Count == 0) { return queryOut; }
 
             querys.ToList<KeyValuePair<string, string>>().ForEach(param =>
             {

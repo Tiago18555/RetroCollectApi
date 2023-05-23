@@ -1,11 +1,10 @@
 ﻿using Microsoft.IdentityModel.Tokens;
-using RetroCollect.Data;
 using RetroCollect.Models;
 using RetroCollectApi.CrossCutting;
-using System.IdentityModel.Tokens.Jwt;
-using BCryptNet = BCrypt.Net.BCrypt;
-using System.Text;
 using RetroCollectApi.Repositories;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
+using BCryptNet = BCrypt.Net.BCrypt;
 
 namespace RetroCollectApi.Application.UseCases.UserOperations.Authenticate
 {

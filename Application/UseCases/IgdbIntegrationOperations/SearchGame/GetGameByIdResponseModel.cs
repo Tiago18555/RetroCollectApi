@@ -1,15 +1,11 @@
 ﻿
 using Newtonsoft.Json;
 using RetroCollectApi.CrossCutting.Enums.IgdbResponse;
-using System.Security.AccessControl;
 
 namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchGame
 {
-
-    // Root myDeserializedClass = JsonConvert.DeserializeObject<List<Root>>(myJsonResponse);
-
     #region ParentObject
-    public struct GetGameByIdResponseModel
+    public class GetGameByIdResponseModel
     {
         [JsonProperty("id")]
         public int Id { get; set; }

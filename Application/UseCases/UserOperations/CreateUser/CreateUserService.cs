@@ -1,5 +1,4 @@
-﻿using RetroCollect.Data;
-using RetroCollect.Models;
+﻿using RetroCollect.Models;
 using RetroCollectApi.CrossCutting;
 using RetroCollectApi.Repositories;
 using System.Data;

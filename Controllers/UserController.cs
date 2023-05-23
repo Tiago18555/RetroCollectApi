@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Components.Forms;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Http.Features;
+﻿using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using RetroCollectApi.Application.UseCases.UserOperations.CreateUser;
 using Swashbuckle.AspNetCore.Annotations;
@@ -37,7 +35,7 @@ namespace RetroCollectApi.Controllers
             Response.StatusCode = result.StatusCode;
             return new ObjectResult(result);
         }
-        
+
     }
 }
 

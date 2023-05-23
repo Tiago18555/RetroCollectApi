@@ -1,39 +1,32 @@
 ﻿using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
-using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchGame;
+using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchConsole;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace RetroCollectApi.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class GameController : ControllerBase
+    public class ConsoleController : ControllerBase
     {
-        private ISearchGameService searchGameService { get; set; }
-        public GameController(ISearchGameService _searchGameService)
+        private ISearchConsoleService searchConsoleService { get; set; }
+
+        public ConsoleController(ISearchConsoleService _searchConsoleService)
         {
-            this.searchGameService = _searchGameService;
+            this.searchConsoleService = _searchConsoleService;
         }
 
         [HttpGet]
         [SwaggerOperation(
-            Summary = "Search games",
-            Description = "Search games from IGDB Database"
+            Summary = "Search consoles",
+            Description = "Search consoles from IGDB Database"
         )]
         [SwaggerResponse(400, "Invalid request")]
         [SwaggerResponse(406, "Invalid format of request")]
         [SwaggerResponse(500, "Internal server error")]
-        public async Task<IActionResult> SearchGame(
-            [FromQuery] string search,
-            [FromQuery] string genre,
-            [FromQuery] string keyword,
-            [FromQuery] string companie,
-            [FromQuery] string language,
-            [FromQuery] string theme,
-            [FromQuery] string releaseyear
-        )
+        public async Task<IActionResult> SearchConsole([FromQuery] string search)
         {
-            var result = await searchGameService.SearchBy(search, genre, keyword, companie, language, theme, releaseyear);
+            var result = await searchConsoleService.SearchBy(search);
 
             Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
             Response.StatusCode = result.StatusCode;
@@ -42,21 +35,20 @@ namespace RetroCollectApi.Controllers
 
         [HttpGet("{id}")]
         [SwaggerOperation(
-            Summary = "Get game by id",
-            Description = "Get a specific game by your id from IGDB Database"
+            Summary = "Get console by id",
+            Description = "Get a specific console by your id from IGDB Database"
         )]
         [SwaggerResponse(400, "Invalid request")]
         [SwaggerResponse(406, "Invalid format of request")]
         [SwaggerResponse(500, "Internal server error")]
-        public async Task<IActionResult> GetGameById([FromRoute] int id)
+        public async Task<IActionResult> GetConsoleById([FromRoute] int id)
         {
-            var result = await searchGameService.GetById(id);
+            var result = await searchConsoleService.GetById(id);
 
             Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
             Response.StatusCode = result.StatusCode;
             return new ObjectResult(result);
         }
-
     }
 }
 

@@ -5,5 +5,6 @@ namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchC
     public interface ISearchComputerService
     {
         Task<ResponseModel> SearchBy(string name);
+        Task<ResponseModel> GetById(int id);
     }
 }
