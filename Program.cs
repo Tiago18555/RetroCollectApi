@@ -1,14 +1,17 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using RetroCollect.Data;
 using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchComputer;
 using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchConsole;
 using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchGame;
+using RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems;
 using RetroCollectApi.Application.UseCases.UserOperations.Authenticate;
 using RetroCollectApi.Application.UseCases.UserOperations.CreateUser;
 using RetroCollectApi.Application.UseCases.UserOperations.ManageUser;
 using RetroCollectApi.Repositories;
+using RetroCollectApi.Repositories.Interfaces;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -41,6 +44,13 @@ builder.Services.AddControllers();
 //Repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
+builder.Services.AddScoped<IUserCollectionRepository, UserCollectionRepository>();
+builder.Services.AddScoped<IUserComputerRepository, UserComputerRepository>();
+builder.Services.AddScoped<IUserConsoleRepository, UserConsoleRepository>();
+
+builder.Services.AddScoped<IConsoleRepository, ConsoleRepository>();
+builder.Services.AddScoped<IComputerRepository, ComputerRepository>();
+builder.Services.AddScoped<IGameRepository, GameRepository>();
 
 //Services
 builder.Services.AddScoped<IAuthenticateService, AuthenticateService>();
@@ -50,6 +60,9 @@ builder.Services.AddScoped<IManageUserService, ManageUserService>();
 builder.Services.AddScoped<ISearchGameService, SearchGameService>();
 builder.Services.AddScoped<ISearchComputerService, SearchComputerService>();
 builder.Services.AddScoped<ISearchConsoleService, SearchConsoleService>();
+
+builder.Services.AddScoped<IAddItemService, AddItemService>();
+builder.Services.AddScoped<IDeleteItemService, DeleteItemService>();
 
 #endregion
 

@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RetroCollectApi.CrossCutting;
-using RetroCollectApi.Repositories;
+using RetroCollectApi.Repositories.Interfaces;
 using System.Data;
 
 namespace RetroCollectApi.Application.UseCases.UserOperations.ManageUser

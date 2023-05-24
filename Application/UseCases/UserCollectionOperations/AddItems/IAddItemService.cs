@@ -9,6 +9,31 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
         public ResponseModel AddGame(AddItemRequestModel item);
     }
 
+    public interface IDeleteItemService
+    {
+        public ResponseModel DeleteComputer(AddItemRequestModel item);
+        public ResponseModel DeleteConsole(AddItemRequestModel item);
+        public ResponseModel DeleteGame(AddItemRequestModel item);
+    }
+
+    public class DeleteItemService : IDeleteItemService
+    {
+        public ResponseModel DeleteComputer(AddItemRequestModel item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ResponseModel DeleteConsole(AddItemRequestModel item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ResponseModel DeleteGame(AddItemRequestModel item)
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     public class AddItemService : IAddItemService
     {
         public ResponseModel AddComputer(AddItemRequestModel item)

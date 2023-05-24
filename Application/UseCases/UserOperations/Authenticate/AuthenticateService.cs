@@ -1,7 +1,7 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using RetroCollect.Models;
 using RetroCollectApi.CrossCutting;
-using RetroCollectApi.Repositories;
+using RetroCollectApi.Repositories.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using BCryptNet = BCrypt.Net.BCrypt;

@@ -1,22 +1,22 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RetroCollect.Models;
 
-namespace RetroCollectApi.Repositories
+namespace RetroCollectApi.Repositories.Interfaces
 {
-    public interface IUserComputerRepository
+    public interface IUserConsoleRepository
     {
         /// <exception cref="DbUpdateConcurrencyException"></exception>
         /// <exception cref="DbUpdateException"></exception>
         /// <returns>The entity found, or <see langword="null" />.</returns>
-        UserComputer Add(UserComputer user);
-        bool Delete(UserComputer user); //TRY VOID
-        UserComputer GetById(Guid id);
+        UserConsole Add(UserConsole user);
+        bool Delete(UserConsole user); //TRY VOID
+        UserConsole GetById(Guid id);
 
         /// <exception cref="ArgumentNullException"></exception>
-        bool Any(Func<UserComputer, bool> predicate);
+        bool Any(Func<UserConsole, bool> predicate);
 
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
-        UserComputer SingleOrDefault(Func<UserComputer, bool> predicate);
+        UserConsole SingleOrDefault(Func<UserConsole, bool> predicate);
     }
 }

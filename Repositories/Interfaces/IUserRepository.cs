@@ -2,7 +2,7 @@
 using RetroCollect.Models;
 using System.Linq;
 
-namespace RetroCollectApi.Repositories
+namespace RetroCollectApi.Repositories.Interfaces
 {
     public interface IUserRepository
     {

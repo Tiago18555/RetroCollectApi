@@ -1,5 +1,6 @@
 ﻿using RetroCollect.Data;
 using RetroCollect.Models;
+using RetroCollectApi.Repositories.Interfaces;
 
 namespace RetroCollectApi.Repositories
 {
