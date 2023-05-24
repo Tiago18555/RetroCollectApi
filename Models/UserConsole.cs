@@ -14,7 +14,7 @@ namespace RetroCollect.Models
         public OwnershipStatus OwnershipStatus { get; set; }
 
         public Guid UserId { get; set; }
-        public Guid ConsoleId { get; set; }
+        public int ConsoleId { get; set; }
         public User User { get; set; }
         public Console Console { get; set; }
     }

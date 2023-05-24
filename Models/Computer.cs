@@ -6,16 +6,11 @@ namespace RetroCollect.Models
     public class Computer
     {
         [Key]
-        public Guid ComputerId { get; set; }
+        public int ComputerId { get; set; }
 
         [MinLength(3)]
         [MaxLength(255)]
         public string Name { get; set; }
-
-        [MinLength(3)]
-        [MaxLength(255)]
-        public Manufacturer Manufacturer { get; set; }
-        public int ReleaseYear { get; set; }
 
         [MinLength(3)]
         [MaxLength(2048)]
@@ -23,6 +18,8 @@ namespace RetroCollect.Models
 
         [MinLength(1)]
         public string ImageUrl { get; set; }
+
+        public bool IsArcade { get; set; }
 
         public ICollection<Game> Games { get; set; }
         public ICollection<UserComputer> UserComputers { get; set; }

@@ -12,8 +12,8 @@ using RetroCollect.Data;
 namespace RetroCollectApi.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20230520213717_all keys from int to guid")]
-    partial class allkeysfrominttoguid
+    [Migration("20230524014315_setting models to igdb responses and using his primary key")]
+    partial class settingmodelstoigdbresponsesandusinghisprimarykey
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -26,9 +26,11 @@ namespace RetroCollectApi.Migrations
 
             modelBuilder.Entity("RetroCollect.Models.Computer", b =>
                 {
-                    b.Property<Guid>("ComputerId")
+                    b.Property<int>("ComputerId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ComputerId"));
 
                     b.Property<string>("Description")
                         .HasMaxLength(2048)
@@ -37,16 +39,12 @@ namespace RetroCollectApi.Migrations
                     b.Property<string>("ImageUrl")
                         .HasColumnType("text");
 
-                    b.Property<int>("Manufacturer")
-                        .HasMaxLength(255)
-                        .HasColumnType("integer");
+                    b.Property<bool>("IsArcade")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Name")
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
-
-                    b.Property<int>("ReleaseYear")
-                        .HasColumnType("integer");
 
                     b.HasKey("ComputerId");
 
@@ -55,9 +53,11 @@ namespace RetroCollectApi.Migrations
 
             modelBuilder.Entity("RetroCollect.Models.Console", b =>
                 {
-                    b.Property<Guid>("ConsoleId")
+                    b.Property<int>("ConsoleId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("ConsoleId"));
 
                     b.Property<string>("Description")
                         .HasMaxLength(2048)
@@ -66,16 +66,12 @@ namespace RetroCollectApi.Migrations
                     b.Property<string>("ImageUrl")
                         .HasColumnType("text");
 
-                    b.Property<int>("Manufacturer")
-                        .HasMaxLength(255)
-                        .HasColumnType("integer");
+                    b.Property<bool>("IsPortable")
+                        .HasColumnType("boolean");
 
                     b.Property<string>("Name")
                         .HasMaxLength(255)
                         .HasColumnType("character varying(255)");
-
-                    b.Property<int>("ReleaseYear")
-                        .HasColumnType("integer");
 
                     b.HasKey("ConsoleId");
 
@@ -84,28 +80,32 @@ namespace RetroCollectApi.Migrations
 
             modelBuilder.Entity("RetroCollect.Models.Game", b =>
                 {
-                    b.Property<Guid>("GameId")
+                    b.Property<int>("GameId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
+                        .HasColumnType("integer");
 
-                    b.Property<Guid>("ComputerId")
-                        .HasColumnType("uuid");
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("GameId"));
 
-                    b.Property<Guid>("ConsoleId")
-                        .HasColumnType("uuid");
+                    b.Property<int>("ComputerId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ConsoleId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Description")
-                        .HasMaxLength(2048)
-                        .HasColumnType("character varying(2048)");
+                        .HasColumnType("text");
 
-                    b.Property<int>("Genre")
-                        .HasColumnType("integer");
+                    b.Property<string>("Genre")
+                        .HasColumnType("text");
 
                     b.Property<string>("ImageUrl")
                         .HasColumnType("text");
 
                     b.Property<int>("ReleaseYear")
                         .HasColumnType("integer");
+
+                    b.Property<string>("Summary")
+                        .HasColumnType("text");
 
                     b.Property<string>("Title")
                         .HasMaxLength(255)
@@ -129,8 +129,8 @@ namespace RetroCollectApi.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("timestamp without time zone");
 
-                    b.Property<Guid>("GameId")
-                        .HasColumnType("uuid");
+                    b.Property<int>("GameId")
+                        .HasColumnType("integer");
 
                     b.Property<int>("RatingValue")
                         .HasColumnType("integer");
@@ -204,8 +204,8 @@ namespace RetroCollectApi.Migrations
                     b.Property<int>("Condition")
                         .HasColumnType("integer");
 
-                    b.Property<Guid>("GameId")
-                        .HasColumnType("uuid");
+                    b.Property<int>("GameId")
+                        .HasColumnType("integer");
 
                     b.Property<string>("Notes")
                         .HasColumnType("text");
@@ -234,8 +234,20 @@ namespace RetroCollectApi.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("ComputerId")
-                        .HasColumnType("uuid");
+                    b.Property<int>("ComputerId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Condition")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("text");
+
+                    b.Property<int>("OwnershipStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("PurchaseDate")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");
@@ -255,8 +267,20 @@ namespace RetroCollectApi.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("ConsoleId")
-                        .HasColumnType("uuid");
+                    b.Property<int>("Condition")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("ConsoleId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Notes")
+                        .HasColumnType("text");
+
+                    b.Property<int>("OwnershipStatus")
+                        .HasColumnType("integer");
+
+                    b.Property<DateTime>("PurchaseDate")
+                        .HasColumnType("timestamp without time zone");
 
                     b.Property<Guid>("UserId")
                         .HasColumnType("uuid");

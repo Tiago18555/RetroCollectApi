@@ -6,19 +6,18 @@ namespace RetroCollect.Models
     public class Game
     {
         [Key]
-        public Guid GameId { get; set; }
+        public int GameId { get; set; }
 
         [MinLength(3)]
         [MaxLength(255)]
         public string Title { get; set; }
-        public Guid ConsoleId { get; set; }
-        public Guid ComputerId { get; set; }
+        public int ConsoleId { get; set; }
+        public int ComputerId { get; set; }
         public int ReleaseYear { get; set; }
-        public Genre Genre { get; set; }
+        public string Genre { get; set; }
 
-        [MinLength(3)]
-        [MaxLength(2048)]
         public string Description { get; set; }
+        public string Summary { get; set; }
         public string ImageUrl { get; set; }
 
         public Console Console { get; set; }

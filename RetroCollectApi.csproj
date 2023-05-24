@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Application\UseCases\UserCollectionOperations\" />
+    <Folder Include="Application\UseCases\UserCollectionOperations\DeleteItems\" />
     <Folder Include="Migrations\" />
   </ItemGroup>
 </Project>

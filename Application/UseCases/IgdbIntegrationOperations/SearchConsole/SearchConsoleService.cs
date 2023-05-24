@@ -19,7 +19,6 @@ namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchC
             var res = await httpClient.IgdbPostAsync<List<PlatformResponseModel>>(query, "platforms");
 
             return res.Ok();
-            throw new NotImplementedException();
         }
 
         public async Task<ResponseModel> SearchBy(string name)
