@@ -1,4 +1,5 @@
-﻿using RetroCollectApi.CrossCutting;
+﻿using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchConsole;
+using RetroCollectApi.CrossCutting;
 
 namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchComputer
 {
@@ -6,5 +7,7 @@ namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchC
     {
         Task<ResponseModel> SearchBy(string name);
         Task<ResponseModel> GetById(int id);
+        Task<List<ComputerInfo>> RetrieveComputerInfoAsync(int game_id);
+
     }
 }

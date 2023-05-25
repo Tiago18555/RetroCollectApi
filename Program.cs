@@ -7,6 +7,8 @@ using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchCompu
 using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchConsole;
 using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchGame;
 using RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems;
+using RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageComputerCollection;
+using RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageConsoleCollection;
 using RetroCollectApi.Application.UseCases.UserOperations.Authenticate;
 using RetroCollectApi.Application.UseCases.UserOperations.CreateUser;
 using RetroCollectApi.Application.UseCases.UserOperations.ManageUser;
@@ -61,8 +63,9 @@ builder.Services.AddScoped<ISearchGameService, SearchGameService>();
 builder.Services.AddScoped<ISearchComputerService, SearchComputerService>();
 builder.Services.AddScoped<ISearchConsoleService, SearchConsoleService>();
 
-builder.Services.AddScoped<IAddItemService, AddItemService>();
-builder.Services.AddScoped<IDeleteItemService, DeleteItemService>();
+builder.Services.AddScoped<IManageGameCollectionService, ManageGameCollectionService>();
+builder.Services.AddScoped<IManageComputerCollectionService, ManageComputerCollectionService>();
+builder.Services.AddScoped<IManageConsoleCollectionService, ManageConsoleCollectionService>();
 
 #endregion
 

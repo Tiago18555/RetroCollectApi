@@ -1,4 +1,5 @@
-﻿using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchGame;
+﻿using Newtonsoft.Json;
+using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchGame;
 using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.Shared;
 using RetroCollectApi.CrossCutting;
 
@@ -21,6 +22,21 @@ namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchC
             return res.Ok();
         }
 
+        public async Task<List<ConsoleInfo>> RetrieveConsoleInfoAsync(int game_id)
+        {
+            String query = @"
+                fields                         
+                name, 
+                summary,
+                platform_logo.image_id,
+                category;
+                where id = " + game_id.ToString() + ";";
+
+            var res = await httpClient.IgdbPostAsync<List<ConsoleInfo>>(query, "platforms");
+
+            return res;
+        }
+
         public async Task<ResponseModel> SearchBy(string name)
         {
             if (string.IsNullOrEmpty(name)) { return GenericResponses.NotFound("Field \"search cannot be empty\""); }
@@ -33,5 +49,25 @@ namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchC
 
             return res.Ok();
         }
+    }
+
+    public class ConsoleInfo
+    {
+        [JsonProperty("id")]
+        public int ConsoleId { get; set; }
+
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        [JsonProperty("summary")]
+        public string Description { get; set; }
+
+        [JsonProperty("platform_logo")]
+        private Platform_Logo Platform_Logo { get; set; }
+        public string ImageUrl => Platform_Logo.Image_Id;
+
+        [JsonProperty("category")]
+        private int Category { get; set; }
+        public bool IsPortable => Category == 5;
     }
 }
