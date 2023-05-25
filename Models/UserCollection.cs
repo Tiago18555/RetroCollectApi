@@ -17,5 +17,8 @@ namespace RetroCollect.Models
         public int GameId { get; set; }
         public User User { get; set; }
         public Game Game { get; set; }
+
+        public int ComputerId { get; set; }
+        public int ConsoleId { get; set; }
     }
 }

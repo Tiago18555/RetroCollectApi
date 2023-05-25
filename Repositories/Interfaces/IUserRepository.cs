@@ -33,8 +33,13 @@ namespace RetroCollectApi.Repositories.Interfaces
 
         #region User Collections
 
+        /// <exception cref="ArgumentNullException"></exception>
         List<T> GetAllComputersByUser<T>(Guid userId, Func<UserComputer, T> predicate);
+
+        /// <exception cref="ArgumentNullException"></exception>
         List<T> GetAllConsolesByUser<T>(Guid userId, Func<UserConsole, T> predicate);
+
+        /// <exception cref="ArgumentNullException"></exception>
         List<T> GetAllCollectionsByUser<T>(Guid userId, Func<UserCollection, T> predicate);
 
         #endregion

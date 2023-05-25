@@ -17,7 +17,8 @@ namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchG
             String query = @"
                 fields artworks.image_id, 
                 category, 
-                collection.name, collection.games.name, 
+                collection.name, collection.games.name,
+                cover.image_id,
                 first_release_date, 
                 genres.name, 
                 involved_companies.porting, involved_companies.publisher, involved_companies.company.name, 
@@ -35,6 +36,24 @@ namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchG
             var res = await httpClient.IgdbPostAsync<List<GetGameByIdResponseModel>>(query, "games");
 
             return res.Ok();
+        }
+
+        public async Task<List<GameInfo>> RetrieveGameInfoAsync(int game_id)
+        {
+            String query = @"
+                fields
+                first_release_date, 
+                genres.name,  
+                name, 
+                platforms.name, platforms.platform_logo
+                storyline, 
+                summary,
+                cover.image_id; 
+                where id = " + game_id.ToString() + ";";
+
+            var res = await httpClient.IgdbPostAsync<List<GameInfo>>(query, "games");
+
+            return res;
         }
 
         public async Task<ResponseModel> SearchBy(string search, string genre, string keyword, string companie, string language, string theme, string releaseyear)

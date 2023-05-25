@@ -14,29 +14,6 @@
             };
         }
 
-        /*
-        cover_small,
-        screenshot_med,
-        cover_big,
-        logo_med,
-        screenshot_big,
-        screenshot_huge,
-        thumb,
-        micro,
-        a720p,
-        a1080p*/
-
-        /*
-                         [FromQuery] string search,
-                [FromQuery] string genre,
-                [FromQuery] string[] keyword,
-                [FromQuery] string companie,
-                [FromQuery] string language,
-                [FromQuery] string theme,
-                [FromQuery] string releaseyear
-         */
-
-
         public static string ToQueryParam(this string s)
         {
             return s switch

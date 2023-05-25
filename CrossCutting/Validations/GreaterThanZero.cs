@@ -10,4 +10,5 @@ namespace RetroCollectApi.CrossCutting.Validations
             return value == null || int.TryParse(value.ToString(), out i) && i > 0;
         }
     }
+
 }

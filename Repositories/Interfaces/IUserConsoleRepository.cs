@@ -9,7 +9,13 @@ namespace RetroCollectApi.Repositories.Interfaces
         /// <exception cref="DbUpdateException"></exception>
         /// <returns>The entity found, or <see langword="null" />.</returns>
         UserConsole Add(UserConsole user);
-        bool Delete(UserConsole user); //TRY VOID
+
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <returns><see langword="true" /> if the entity has deleted successfully</returns>
+        bool Delete(UserConsole user);
+
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <returns>returns the Entity found or the default value for entity</returns>
         UserConsole GetById(Guid id);
 
         /// <exception cref="ArgumentNullException"></exception>

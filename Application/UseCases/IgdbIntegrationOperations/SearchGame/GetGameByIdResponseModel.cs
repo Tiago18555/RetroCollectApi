@@ -1,5 +1,6 @@
 ﻿
 using Newtonsoft.Json;
+using RetroCollect.Models;
 using RetroCollectApi.CrossCutting.Enums.IgdbResponse;
 
 namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchGame
@@ -21,6 +22,9 @@ namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchG
 
         [JsonProperty("collection")]
         public Collection Collection { get; set; }
+
+        private Cover _Cover { get; set; }
+        public string Cover => _Cover.Image_Id;
 
         [JsonProperty("first_release_date")]
         public int FirstReleaseDate { get; set; }
@@ -61,6 +65,35 @@ namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchG
         [JsonProperty("websites")]
         private List<Website> _Websites { get; set; }
         public List<string> Websites => _Websites.Select(prop => prop.Url).ToList();
+    }
+
+    public class GameInfo
+    {
+        [JsonProperty("id")]
+        public int GameId { get; set; }
+
+        [JsonProperty("first_release_date")]
+        public int FirstReleaseDate { get; set; }
+
+        [JsonProperty("genres")]
+        private List<Genre> _Genres { get; set; }
+        public List<string> Genres => _Genres.Select(prop => prop.Name).ToList();
+
+        [JsonProperty("name")]
+        public string Title { get; set; }
+
+        [JsonProperty("platforms")]
+        public List<Platform> Platforms { get; set; }
+
+        [JsonProperty("storyline")]
+        public string Description { get; set; }
+
+        [JsonProperty("summary")]
+        public string Summary { get; set; }
+
+        [JsonProperty("cover")]
+        private Cover _Cover { get; set; }
+        public string Cover => _Cover.Image_Id;
     }
 
     #endregion
