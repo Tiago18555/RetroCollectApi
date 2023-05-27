@@ -80,8 +80,8 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
             {
                 ConsoleId = item.Item_id,
                 UserId = item.User_id,
-                Condition = (Condition)Enum.Parse(typeof(Condition), item.Condition),
-                OwnershipStatus = (OwnershipStatus)Enum.Parse(typeof(OwnershipStatus), item.OwnershipStatus),
+                Condition = Enum.Parse<Condition>(item.Condition.ToCapitalize(typeof(Condition))),
+                OwnershipStatus = Enum.Parse<OwnershipStatus>(item.OwnershipStatus.ToCapitalize(typeof(OwnershipStatus))),
                 Notes = item.Notes == null ? null : item.Notes,
                 PurchaseDate = item.PurchaseDate == DateTime.MinValue ? DateTime.MinValue : item.PurchaseDate
             };

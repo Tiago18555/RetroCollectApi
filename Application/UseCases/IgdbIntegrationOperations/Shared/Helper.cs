@@ -27,7 +27,7 @@ namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.Shared
             }
             else
             {
-                throw new Exception($"Erro na requisição: {response.StatusCode}");
+                throw new Exception($"Erro na requisição: {response.ReasonPhrase}");
             }
         }
     }

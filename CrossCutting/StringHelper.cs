@@ -1,4 +1,7 @@
-﻿namespace RetroCollectApi.CrossCutting
+﻿using RetroCollectApi.CrossCutting.Enums.ForModels;
+using System.Diagnostics;
+
+namespace RetroCollectApi.CrossCutting
 {
     public static class StringHelper
     {
@@ -52,6 +55,39 @@
         public static string CleanKeyword(this string k)
         {
             return k.Replace(";", "").Replace("\"", "").Replace("*", "").Replace(",", "").Trim();
+        }
+
+        public static string ToCapitalize(this string s, Type t)
+        {
+            if(t == typeof(OwnershipStatus))
+            {
+                return s switch
+                {
+                    "owned" => "Owned",
+                    "desired" => "Desired",
+                    "traded" => "Traded",
+                    "borrowed" => "Borrowed",
+                    "sold" => "sold",
+                    _ => "Invalid"
+                };
+            }
+
+            if(t == typeof(Condition))
+            {
+                return s switch
+                {
+                    "new" => "New",
+                    "likenew" => "LikeNew",
+                    "used" => "Used",
+                    "fair" => "Fair",
+                    "poor" => "Poor",
+                    _ => "Invalid",
+                };
+            }
+            else
+            {
+                throw new ArgumentException("Invalid Type");
+            }
         }
     }
 }

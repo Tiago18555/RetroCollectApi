@@ -1,9 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using RetroCollect.Models;
 using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchGame;
 using RetroCollectApi.CrossCutting;
 using RetroCollectApi.CrossCutting.Enums.ForModels;
 using RetroCollectApi.Repositories.Interfaces;
+using System.ComponentModel.DataAnnotations;
 using System.Data;
 using Game = RetroCollect.Models.Game;
 
@@ -75,14 +77,16 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
                 }
             }
 
+            //item.OwnershipStatus.
+
             UserCollection userCollection = new()
             {
                 ConsoleId = item.PlatformIsComputer == false ? item.Platform_id : 0,
                 ComputerId = item.PlatformIsComputer == true ? item.Platform_id : 0,
                 GameId = item.Game_id,
                 UserId = item.User_id,
-                Condition = (Condition)Enum.Parse(typeof(Condition), item.Condition),
-                OwnershipStatus = (OwnershipStatus)Enum.Parse(typeof(OwnershipStatus), item.OwnershipStatus),
+                Condition = Enum.Parse<Condition>(item.Condition.ToCapitalize(typeof(Condition))),
+                OwnershipStatus = Enum.Parse<OwnershipStatus>(item.OwnershipStatus.ToCapitalize(typeof(OwnershipStatus))),
                 Notes = item.Notes == null ? null : item.Notes,
                 PurchaseDate = item.PurchaseDate == DateTime.MinValue ? DateTime.MinValue : item.PurchaseDate
             };
@@ -90,7 +94,7 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
             try
             {
                 var res = userCollectionRepository.Add(userCollection);
-                return res.Created();
+                return res.MapObjectTo(new AddGameResponseModel()).Created();
             }
             catch (DBConcurrencyException)
             {
@@ -111,5 +115,26 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
         {
             throw new NotImplementedException();
         }
+    }
+
+    public class AddGameResponseModel
+    {
+
+        public Guid UserCollectionId { get; set; }
+
+        private Condition Condition { get; set; }
+        public string condition => Enum.GetName(typeof(Condition), Condition);
+
+        public DateTime PurchaseDate { get; set; }
+        public string Notes { get; set; }
+
+        private OwnershipStatus OwnershipStatus { get; set; }
+        public string ownership_status => Enum.GetName(typeof(OwnershipStatus), OwnershipStatus);
+
+        public Guid UserId { get; set; }
+        public User User { get; set; }
+
+        public int ComputerId { get; set; }
+        public int ConsoleId { get; set; }
     }
 }

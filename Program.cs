@@ -109,7 +109,10 @@ app.UseAuthorization();
 
 app.MapControllers();
 
+System.Console.ForegroundColor = ConsoleColor.Green;
 System.Console.WriteLine("\t __  ___ ___ __   _      _   _          ___  _ ___ \r\n\t )_) )_   )  )_) / )    / ` / ) )   )   )_  / ` )  \r\n\t/ \\ (__  (  / \\ (_/    (_. (_/ (__ (__ (__ (_. (  \n\n");
+System.Console.ForegroundColor = ConsoleColor.White;
+
 
 app.Run();
 

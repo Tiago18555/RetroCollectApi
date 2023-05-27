@@ -10,9 +10,9 @@ namespace RetroCollectApi.CrossCutting.Validations
             {
                 "new" => ValidationResult.Success,
                 "likenew" => ValidationResult.Success,
-                "Used" => ValidationResult.Success,
-                "Fair" => ValidationResult.Success,
-                "Poor" => ValidationResult.Success,
+                "used" => ValidationResult.Success,
+                "fair" => ValidationResult.Success,
+                "poor" => ValidationResult.Success,
                 _ => new ValidationResult("Please enter a correct value: \n\"new\", \"likenew\", \"used\", \"fair\" or \"poor\"")
             };
         }

@@ -27,18 +27,22 @@ namespace RetroCollectApi.Application.UseCases.UserOperations.ManageUser
             }
             catch (ArgumentNullException)
             {
+                throw;
                 return GenericResponses.NotAcceptable("Formato de dados inválido");
             }
             catch (DBConcurrencyException)
             {
+                throw;
                 return GenericResponses.NotAcceptable("Formato de dados inválido");
             }
             catch (DbUpdateException)
             {
+                throw;
                 return GenericResponses.NotAcceptable("Formato de dados inválido");
             }
             catch (InvalidOperationException)
             {
+                throw;
                 return GenericResponses.NotAcceptable("Formato de dados inválido.");
             }
             catch (Exception)

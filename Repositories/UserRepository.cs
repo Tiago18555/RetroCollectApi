@@ -33,12 +33,12 @@ namespace RetroCollectApi.Repositories
 
         public bool Any(Func<User, bool> predicate)
         {
-            return _context.Users.Any(predicate);
+            return _context.Users.AsNoTracking().Any(predicate);
         }
 
         public User SingleOrDefault(Func<User, bool> predicate)
         {
-            return _context.Users.Where(predicate).SingleOrDefault();
+            return _context.Users.AsNoTracking().Where(predicate).SingleOrDefault();
         }
 
         public User Update(User user)

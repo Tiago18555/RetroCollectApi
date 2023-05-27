@@ -45,7 +45,7 @@ namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchG
                 first_release_date, 
                 genres.name,  
                 name, 
-                platforms.name, platforms.platform_logo
+                platforms.name, platforms.platform_logo.image_id,
                 storyline, 
                 summary,
                 cover.image_id; 
