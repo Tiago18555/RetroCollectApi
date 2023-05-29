@@ -24,5 +24,11 @@ namespace RetroCollectApi.Repositories.Interfaces
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
         UserConsole SingleOrDefault(Func<UserConsole, bool> predicate);
+
+        /// <exception cref="DbUpdateConcurrencyException"></exception>
+        /// <exception cref="DbUpdateException"></exception>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <returns>The entity found, or <see langword="null" />.</returns>
+        UserConsole Update(UserConsole user);
     }
 }

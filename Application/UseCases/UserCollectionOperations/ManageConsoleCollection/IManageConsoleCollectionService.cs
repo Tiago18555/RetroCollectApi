@@ -25,6 +25,6 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        public Task<ResponseModel> UpdateGame(UpdateConsoleRequestModel item, ClaimsPrincipal user);
+        public Task<ResponseModel> UpdateConsole(UpdateConsoleRequestModel item, ClaimsPrincipal user);
     }
 }

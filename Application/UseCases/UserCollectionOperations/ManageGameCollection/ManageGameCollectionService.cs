@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using RetroCollect.Models;
 using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchGame;
+using RetroCollectApi.Application.UseCases.UserCollectionOperations.Shared;
 using RetroCollectApi.CrossCutting;
 using RetroCollectApi.CrossCutting.Enums.ForModels;
 using RetroCollectApi.Repositories.Interfaces;
@@ -127,30 +128,64 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
             }
         }
 
-        public Task<ResponseModel> UpdateGame(UpdateGameRequestModel item, ClaimsPrincipal user)
+        public async Task<ResponseModel> UpdateGame(UpdateGameRequestModel updateGameRequestModel, ClaimsPrincipal user)
         {
-            throw new NotImplementedException();
+            
+            try
+            {
+                var foundUser = userCollectionRepository.SingleOrDefault(x => x.UserId == updateGameRequestModel.User_id);
+
+                if (foundUser == null) { return GenericResponses.NotFound("User not found"); }
+
+                if (!gameRepository.Any(g => g.GameId == updateGameRequestModel.Game_id) && updateGameRequestModel.Game_id != 0)
+                {
+                    var result = await searchGameService.RetrieveGameInfoAsync(updateGameRequestModel.Game_id);
+
+                    var gameInfo = result.Single();
+
+                    Game game = new()
+                    {
+                        GameId = gameInfo.GameId,
+                        Genres = gameInfo.Genres,
+                        Description = gameInfo.Description,
+                        Summary = gameInfo.Summary,
+                        ImageUrl = gameInfo.Cover,
+                        Title = gameInfo.Title,
+                        ReleaseYear = gameInfo.FirstReleaseDate
+                    };
+
+                    gameRepository.Add(game);
+
+                }
+
+                var res = this.userCollectionRepository.Update(foundUser.MapAndFill<UserCollection, UpdateGameRequestModel>(updateGameRequestModel));
+
+                return res.Ok();
+            }
+            catch (ArgumentNullException)
+            {
+                throw;
+                //return GenericResponses.NotAcceptable("Formato de dados inválido");
+            }
+            catch (DBConcurrencyException)
+            {
+                throw;
+                //return GenericResponses.NotAcceptable("Formato de dados inválido");
+            }
+            catch (DbUpdateException)
+            {
+                throw;
+                //return GenericResponses.NotAcceptable("Formato de dados inválido");
+            }
+            catch (InvalidOperationException)
+            {
+                throw;
+                //return GenericResponses.NotAcceptable("Formato de dados inválido.");
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
-    }
-
-    public class AddGameResponseModel
-    {
-
-        public Guid UserCollectionId { get; set; }
-
-        private Condition Condition { get; set; }
-        public string condition => Enum.GetName(typeof(Condition), Condition);
-
-        public DateTime PurchaseDate { get; set; }
-        public string Notes { get; set; }
-
-        private OwnershipStatus OwnershipStatus { get; set; }
-        public string ownership_status => Enum.GetName(typeof(OwnershipStatus), OwnershipStatus);
-
-        public Guid UserId { get; set; }
-        public User User { get; set; }
-
-        public int ComputerId { get; set; }
-        public int ConsoleId { get; set; }
     }
 }

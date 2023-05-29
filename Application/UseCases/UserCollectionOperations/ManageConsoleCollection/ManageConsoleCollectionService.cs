@@ -125,7 +125,7 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
             }
         }
 
-        public Task<ResponseModel> UpdateGame(UpdateConsoleRequestModel item, ClaimsPrincipal request)
+        public Task<ResponseModel> UpdateConsole(UpdateConsoleRequestModel item, ClaimsPrincipal request)
         {
             throw new NotImplementedException();
         }

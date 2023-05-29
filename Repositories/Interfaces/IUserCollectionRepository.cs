@@ -25,5 +25,11 @@ namespace RetroCollectApi.Repositories.Interfaces
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
         UserCollection SingleOrDefault(Func<UserCollection, bool> predicate);
+
+        /// <exception cref="DbUpdateConcurrencyException"></exception>
+        /// <exception cref="DbUpdateException"></exception>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <returns>The entity found, or <see langword="null" />.</returns>
+        UserCollection Update(UserCollection user);
     }
 }

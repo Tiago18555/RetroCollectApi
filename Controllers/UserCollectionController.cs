@@ -40,7 +40,6 @@ namespace RetroCollectApi.Controllers
             Summary = "Delete game",
             Description = "Delete game of a specified user collection"
         )]
-        [SwaggerResponse(201, "Item added to collection")]
         [SwaggerResponse(406, "Invalid format of request")]
         [SwaggerResponse(500, "Internal server error")]
         public IActionResult DeleteGame([FromRoute] Guid id)

@@ -8,6 +8,6 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
     {
         public Task<ResponseModel> AddComputer(AddItemRequestModel item, ClaimsPrincipal user);
         public ResponseModel DeleteComputer(Guid id, ClaimsPrincipal user);
-        public Task<ResponseModel> UpdateGame(UpdateComputerRequestModel item, ClaimsPrincipal user);
+        public Task<ResponseModel> UpdateComputer(UpdateComputerRequestModel item, ClaimsPrincipal user);
     }
 }

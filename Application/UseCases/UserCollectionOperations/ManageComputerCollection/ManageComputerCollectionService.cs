@@ -123,7 +123,7 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
             }
         }
 
-        public Task<ResponseModel> UpdateGame(UpdateComputerRequestModel item, ClaimsPrincipal request)
+        public Task<ResponseModel> UpdateComputer(UpdateComputerRequestModel item, ClaimsPrincipal request)
         {
             throw new NotImplementedException();
         }

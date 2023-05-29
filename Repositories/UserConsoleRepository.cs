@@ -44,5 +44,15 @@ namespace RetroCollectApi.Repositories
         {
             return _context.UserConsoles.Where(predicate).SingleOrDefault();
         }
+
+        public UserConsole Update(UserConsole user)
+        {
+            _context.UserConsoles.Update(user);
+            _context.SaveChanges();
+
+            return _context.UserConsoles
+                .Where(x => x.UserId == user.UserId)
+                .FirstOrDefault();
+        }
     }
 }
