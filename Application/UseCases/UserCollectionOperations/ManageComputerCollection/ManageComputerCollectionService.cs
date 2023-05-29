@@ -4,6 +4,7 @@ using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchCompu
 using RetroCollectApi.Application.UseCases.UserCollectionOperations.Shared;
 using RetroCollectApi.CrossCutting;
 using RetroCollectApi.CrossCutting.Enums.ForModels;
+using RetroCollectApi.Repositories;
 using RetroCollectApi.Repositories.Interfaces;
 using System.Data;
 
@@ -99,9 +100,26 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
             }
         }
 
-        public Task<ResponseModel> DeleteComputer()
+        public ResponseModel DeleteComputer(Guid id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var foundItem = userComputerRepository.GetById(id);
+                if (foundItem == null) { return GenericResponses.NotFound(); }
+
+                if (userComputerRepository.Delete(foundItem))
+                {
+                    return GenericResponses.Ok("Computer deleted");
+                }
+                else
+                {
+                    return GenericResponses.Ok("Not deleted");
+                }
+            }
+            catch (ArgumentNullException)
+            {
+                throw;
+            }
         }
 
         public Task<ResponseModel> UpdateGame(UpdateComputerRequestModel item)

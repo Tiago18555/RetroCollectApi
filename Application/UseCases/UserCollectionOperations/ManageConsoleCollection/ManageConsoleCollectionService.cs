@@ -4,6 +4,7 @@ using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchConso
 using RetroCollectApi.Application.UseCases.UserCollectionOperations.Shared;
 using RetroCollectApi.CrossCutting;
 using RetroCollectApi.CrossCutting.Enums.ForModels;
+using RetroCollectApi.Repositories;
 using RetroCollectApi.Repositories.Interfaces;
 using System.Data;
 using Console = RetroCollect.Models.Console;
@@ -101,9 +102,26 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
             }
 
         }
-        public Task<ResponseModel> DeleteConsole()
+        public ResponseModel DeleteConsole(Guid id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var foundItem = userConsoleRepository.GetById(id);
+                if (foundItem == null) { return GenericResponses.NotFound(); }
+
+                if (userConsoleRepository.Delete(foundItem))
+                {
+                    return GenericResponses.Ok("Console deleted");
+                }
+                else
+                {
+                    return GenericResponses.Ok("Not deleted");
+                }
+            }
+            catch (ArgumentNullException)
+            {
+                throw;
+            }
         }
 
         public Task<ResponseModel> UpdateGame(UpdateConsoleRequestModel item)

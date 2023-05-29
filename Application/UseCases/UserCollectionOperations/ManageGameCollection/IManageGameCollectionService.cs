@@ -7,7 +7,7 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
     public interface IManageGameCollectionService
     {
         public Task<ResponseModel> AddGame(AddGameRequestModel item);
-        public Task<ResponseModel> DeleteGame();
+        public ResponseModel DeleteGame(Guid id);
         public Task<ResponseModel> UpdateGame(UpdateGameRequestModel item);
     }
 }

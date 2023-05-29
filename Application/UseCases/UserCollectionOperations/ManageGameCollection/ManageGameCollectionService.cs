@@ -57,7 +57,7 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
 
                 try
                 {
-                    var res = gameRepository.Add(game);
+                    gameRepository.Add(game);
                 }
                 catch (InvalidOperationException)
                 {
@@ -76,8 +76,6 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
                     throw;
                 }
             }
-
-            //item.OwnershipStatus.
 
             UserCollection userCollection = new()
             {
@@ -106,9 +104,26 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
             }
         }
 
-        public Task<ResponseModel> DeleteGame()
+        public ResponseModel DeleteGame(Guid id)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var foundItem = userCollectionRepository.GetById(id);
+                if (foundItem == null) { return GenericResponses.NotFound(); }
+
+                if (userCollectionRepository.Delete(foundItem))
+                {
+                    return GenericResponses.Ok("Game deleted");
+                }
+                else
+                {
+                    return GenericResponses.Ok("Not deleted");
+                }
+            }
+            catch (ArgumentNullException)
+            {
+                throw;
+            }
         }
 
         public Task<ResponseModel> UpdateGame(UpdateGameRequestModel item)

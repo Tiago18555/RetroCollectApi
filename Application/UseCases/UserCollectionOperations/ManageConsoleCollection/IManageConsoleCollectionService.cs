@@ -5,9 +5,25 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
 {
     public interface IManageConsoleCollectionService
     {
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
         public Task<ResponseModel> AddConsole(AddItemRequestModel item);
-        public Task<ResponseModel> DeleteConsole();
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public ResponseModel DeleteConsole(Guid id);
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
         public Task<ResponseModel> UpdateGame(UpdateConsoleRequestModel item);
     }
 }

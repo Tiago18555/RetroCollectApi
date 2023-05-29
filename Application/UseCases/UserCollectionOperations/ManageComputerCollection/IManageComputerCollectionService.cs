@@ -6,7 +6,7 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
     public interface IManageComputerCollectionService
     {
         public Task<ResponseModel> AddComputer(AddItemRequestModel item);
-        public Task<ResponseModel> DeleteComputer();
+        public ResponseModel DeleteComputer(Guid id);
         public Task<ResponseModel> UpdateGame(UpdateComputerRequestModel item);
     }
 }

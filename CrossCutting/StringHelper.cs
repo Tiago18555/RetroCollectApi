@@ -57,6 +57,13 @@ namespace RetroCollectApi.CrossCutting
             return k.Replace(";", "").Replace("\"", "").Replace("*", "").Replace(",", "").Trim();
         }
 
+        /// <summary>
+        /// Capitalize the first letters of a string (for Enums)
+        /// </summary>
+        /// <param name="s">string input</param>
+        /// <param name="t">enum type output</param>
+        /// <returns></returns>
+        /// <exception cref="ArgumentException"></exception>
         public static string ToCapitalize(this string s, Type t)
         {
             if(t == typeof(OwnershipStatus))
@@ -86,7 +93,7 @@ namespace RetroCollectApi.CrossCutting
             }
             else
             {
-                throw new ArgumentException("Invalid Type");
+                throw new ArgumentException($"{nameof(t)}: Invalid Type");
             }
         }
     }
