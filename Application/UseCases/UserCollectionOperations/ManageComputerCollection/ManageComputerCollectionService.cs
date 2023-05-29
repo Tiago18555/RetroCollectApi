@@ -7,6 +7,7 @@ using RetroCollectApi.CrossCutting.Enums.ForModels;
 using RetroCollectApi.Repositories;
 using RetroCollectApi.Repositories.Interfaces;
 using System.Data;
+using System.Security.Claims;
 
 namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageComputerCollection
 {
@@ -29,7 +30,7 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
             this.searchComputerService = searchComputerService;
         }
 
-        public async Task<ResponseModel> AddComputer(AddItemRequestModel item)
+        public async Task<ResponseModel> AddComputer(AddItemRequestModel item, ClaimsPrincipal request)
         {
             //Specify format of DateTime entries yyyy-mm-dd
 
@@ -100,7 +101,7 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
             }
         }
 
-        public ResponseModel DeleteComputer(Guid id)
+        public ResponseModel DeleteComputer(Guid id, ClaimsPrincipal request)
         {
             try
             {
@@ -122,7 +123,7 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
             }
         }
 
-        public Task<ResponseModel> UpdateGame(UpdateComputerRequestModel item)
+        public Task<ResponseModel> UpdateGame(UpdateComputerRequestModel item, ClaimsPrincipal request)
         {
             throw new NotImplementedException();
         }

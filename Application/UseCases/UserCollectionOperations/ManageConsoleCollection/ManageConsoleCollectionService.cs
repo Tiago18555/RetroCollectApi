@@ -7,6 +7,7 @@ using RetroCollectApi.CrossCutting.Enums.ForModels;
 using RetroCollectApi.Repositories;
 using RetroCollectApi.Repositories.Interfaces;
 using System.Data;
+using System.Security.Claims;
 using Console = RetroCollect.Models.Console;
 
 namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageConsoleCollection
@@ -31,7 +32,7 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
         }
 
 
-        public async Task<ResponseModel> AddConsole(AddItemRequestModel item)
+        public async Task<ResponseModel> AddConsole(AddItemRequestModel item, ClaimsPrincipal request)
         {
             //Specify format of DateTime entries yyyy-mm-dd
 
@@ -102,7 +103,7 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
             }
 
         }
-        public ResponseModel DeleteConsole(Guid id)
+        public ResponseModel DeleteConsole(Guid id, ClaimsPrincipal request)
         {
             try
             {
@@ -124,7 +125,7 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
             }
         }
 
-        public Task<ResponseModel> UpdateGame(UpdateConsoleRequestModel item)
+        public Task<ResponseModel> UpdateGame(UpdateConsoleRequestModel item, ClaimsPrincipal request)
         {
             throw new NotImplementedException();
         }

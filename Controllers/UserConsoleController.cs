@@ -26,7 +26,7 @@ namespace RetroCollectApi.Controllers
         [SwaggerResponse(500, "Internal server error")]
         public async Task<IActionResult> AddConsole([FromBody] AddItemRequestModel item)
         {
-            var result = await manageConsoleCollectionService.AddConsole(item);
+            var result = await manageConsoleCollectionService.AddConsole(item, HttpContext.User);
 
             Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
             Response.StatusCode = result.StatusCode;

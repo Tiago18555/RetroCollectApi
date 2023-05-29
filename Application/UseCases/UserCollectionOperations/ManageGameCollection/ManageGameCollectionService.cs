@@ -7,6 +7,7 @@ using RetroCollectApi.CrossCutting.Enums.ForModels;
 using RetroCollectApi.Repositories.Interfaces;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
+using System.Security.Claims;
 using Game = RetroCollect.Models.Game;
 
 namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
@@ -30,16 +31,16 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
             this.searchGameService = searchGameService;
         }
 
-        public async Task<ResponseModel> AddGame(AddGameRequestModel item)
+        public async Task<ResponseModel> AddGame(AddGameRequestModel item, ClaimsPrincipal user)
         {
             //Specify format of DateTime entries yyyy-mm-dd
 
-            var user = userRepository.SingleOrDefault(u => u.UserId == item.User_id);
-            if (user == null) { return GenericResponses.NotFound("User not found"); }
+            var foundUser = userRepository.SingleOrDefault(u => u.UserId == item.User_id);
+            if (foundUser == null) { return GenericResponses.NotFound("User not found"); }
 
             if (!gameRepository.Any(g => g.GameId == item.Game_id))
             {
-                //Função adicionar jogo na entity Game=>
+                //Função adicionar jogo na entity Game  =>
                 var result = await searchGameService.RetrieveGameInfoAsync(item.Game_id);
 
                 var gameInfo = result.Single();
@@ -104,7 +105,7 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
             }
         }
 
-        public ResponseModel DeleteGame(Guid id)
+        public ResponseModel DeleteGame(Guid id, ClaimsPrincipal user)
         {
             try
             {
@@ -126,7 +127,7 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
             }
         }
 
-        public Task<ResponseModel> UpdateGame(UpdateGameRequestModel item)
+        public Task<ResponseModel> UpdateGame(UpdateGameRequestModel item, ClaimsPrincipal user)
         {
             throw new NotImplementedException();
         }

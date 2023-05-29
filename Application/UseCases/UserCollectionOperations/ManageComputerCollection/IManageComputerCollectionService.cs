@@ -1,12 +1,13 @@
 ﻿using RetroCollectApi.Application.UseCases.UserCollectionOperations.Shared;
 using RetroCollectApi.CrossCutting;
+using System.Security.Claims;
 
 namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageComputerCollection
 {
     public interface IManageComputerCollectionService
     {
-        public Task<ResponseModel> AddComputer(AddItemRequestModel item);
-        public ResponseModel DeleteComputer(Guid id);
-        public Task<ResponseModel> UpdateGame(UpdateComputerRequestModel item);
+        public Task<ResponseModel> AddComputer(AddItemRequestModel item, ClaimsPrincipal user);
+        public ResponseModel DeleteComputer(Guid id, ClaimsPrincipal user);
+        public Task<ResponseModel> UpdateGame(UpdateComputerRequestModel item, ClaimsPrincipal user);
     }
 }

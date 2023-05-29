@@ -1,5 +1,6 @@
 ﻿using RetroCollectApi.Application.UseCases.UserCollectionOperations.Shared;
 using RetroCollectApi.CrossCutting;
+using System.Security.Claims;
 
 namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageConsoleCollection
 {
@@ -10,20 +11,20 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        public Task<ResponseModel> AddConsole(AddItemRequestModel item);
+        public Task<ResponseModel> AddConsole(AddItemRequestModel item, ClaimsPrincipal user);
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public ResponseModel DeleteConsole(Guid id);
+        public ResponseModel DeleteConsole(Guid id, ClaimsPrincipal user);
 
         /// <summary>
         /// 
         /// </summary>
         /// <param name="item"></param>
         /// <returns></returns>
-        public Task<ResponseModel> UpdateGame(UpdateConsoleRequestModel item);
+        public Task<ResponseModel> UpdateGame(UpdateConsoleRequestModel item, ClaimsPrincipal user);
     }
 }
