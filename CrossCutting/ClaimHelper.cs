@@ -5,12 +5,12 @@ namespace RetroCollectApi.CrossCutting
     public static class ClaimHelper
     {
         /// <summary>
-        /// 
+        /// Check if user_id of Claims and other user_id match
         /// </summary>
         /// <param name="user"></param>
         /// <param name="givenId"></param>
-        /// <returns></returns>
-        public static bool IsTheRequestedOneId(this ClaimsPrincipal user, long givenId) =>
+        /// <returns><seelang true></seelang> if they match</returns>
+        public static bool IsTheRequestedOneId(this ClaimsPrincipal user, Guid givenId) =>
             givenId.ToString().Equals(user.GetUserId());
 
 

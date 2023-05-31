@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RetroCollect.Models;
 using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchComputer;
+using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchConsole;
+using RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageConsoleCollection;
 using RetroCollectApi.Application.UseCases.UserCollectionOperations.Shared;
 using RetroCollectApi.CrossCutting;
 using RetroCollectApi.CrossCutting.Enums.ForModels;
@@ -89,7 +91,7 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
             try
             {
                 var res = userComputerRepository.Add(userComputer);
-                return res.Created();
+                return res.MapObjectTo(new AddItemResponseModel()).Created();
             }
             catch (DBConcurrencyException)
             {
@@ -123,9 +125,75 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
             }
         }
 
-        public Task<ResponseModel> UpdateComputer(UpdateComputerRequestModel item, ClaimsPrincipal request)
+        public async Task<ResponseModel> UpdateComputer(UpdateComputerRequestModel updateComputerRequestModel, ClaimsPrincipal request)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var foundUser = userComputerRepository.SingleOrDefault(x => x.UserId == updateComputerRequestModel.User_id);
+                if (foundUser == null) { return GenericResponses.NotFound("User not found"); }
+
+                if (!computerRepository.Any(g => g.ComputerId == updateComputerRequestModel.Item_id) && updateComputerRequestModel.Item_id != 0)
+                {
+                    var result = await searchComputerService.RetrieveComputerInfoAsync(updateComputerRequestModel.Item_id);
+
+                    var computerInfo = result.Single();
+
+                    Computer computer = new()
+                    {
+                        ComputerId = computerInfo.ComputerId,
+                        Description = computerInfo.Description,
+                        ImageUrl = computerInfo.ImageUrl,
+                        Name = computerInfo.Name,
+                        IsArcade = computerInfo.IsArcade
+                    };
+                    computerRepository.Add(computer);
+
+                }
+
+                var res = this.userComputerRepository.Update(foundUser.MapAndFill<UserComputer, UpdateComputerRequestModel>(updateComputerRequestModel));
+
+                return res.Ok();
+            }
+            catch (ArgumentNullException)
+            {
+                throw;
+                //return GenericResponses.NotAcceptable("Formato de dados inválido");
+            }
+            catch (DBConcurrencyException)
+            {
+                throw;
+                //return GenericResponses.NotAcceptable("Formato de dados inválido");
+            }
+            catch (DbUpdateException)
+            {
+                throw;
+                //return GenericResponses.NotAcceptable("Formato de dados inválido");
+            }
+            catch (InvalidOperationException)
+            {
+                throw;
+                //return GenericResponses.NotAcceptable("Formato de dados inválido.");
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<ResponseModel> GetAllComputersByUser(Guid userId, ClaimsPrincipal user)
+        {
+            if (user.IsTheRequestedOneId(userId)) { return GenericResponses.Unauthorized(); }
+
+            try
+            {
+                var res = await userRepository.GetAllComputersByUser(userId, x => x.MapObjectTo(new GetAllComputersByUserResponseModel()));
+                return res.Ok();
+            }
+            catch (ArgumentNullException)
+            {
+                throw;
+                //return GenericResponses.NotAcceptable("Formato de dados inválido");
+            }
         }
     }
 }

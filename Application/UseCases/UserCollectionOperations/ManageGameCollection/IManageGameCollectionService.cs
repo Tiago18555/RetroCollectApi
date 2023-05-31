@@ -10,5 +10,6 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
         public Task<ResponseModel> AddGame(AddGameRequestModel item, ClaimsPrincipal user);
         public ResponseModel DeleteGame(Guid id, ClaimsPrincipal user);
         public Task<ResponseModel> UpdateGame(UpdateGameRequestModel item, ClaimsPrincipal user);
+        public Task<ResponseModel> GetAllGamesByUser(Guid userId, ClaimsPrincipal user);
     }
 }

@@ -24,11 +24,11 @@ namespace RetroCollectApi.Repositories
                 .FirstOrDefault();
         }
 
-        public List<T> GetAll<T>(Func<User, T> predicate)
+        public async Task<List<T>> GetAll<T>(Func<User, T> predicate)
         {
-            return _context.Users
+            return await Task.FromResult(_context.Users
                 .Select(predicate)
-                .ToList();
+                .ToList());
         }
 
         public bool Any(Func<User, bool> predicate)
@@ -51,34 +51,34 @@ namespace RetroCollectApi.Repositories
                 .FirstOrDefault();
         }
 
-        public List<T> GetAllComputersByUser<T>(Guid userId, Func<UserComputer, T> predicate)
+        public async Task<List<T>> GetAllComputersByUser<T>(Guid userId, Func<UserComputer, T> predicate)
         {
-            return _context.UserComputers
+            return await Task.FromResult(_context.UserComputers
                 .Include(x => x.Computer)
                 .AsNoTracking()
                 .Where(x => x.UserId == userId)
                 .Select(predicate)
-                .ToList();
+                .ToList());
         }
 
-        public List<T> GetAllConsolesByUser<T>(Guid userId, Func<UserConsole, T> predicate)
+        public async Task<List<T>> GetAllConsolesByUser<T>(Guid userId, Func<UserConsole, T> predicate)
         {
-            return _context.UserConsoles
+            return await Task.FromResult(_context.UserConsoles
                 .Include(x => x.Console)
                 .AsNoTracking()
                 .Where(x => x.UserId == userId)
                 .Select(predicate)
-                .ToList();
+                .ToList());
         }
 
-        public List<T> GetAllCollectionsByUser<T>(Guid userId, Func<UserCollection, T> predicate)
+        public async Task<List<T>> GetAllCollectionsByUser<T>(Guid userId, Func<UserCollection, T> predicate)
         {
-            return _context.UserCollections
+            return await Task.FromResult(_context.UserCollections
                  .Include(x => x.Game)
                  .AsNoTracking()
                  .Where(x => x.UserId == userId)
                  .Select(predicate)
-                 .ToList();
+                 .ToList());
         }
     }
 }

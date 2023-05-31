@@ -13,7 +13,7 @@ using Game = RetroCollect.Models.Game;
 
 namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
 {
-    public class ManageGameCollectionService : IManageGameCollectionService
+    public partial class ManageGameCollectionService : IManageGameCollectionService
     {
         private IUserRepository userRepository { get; set; }
         private IGameRepository gameRepository { get; set; }
@@ -185,6 +185,22 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
             catch (Exception)
             {
                 throw;
+            }
+        }
+
+        public async Task<ResponseModel> GetAllGamesByUser(Guid userId, ClaimsPrincipal user)
+        {
+            if (user.IsTheRequestedOneId(userId)) { return GenericResponses.Unauthorized(); }
+
+            try
+            {
+                var res = await userRepository.GetAllCollectionsByUser(userId, x => x.MapObjectTo(new GetAllCollectionsByUserResponseModel()));
+                return res.Ok();
+            }
+            catch (ArgumentNullException)
+            {
+                throw;
+                //return GenericResponses.NotAcceptable("Formato de dados inválido");
             }
         }
     }

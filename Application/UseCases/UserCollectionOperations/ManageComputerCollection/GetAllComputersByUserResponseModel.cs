@@ -1,9 +1,9 @@
 ﻿using RetroCollect.Models;
 using RetroCollectApi.CrossCutting.Enums.ForModels;
 
-namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.Shared
+namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageComputerCollection
 {
-    public class AddItemResponseModel
+    public class GetAllComputersByUserResponseModel
     {
         public Guid UserCollectionId { get; set; }
 
@@ -18,5 +18,8 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.Shared
 
         public Guid UserId { get; set; }
         public User User { get; set; }
+
+        public int ComputerId { get; set; }
+        public int ConsoleId { get; set; }
     }
 }

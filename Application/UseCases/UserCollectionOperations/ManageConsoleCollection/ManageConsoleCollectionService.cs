@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RetroCollect.Models;
 using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchConsole;
+using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchGame;
+using RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems;
 using RetroCollectApi.Application.UseCases.UserCollectionOperations.Shared;
 using RetroCollectApi.CrossCutting;
 using RetroCollectApi.CrossCutting.Enums.ForModels;
@@ -8,6 +10,7 @@ using RetroCollectApi.Repositories;
 using RetroCollectApi.Repositories.Interfaces;
 using System.Data;
 using System.Security.Claims;
+using static RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems.ManageGameCollectionService;
 using Console = RetroCollect.Models.Console;
 
 namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageConsoleCollection
@@ -91,7 +94,7 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
             try
             {
                 var res = userConsoleRepository.Add(userConsole);
-                return res.Created();
+                return res.MapObjectTo(new AddItemResponseModel()).Created();
             }
             catch (DBConcurrencyException)
             {
@@ -125,9 +128,75 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
             }
         }
 
-        public Task<ResponseModel> UpdateConsole(UpdateConsoleRequestModel item, ClaimsPrincipal request)
+        public async Task<ResponseModel> UpdateConsole(UpdateConsoleRequestModel updateConsoleRequestModel, ClaimsPrincipal request)
         {
-            throw new NotImplementedException();
+            try
+            {
+                var foundUser = userConsoleRepository.SingleOrDefault(x => x.UserId == updateConsoleRequestModel.User_id);
+                if (foundUser == null) { return GenericResponses.NotFound("User not found"); }
+
+                if (!consoleRepository.Any(g => g.ConsoleId == updateConsoleRequestModel.Item_id) && updateConsoleRequestModel.Item_id != 0)
+                {
+                    var result = await searchConsoleService.RetrieveConsoleInfoAsync(updateConsoleRequestModel.Item_id);
+
+                    var consoleInfo = result.Single();
+
+                    Console console = new()
+                    {
+                        ConsoleId = consoleInfo.ConsoleId,
+                        Description = consoleInfo.Description,
+                        ImageUrl = consoleInfo.ImageUrl,
+                        Name= consoleInfo.Name,
+                        IsPortable= consoleInfo.IsPortable                        
+                    };
+                    consoleRepository.Add(console);
+
+                }
+
+                var res = this.userConsoleRepository.Update(foundUser.MapAndFill<UserConsole, UpdateConsoleRequestModel>(updateConsoleRequestModel));
+
+                return res.Ok();
+            }
+            catch (ArgumentNullException)
+            {
+                throw;
+                //return GenericResponses.NotAcceptable("Formato de dados inválido");
+            }
+            catch (DBConcurrencyException)
+            {
+                throw;
+                //return GenericResponses.NotAcceptable("Formato de dados inválido");
+            }
+            catch (DbUpdateException)
+            {
+                throw;
+                //return GenericResponses.NotAcceptable("Formato de dados inválido");
+            }
+            catch (InvalidOperationException)
+            {
+                throw;
+                //return GenericResponses.NotAcceptable("Formato de dados inválido.");
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public async Task<ResponseModel> GetAllConsolesByUser(Guid userId, ClaimsPrincipal user)
+        {
+            if (user.IsTheRequestedOneId(userId)) { return GenericResponses.Unauthorized(); }
+
+            try
+            {
+                var res = await userRepository.GetAllConsolesByUser(userId, x => x.MapObjectTo(new GetAllConsolesByUserResponseModel()));
+                return res.Ok();
+            }
+            catch (ArgumentNullException)
+            {
+                throw;
+                //return GenericResponses.NotAcceptable("Formato de dados inválido");
+            }
         }
     }
 }

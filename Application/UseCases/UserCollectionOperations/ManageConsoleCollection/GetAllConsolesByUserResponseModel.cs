@@ -1,9 +1,9 @@
 ﻿using RetroCollect.Models;
 using RetroCollectApi.CrossCutting.Enums.ForModels;
 
-namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.Shared
+namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageConsoleCollection
 {
-    public class AddItemResponseModel
+    public class GetAllConsolesByUserResponseModel
     {
         public Guid UserCollectionId { get; set; }
 

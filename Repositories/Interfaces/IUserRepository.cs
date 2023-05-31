@@ -13,7 +13,7 @@ namespace RetroCollectApi.Repositories.Interfaces
         User Add(User user);
 
         /// <exception cref="ArgumentNullException"></exception>
-        List<T> GetAll<T>(Func<User, T> predicate);
+        Task<List<T>> GetAll<T>(Func<User, T> predicate);
 
 
         /// <exception cref="ArgumentNullException"></exception>
@@ -34,13 +34,13 @@ namespace RetroCollectApi.Repositories.Interfaces
         #region User Collections
 
         /// <exception cref="ArgumentNullException"></exception>
-        List<T> GetAllComputersByUser<T>(Guid userId, Func<UserComputer, T> predicate);
+        Task<List<T>> GetAllComputersByUser<T>(Guid userId, Func<UserComputer, T> predicate);
 
         /// <exception cref="ArgumentNullException"></exception>
-        List<T> GetAllConsolesByUser<T>(Guid userId, Func<UserConsole, T> predicate);
+        Task<List<T>> GetAllConsolesByUser<T>(Guid userId, Func<UserConsole, T> predicate);
 
         /// <exception cref="ArgumentNullException"></exception>
-        List<T> GetAllCollectionsByUser<T>(Guid userId, Func<UserCollection, T> predicate);
+        Task<List<T>> GetAllCollectionsByUser<T>(Guid userId, Func<UserCollection, T> predicate);
 
         #endregion
 

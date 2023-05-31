@@ -17,6 +17,23 @@ namespace RetroCollectApi.Controllers
             this.manageConsoleCollectionService = manageConsoleCollectionService;
         }
 
+        [HttpGet("{userId}")]
+        [SwaggerOperation(
+            Summary = "List console collection",
+            Description = "List all consoles for a specified user"
+        )]
+        [SwaggerResponse(200, "List found")]
+        [SwaggerResponse(406, "Invalid format of request")]
+        [SwaggerResponse(500, "Internal server error")]
+        public async Task<IActionResult> GetAllConsoleByUser([FromRoute] Guid userId)
+        {
+            var result = await manageConsoleCollectionService.GetAllConsolesByUser(userId, HttpContext.User);
+
+            Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
+            Response.StatusCode = result.StatusCode;
+            return new ObjectResult(result);
+        }
+
         [HttpPost]
         [SwaggerOperation(
             Summary = "Add console",
@@ -34,16 +51,16 @@ namespace RetroCollectApi.Controllers
             return new ObjectResult(result);
         }
 
-        [HttpDelete]
+        [HttpDelete("{userConsoleId}")]
         [SwaggerOperation(
             Summary = "Delete console",
             Description = "Delete console of a specified user collection"
         )]
         [SwaggerResponse(406, "Invalid format of request")]
         [SwaggerResponse(500, "Internal server error")]
-        public IActionResult DeleteConsole([FromRoute] Guid id)
+        public IActionResult DeleteConsole([FromRoute] Guid userConsoleId)
         {
-            var result = manageConsoleCollectionService.DeleteConsole(id, HttpContext.User);
+            var result = manageConsoleCollectionService.DeleteConsole(userConsoleId, HttpContext.User);
 
             Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
             Response.StatusCode = result.StatusCode;
