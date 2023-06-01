@@ -18,6 +18,7 @@ namespace RetroCollectApi.Repositories
         {
             _context.UserComputers.Add(user);
             _context.SaveChanges();
+            _context.Entry(user).Reference(x => x.Computer).Load();
             _context.Entry(user).State = EntityState.Detached;
 
             return user;

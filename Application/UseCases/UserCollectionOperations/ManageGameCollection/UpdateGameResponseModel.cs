@@ -23,11 +23,11 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
 
         [JsonIgnore]
         public User User { get; set; }
-        public string UserName => User.Username;
+        public string UserName => User == null ? null : User.Username;
 
         [JsonIgnore]
         public Game Game { get; set; }
-        public string GameTitle => Game.Title;
+        public string GameTitle => Game == null ? null : Game.Title;
 
         public int ComputerId { get; set; }
         public int ConsoleId { get; set; }

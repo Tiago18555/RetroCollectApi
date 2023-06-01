@@ -21,11 +21,11 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
         public Guid UserId { get; set; }
         [JsonIgnore]
         public User User { get; set; }
-        public string UserName => User.Username;
+        public string UserName => User == null ? null : User.Username;
 
         public int ConsoleId { get; set; }
         [JsonIgnore]
         public Console Console { get; set; }
-        public string ConsoleName => Console.Name;
+        public string ConsoleName => Console == null ? null : Console.Name;
     }
 }

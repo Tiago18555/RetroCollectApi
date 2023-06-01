@@ -20,11 +20,11 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
         public Guid UserId { get; set; }
         [JsonIgnore]
         public User User { get; set; }
-        public string UserName => User.Username;
+        public string UserName => User == null ? null : User.Username;
 
         public int ComputerId { get; set; }
         [JsonIgnore]
         public Computer Computer { get; set; }
-        public string ComputerName => Computer.Name;
+        public string ComputerName => Computer == null ? null : Computer.Name;
     }
 }

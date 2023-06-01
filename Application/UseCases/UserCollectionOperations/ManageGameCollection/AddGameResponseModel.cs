@@ -26,7 +26,7 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
         public int GameId { get; set; }
         [JsonIgnore]
         public Game Game { get; set; }
-        public string GameTitle => Game.Title;
+        public string GameTitle => Game == null ? null : Game.Title;
 
         public int ComputerId { get; set; }
         public int ConsoleId { get; set; }

@@ -52,7 +52,7 @@ namespace RetroCollectApi.Controllers
         [SwaggerResponse(500, "Internal server error")]
         public ObjectResult UpdateUser([FromBody] UpdateUserRequestModel user)
         {
-            var result = ManageUserService.UpdateUser(user);
+            var result = ManageUserService.UpdateUser(user, HttpContext.User);
 
             Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
             Response.StatusCode = result.StatusCode;
