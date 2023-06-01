@@ -78,18 +78,19 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
 
             }
 
-            UserComputer userComputer = new()
-            {
-                ComputerId = item.Item_id,
-                UserId = item.User_id,
-                Condition = Enum.Parse<Condition>(item.Condition.ToCapitalize(typeof(Condition))),
-                OwnershipStatus = Enum.Parse<OwnershipStatus>(item.OwnershipStatus.ToCapitalize(typeof(OwnershipStatus))),
-                Notes = item.Notes == null ? null : item.Notes,
-                PurchaseDate = item.PurchaseDate == DateTime.MinValue ? DateTime.MinValue : item.PurchaseDate
-            };
 
             try
             {
+                UserComputer userComputer = new()
+                {
+                    ComputerId = item.Item_id,
+                    UserId = item.User_id,
+                    Condition = Enum.Parse<Condition>(item.Condition.ToCapitalize(typeof(Condition))),
+                    OwnershipStatus = Enum.Parse<OwnershipStatus>(item.OwnershipStatus.ToCapitalize(typeof(OwnershipStatus))),
+                    Notes = item.Notes == null ? null : item.Notes,
+                    PurchaseDate = item.PurchaseDate == DateTime.MinValue ? DateTime.MinValue : item.PurchaseDate
+                };
+
                 var res = userComputerRepository.Add(userComputer);
                 return res.MapObjectTo(new AddItemResponseModel()).Created();
             }
@@ -100,6 +101,14 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
             catch (DbUpdateConcurrencyException)
             {
                 throw;
+            }
+            catch (InvalidEnumTypeException msg)
+            {
+                return GenericResponses.UnsupportedMediaType("Invalid type for Condition or OwnershipStatus: " + msg);
+            }
+            catch (InvalidEnumValueException msg)
+            {
+                return GenericResponses.BadRequest("Invalid value for Condition or OwnershipStatus: " + msg);
             }
         }
 

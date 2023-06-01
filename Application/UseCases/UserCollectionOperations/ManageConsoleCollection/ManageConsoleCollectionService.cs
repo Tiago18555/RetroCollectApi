@@ -107,7 +107,7 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
             }
             catch (InvalidEnumTypeException msg)
             {
-                return GenericResponses.BadRequest("Invalid type for Condition or OwnershipStatus: " + msg);
+                return GenericResponses.UnsupportedMediaType("Invalid type for Condition or OwnershipStatus: " + msg);
             }
             catch (InvalidEnumValueException msg)
             {

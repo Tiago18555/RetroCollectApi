@@ -79,20 +79,21 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
                 }
             }
 
-            UserCollection userCollection = new()
-            {
-                ConsoleId = item.PlatformIsComputer == false ? item.Platform_id : 0,
-                ComputerId = item.PlatformIsComputer == true ? item.Platform_id : 0,
-                GameId = item.Game_id,
-                UserId = item.User_id,
-                Condition = Enum.Parse<Condition>(item.Condition.ToCapitalize(typeof(Condition))),
-                OwnershipStatus = Enum.Parse<OwnershipStatus>(item.OwnershipStatus.ToCapitalize(typeof(OwnershipStatus))),
-                Notes = item.Notes == null ? null : item.Notes,
-                PurchaseDate = item.PurchaseDate == DateTime.MinValue ? DateTime.MinValue : item.PurchaseDate
-            };
 
             try
             {
+                UserCollection userCollection = new()
+                {
+                    ConsoleId = item.PlatformIsComputer == false ? item.Platform_id : 0,
+                    ComputerId = item.PlatformIsComputer == true ? item.Platform_id : 0,
+                    GameId = item.Game_id,
+                    UserId = item.User_id,
+                    Condition = Enum.Parse<Condition>(item.Condition.ToCapitalize(typeof(Condition))),
+                    OwnershipStatus = Enum.Parse<OwnershipStatus>(item.OwnershipStatus.ToCapitalize(typeof(OwnershipStatus))),
+                    Notes = item.Notes == null ? null : item.Notes,
+                    PurchaseDate = item.PurchaseDate == DateTime.MinValue ? DateTime.MinValue : item.PurchaseDate
+                };
+
                 var res = userCollectionRepository.Add(userCollection);
                 return res.MapObjectTo(new AddGameResponseModel()).Created();
             }
@@ -104,6 +105,15 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
             {
                 throw;
             }
+            catch (InvalidEnumTypeException msg)
+            {
+                return GenericResponses.UnsupportedMediaType("Invalid type for Condition or OwnershipStatus: " + msg);
+            }
+            catch (InvalidEnumValueException msg)
+            {
+                return GenericResponses.BadRequest("Invalid value for Condition or OwnershipStatus: " + msg);
+            }
+            
         }
 
         public ResponseModel DeleteGame(Guid id, ClaimsPrincipal user)
