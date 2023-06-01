@@ -5,18 +5,16 @@ namespace RetroCollectApi.Application.UseCases.UserOperations.ManageUser
 {
     public static class ManageUserHelper
     {
-        public static User MapAndFill(this User source, UpdateUserRequestModel target)
+        public static User MapAndFill(this User target, UpdateUserRequestModel source)
         {
-            var user = source.MapObjectTo(new User());
+            if (source.Username != null) { target.Username = source.Username; }
+            if (source.Email != null) { target.Email = source.Email; }
+            if (source.FirstName != null) { target.FirstName = source.FirstName; }
+            if (source.LastName != null) { target.LastName = source.LastName; }
 
-            if (target.Username != null) { user.Username = target.Username; }
-            if (target.Email != null) { user.Email = target.Email; }
-            if (target.FirstName != null) { user.FirstName = target.FirstName; }
-            if (target.LastName != null) { user.LastName = target.LastName; }
+            target.UpdatedAt = DateTime.Now;
 
-            user.UpdatedAt = DateTime.Now;
-
-            return user;
+            return target;
         }
     }
 

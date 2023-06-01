@@ -21,6 +21,8 @@ namespace RetroCollectApi.Repositories
 
             return _context.Users
                 .Where(x => x.UserId == user.UserId)
+                .AsQueryable()
+                .AsNoTracking()
                 .FirstOrDefault();
         }
 
@@ -38,7 +40,12 @@ namespace RetroCollectApi.Repositories
 
         public User SingleOrDefault(Func<User, bool> predicate)
         {
-            return _context.Users.AsNoTracking().Where(predicate).SingleOrDefault();
+            return _context
+                .Users
+                .Where(predicate)
+                .AsQueryable()
+                .AsNoTracking()
+                .SingleOrDefault();
         }
 
         public User Update(User user)

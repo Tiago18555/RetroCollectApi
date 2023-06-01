@@ -1,4 +1,5 @@
-﻿using RetroCollect.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using RetroCollect.Data;
 using RetroCollect.Models;
 using RetroCollectApi.Repositories.Interfaces;
 
@@ -25,7 +26,10 @@ namespace RetroCollectApi.Repositories
 
         public bool Any(Func<UserCollection, bool> predicate)
         {
-            return _context.UserCollections.Any(predicate);
+            return _context
+                .UserCollections
+                .AsNoTracking()
+                .Any(predicate);
         }
 
         public bool Delete(UserCollection user)
@@ -37,12 +41,21 @@ namespace RetroCollectApi.Repositories
 
         public UserCollection GetById(Guid id)
         {
-            return _context.UserCollections.Where(x => x.UserCollectionId == id).FirstOrDefault();
+            return _context
+                .UserCollections
+                .Where(x => x.UserCollectionId == id)
+                .AsNoTracking()
+                .FirstOrDefault();
         }
 
         public UserCollection SingleOrDefault(Func<UserCollection, bool> predicate)
         {
-            return _context.UserCollections.Where(predicate).SingleOrDefault();
+            return _context
+                .UserCollections
+                .Where(predicate)
+                .AsQueryable()
+                .AsNoTracking()
+                .SingleOrDefault();
         }
 
         public UserCollection Update(UserCollection user)
@@ -50,8 +63,11 @@ namespace RetroCollectApi.Repositories
             _context.UserCollections.Update(user);
             _context.SaveChanges();
 
-            return _context.UserCollections
-                .Where(x => x.UserId == user.UserId)
+            return _context
+                .UserCollections
+                .Include(x => x.Game)
+                .Include(x => x.User)
+                .Where(x => x.UserCollectionId == user.UserCollectionId)
                 .FirstOrDefault();
         }
     }

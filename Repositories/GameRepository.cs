@@ -1,4 +1,5 @@
-﻿using RetroCollect.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using RetroCollect.Data;
 using RetroCollect.Models;
 using RetroCollectApi.Repositories.Interfaces;
 
@@ -20,12 +21,17 @@ namespace RetroCollectApi.Repositories
 
             return _context.Games
                 .Where(x => x.GameId == game.GameId)
+                .AsQueryable()
+                .AsNoTracking()
                 .FirstOrDefault();
         }
 
         public bool Any(Func<Game, bool> predicate)
         {
-            return _context.Games.Any(predicate);
+            return _context
+                .Games
+                .AsNoTracking()
+                .Any(predicate);
         }
     }
 }

@@ -7,7 +7,7 @@ using RetroCollectApi.CrossCutting.Enums.ForModels;
 
 namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.Shared
 {
-    public static class ManageUserHelper
+    public static class ManageUserCollectionHelper
     {
         /// <summary>
         /// 
@@ -18,61 +18,62 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.Shared
         /// <param name="target"></param>
         /// <returns></returns>
         /// <exception cref="ArgumentException"></exception>
-        public static TSource MapAndFill<TSource, TTarget>(this TSource source, object target) where TSource : class
+        public static TTarget MapAndFill<TTarget, TSource>(this object target, TSource source) where TTarget : class //target banco / source request
         {
-            if(typeof(TSource) == typeof(UserCollection) && typeof(TTarget) == typeof(UpdateGameRequestModel))
+            if(typeof(TSource) == typeof(UpdateGameRequestModel) && typeof(TTarget) == typeof(UserCollection))
             {
-                var u = source.MapObjectTo(new UserCollection());
-                var game = target as UpdateGameRequestModel;
+                var userCollection = target as UserCollection;
+                var request = source as UpdateGameRequestModel;
 
-                if (game.PurchaseDate == DateTime.MinValue) { u.PurchaseDate = game.PurchaseDate; }
+                if (request.PurchaseDate != DateTime.MinValue) { userCollection.PurchaseDate = request.PurchaseDate; }
 
-                if (game.User_id == default) { u.UserId = game.User_id; }
+                if (request.User_id != default) { userCollection.UserId = request.User_id; }
 
-                if (string.IsNullOrEmpty(game.Notes)) { u.Notes = game.Notes; }
-                if (string.IsNullOrEmpty(game.Condition)) { u.Condition = Enum.Parse<Condition>(game.Condition); }
-                if (string.IsNullOrEmpty(game.OwnershipStatus)) { u.OwnershipStatus = Enum.Parse<OwnershipStatus>(game.OwnershipStatus); }
+                if (!string.IsNullOrEmpty(request.Notes)) { userCollection.Notes = request.Notes; }
+                if (!string.IsNullOrEmpty(request.Condition)) { userCollection.Condition = Enum.Parse<Condition>(request.Condition); }
+                if (!string.IsNullOrEmpty(request.OwnershipStatus)) { userCollection.OwnershipStatus = Enum.Parse<OwnershipStatus>(request.OwnershipStatus); }
 
-                if (game.Game_id == 0) { u.GameId = game.Game_id; }
-                if (game.Platform_id == 0 && game.PlatformIsComputer) { u.ComputerId = game.Platform_id; }
-                if (game.Platform_id == 0 && !game.PlatformIsComputer) { u.ConsoleId = game.Platform_id; }
+                if (request.Game_id != 0) { userCollection.GameId = request.Game_id; }
+                if (request.Platform_id != 0 && request.PlatformIsComputer) { userCollection.ComputerId = request.Platform_id; }
+                if (request.Platform_id != 0 && !request.PlatformIsComputer) { userCollection.ConsoleId = request.Platform_id; }
 
-                return u as TSource;
+
+                return userCollection as TTarget;
 
             }
-            if (typeof(TSource) == typeof(UserComputer))
+            if (typeof(TSource) == typeof(UpdateComputerRequestModel) && typeof(TTarget) == typeof(UserComputer))
             {
-                var u = source.MapObjectTo(new UserComputer());
-                var computer = target as UpdateComputerRequestModel;
+                var userCollection = target as UserCollection;
+                var computer = source as UpdateComputerRequestModel;
 
-                if (computer.PurchaseDate == DateTime.MinValue) { u.PurchaseDate = computer.PurchaseDate; }
+                if (computer.PurchaseDate != DateTime.MinValue) { userCollection.PurchaseDate = computer.PurchaseDate; }
 
-                if (computer.User_id == default) { u.UserId = computer.User_id; }
+                if (computer.User_id != default) { userCollection.UserId = computer.User_id; }
 
-                if (string.IsNullOrEmpty(computer.Notes)) { u.Notes = computer.Notes; }
-                if (string.IsNullOrEmpty(computer.Condition)) { u.Condition = Enum.Parse<Condition>(computer.Condition); }
-                if (string.IsNullOrEmpty(computer.OwnershipStatus)) { u.OwnershipStatus = Enum.Parse<OwnershipStatus>(computer.OwnershipStatus); }
+                if (!string.IsNullOrEmpty(computer.Notes)) { userCollection.Notes = computer.Notes; }
+                if (!string.IsNullOrEmpty(computer.Condition)) { userCollection.Condition = Enum.Parse<Condition>(computer.Condition); }
+                if (!string.IsNullOrEmpty(computer.OwnershipStatus)) { userCollection.OwnershipStatus = Enum.Parse<OwnershipStatus>(computer.OwnershipStatus); }
 
-                if (computer.Item_id == 0) { u.ComputerId = computer.Item_id; }
+                if (computer.Item_id != 0) { userCollection.ComputerId = computer.Item_id; }
 
-                return u as TSource;
+                return userCollection as TTarget;
             }
-            if (typeof(TSource) == typeof(UserConsole))
+            if (typeof(TSource) == typeof(UpdateConsoleRequestModel) && typeof(TTarget) == typeof(UserConsole))
             {
-                var u = source.MapObjectTo(new UserConsole());
-                var console = target as UpdateConsoleRequestModel;
+                var userCollection = target as UserCollection;
+                var console = source as UpdateConsoleRequestModel;
 
-                if (console.PurchaseDate == DateTime.MinValue) { u.PurchaseDate = console.PurchaseDate; }
+                if (console.PurchaseDate != DateTime.MinValue) { userCollection.PurchaseDate = console.PurchaseDate; }
 
-                if (console.User_id == default) { u.UserId = console.User_id; }
+                if (console.User_id != default) { userCollection.UserId = console.User_id; }
 
-                if (string.IsNullOrEmpty(console.Notes)) { u.Notes = console.Notes; }
-                if (string.IsNullOrEmpty(console.Condition)) { u.Condition = Enum.Parse<Condition>(console.Condition); }
-                if (string.IsNullOrEmpty(console.OwnershipStatus)) { u.OwnershipStatus = Enum.Parse<OwnershipStatus>(console.OwnershipStatus); }
+                if (!string.IsNullOrEmpty(console.Notes)) { userCollection.Notes = console.Notes; }
+                if (!string.IsNullOrEmpty(console.Condition)) { userCollection.Condition = Enum.Parse<Condition>(console.Condition); }
+                if (!string.IsNullOrEmpty(console.OwnershipStatus)) { userCollection.OwnershipStatus = Enum.Parse<OwnershipStatus>(console.OwnershipStatus); }
 
-                if (console.Item_id == 0) { u.ConsoleId = console.Item_id; }
+                if (console.Item_id != 0) { userCollection.ConsoleId = console.Item_id; }
 
-                return u as TSource;
+                return userCollection as TTarget;
             }
             else
             {

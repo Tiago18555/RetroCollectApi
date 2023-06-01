@@ -6,6 +6,7 @@ namespace RetroCollectApi.CrossCutting.Validations
     {
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {
+            if (value == null) return ValidationResult.Success;
             return value.ToString().ToLower().Trim() switch
             {
                 "owned" => ValidationResult.Success,

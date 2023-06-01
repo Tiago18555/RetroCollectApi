@@ -9,6 +9,7 @@ namespace RetroCollectApi.CrossCutting.Validations
         {
             if (value is DateTime date)
             {
+                if ((DateTime)value == DateTime.MinValue) return true;
                 return date <= DateTime.Now;
             }
 

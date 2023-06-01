@@ -6,7 +6,12 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
     public class UpdateConsoleRequestModel
     {
         public int Item_id { get; set; }
+
+        [Required]
         public Guid User_id { get; set; }
+
+        [Required]
+        public Guid UserConsoleId { get; set; }
 
         [DataType(DataType.DateTime)]
         [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-dd}")]

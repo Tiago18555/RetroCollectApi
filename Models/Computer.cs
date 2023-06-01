@@ -20,8 +20,6 @@ namespace RetroCollect.Models
         public string ImageUrl { get; set; }
 
         public bool IsArcade { get; set; }
-
-        public ICollection<Game> Games { get; set; }
-        public ICollection<UserComputer> UserComputers { get; set; }
+        public IEnumerable<UserComputer> UserComputers { get; set; }
     }
 }

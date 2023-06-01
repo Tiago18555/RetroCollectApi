@@ -3,6 +3,7 @@ using RetroCollect.Models;
 using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchConsole;
 using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchGame;
 using RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems;
+using RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageComputerCollection;
 using RetroCollectApi.Application.UseCases.UserCollectionOperations.Shared;
 using RetroCollectApi.CrossCutting;
 using RetroCollectApi.CrossCutting.Enums.ForModels;
@@ -141,8 +142,11 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
         {
             try
             {
-                var foundUser = userConsoleRepository.SingleOrDefault(x => x.UserId == updateConsoleRequestModel.User_id);
+                var foundUser = userRepository.SingleOrDefault(x => x.UserId == updateConsoleRequestModel.User_id);
                 if (foundUser == null) { return GenericResponses.NotFound("User not found"); }
+
+                var foundConsole = userConsoleRepository.SingleOrDefault(x => x.UserConsoleId == updateConsoleRequestModel.UserConsoleId);
+                if (foundConsole == null) { return GenericResponses.NotFound("Item Not Found"); }
 
                 if (!consoleRepository.Any(g => g.ConsoleId == updateConsoleRequestModel.Item_id) && updateConsoleRequestModel.Item_id != 0)
                 {
@@ -162,7 +166,7 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
 
                 }
 
-                var res = this.userConsoleRepository.Update(foundUser.MapAndFill<UserConsole, UpdateConsoleRequestModel>(updateConsoleRequestModel));
+                var res = this.userConsoleRepository.Update(foundConsole.MapAndFill<UserConsole, UpdateConsoleRequestModel>(updateConsoleRequestModel));
 
                 return res.Ok();
             }

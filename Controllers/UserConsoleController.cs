@@ -67,7 +67,7 @@ namespace RetroCollectApi.Controllers
             return new ObjectResult(result);
         }
 
-        [HttpDelete]
+        [HttpPut]
         [SwaggerOperation(
             Summary = "Update console",
             Description = "Update console of a specified user collection"

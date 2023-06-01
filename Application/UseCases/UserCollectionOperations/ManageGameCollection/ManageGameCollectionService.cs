@@ -1,10 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using RetroCollect.Models;
 using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchGame;
+using RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageConsoleCollection;
 using RetroCollectApi.Application.UseCases.UserCollectionOperations.Shared;
 using RetroCollectApi.CrossCutting;
 using RetroCollectApi.CrossCutting.Enums.ForModels;
+using RetroCollectApi.Repositories;
 using RetroCollectApi.Repositories.Interfaces;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
@@ -143,9 +144,11 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
             
             try
             {
-                var foundUser = userCollectionRepository.SingleOrDefault(x => x.UserId == updateGameRequestModel.User_id);
-
+                var foundUser = userRepository.SingleOrDefault(x => x.UserId == updateGameRequestModel.User_id);
                 if (foundUser == null) { return GenericResponses.NotFound("User not found"); }
+
+                var foundGame = userCollectionRepository.SingleOrDefault(x => x.UserCollectionId == updateGameRequestModel.UserCollection_id);
+                if (foundGame == null) { return GenericResponses.NotFound("Item Not Found"); }
 
                 if (!gameRepository.Any(g => g.GameId == updateGameRequestModel.Game_id) && updateGameRequestModel.Game_id != 0)
                 {
@@ -168,9 +171,11 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
 
                 }
 
-                var res = this.userCollectionRepository.Update(foundUser.MapAndFill<UserCollection, UpdateGameRequestModel>(updateGameRequestModel));
 
-                return res.Ok();
+
+                var res = this.userCollectionRepository.Update(foundGame.MapAndFill<UserCollection, UpdateGameRequestModel>(updateGameRequestModel));
+
+                return res.MapObjectTo(new UpdateGameResponseModel()).Ok();
             }
             catch (ArgumentNullException)
             {

@@ -138,8 +138,11 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
         {
             try
             {
-                var foundUser = userComputerRepository.SingleOrDefault(x => x.UserId == updateComputerRequestModel.User_id);
+                var foundUser = userRepository.SingleOrDefault(x => x.UserId == updateComputerRequestModel.User_id);
                 if (foundUser == null) { return GenericResponses.NotFound("User not found"); }
+
+                var foundComputer = userComputerRepository.SingleOrDefault(x => x.UserComputerId == updateComputerRequestModel.UserComputerId);
+                if (foundComputer == null) { return GenericResponses.NotFound("Item Not Found"); }
 
                 if (!computerRepository.Any(g => g.ComputerId == updateComputerRequestModel.Item_id) && updateComputerRequestModel.Item_id != 0)
                 {
@@ -159,7 +162,7 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
 
                 }
 
-                var res = this.userComputerRepository.Update(foundUser.MapAndFill<UserComputer, UpdateComputerRequestModel>(updateComputerRequestModel));
+                var res = this.userComputerRepository.Update(foundComputer.MapAndFill<UserComputer, UpdateComputerRequestModel>(updateComputerRequestModel));
 
                 return res.Ok();
             }

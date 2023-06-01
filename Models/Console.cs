@@ -16,11 +16,10 @@ namespace RetroCollect.Models
         [MaxLength(2048)]
         public string Description { get; set; }
 
+        [MinLength(1)]
         public string ImageUrl { get; set; }
 
         public bool IsPortable { get; set; }
-
-        public ICollection<Game> Games { get; set; }
-        public ICollection<UserConsole> UserConsoles { get; set; }
+        public IEnumerable<UserConsole> UserConsoles { get; set; }
     }
 }

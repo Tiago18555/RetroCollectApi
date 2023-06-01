@@ -15,6 +15,7 @@ using RetroCollectApi.Application.UseCases.UserOperations.ManageUser;
 using RetroCollectApi.Repositories;
 using RetroCollectApi.Repositories.Interfaces;
 using System.Text;
+using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
@@ -38,7 +39,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 });
 
 // Add services to the container.
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(x =>
+                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+
 
 
 #region DEPENDENCY INJECTION SETUP
@@ -73,7 +76,12 @@ builder.Services.AddScoped<IManageConsoleCollectionService, ManageConsoleCollect
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
-builder.Services.AddDbContext<DataContext>(o => o.UseNpgsql(connectionString));
+builder.Services.AddDbContext<DataContext>(o =>
+{
+    o.UseNpgsql(connectionString);
+    o.EnableSensitiveDataLogging();
+});
+
 
 builder.Services.AddSwaggerGen(c =>
 {
@@ -109,6 +117,7 @@ app.UseCors(x => x
     .AllowAnyMethod().AllowAnyHeader()
     .SetIsOriginAllowed(origin => true)
     .AllowCredentials());
+
 
 app.UseAuthentication();
 

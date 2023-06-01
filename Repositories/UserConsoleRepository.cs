@@ -1,4 +1,5 @@
-﻿using RetroCollect.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using RetroCollect.Data;
 using RetroCollect.Models;
 using RetroCollectApi.Repositories.Interfaces;
 
@@ -25,7 +26,10 @@ namespace RetroCollectApi.Repositories
 
         public bool Any(Func<UserConsole, bool> predicate)
         {
-            return _context.UserConsoles.Any(predicate);
+            return _context
+                .UserConsoles
+                .AsNoTracking()
+                .Any(predicate);
         }
 
         public bool Delete(UserConsole user)
@@ -42,7 +46,11 @@ namespace RetroCollectApi.Repositories
 
         public UserConsole SingleOrDefault(Func<UserConsole, bool> predicate)
         {
-            return _context.UserConsoles.Where(predicate).SingleOrDefault();
+            return _context
+                .UserConsoles
+                .AsNoTracking()
+                .Where(predicate)
+                .SingleOrDefault();
         }
 
         public UserConsole Update(UserConsole user)

@@ -25,9 +25,9 @@ namespace RetroCollect.Models
         public string LastName { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
-        public ICollection<UserConsole> UserConsoles { get; set; }
-        public ICollection<UserComputer> UserComputers { get; set; }
-        public ICollection<UserCollection> UserCollections { get; set; }
-        public ICollection<Rating> Ratings { get; set; }
+        public IEnumerable<UserConsole> UserConsoles { get; set; }
+        public IEnumerable<UserComputer> UserComputers { get; set; }
+        public IEnumerable<UserCollection> UserCollections { get; set; }
+        public IEnumerable<Rating> Ratings { get; set; }
     }
 }
