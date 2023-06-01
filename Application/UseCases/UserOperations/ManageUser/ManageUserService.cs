@@ -1,7 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using RetroCollect.Models;
 using RetroCollectApi.CrossCutting;
 using RetroCollectApi.Repositories.Interfaces;
 using System.Data;
+using System.Security.Claims;
 
 namespace RetroCollectApi.Application.UseCases.UserOperations.ManageUser
 {
@@ -13,8 +15,10 @@ namespace RetroCollectApi.Application.UseCases.UserOperations.ManageUser
             this.repository = repository;
         }
 
-        public ResponseModel UpdateUser(UpdateUserRequestModel userRequestModel)
+        public ResponseModel UpdateUser(UpdateUserRequestModel userRequestModel, ClaimsPrincipal user)
         {
+            if (!user.IsTheRequestedOneId(userRequestModel.UserId)) return GenericResponses.Forbidden();
+
             try
             {
                 var foundUser = repository.SingleOrDefault(x => x.UserId == userRequestModel.UserId);

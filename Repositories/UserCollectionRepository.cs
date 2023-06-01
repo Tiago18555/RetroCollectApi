@@ -18,10 +18,9 @@ namespace RetroCollectApi.Repositories
         {
             _context.UserCollections.Add(user);
             _context.SaveChanges();
+            _context.Entry(user).State = EntityState.Detached;
 
-            return _context.UserCollections
-                .Where(x => x.UserCollectionId == user.UserCollectionId)
-                .FirstOrDefault();
+            return user;
         }
 
         public bool Any(Func<UserCollection, bool> predicate)
@@ -61,14 +60,11 @@ namespace RetroCollectApi.Repositories
         public UserCollection Update(UserCollection user)
         {
             _context.UserCollections.Update(user);
+            _context.Entry(user).Reference(x => x.Game).Load();
+            _context.Entry(user).Reference(x => x.User).Load();
             _context.SaveChanges();
 
-            return _context
-                .UserCollections
-                .Include(x => x.Game)
-                .Include(x => x.User)
-                .Where(x => x.UserCollectionId == user.UserCollectionId)
-                .FirstOrDefault();
+            return user;
         }
     }
 }

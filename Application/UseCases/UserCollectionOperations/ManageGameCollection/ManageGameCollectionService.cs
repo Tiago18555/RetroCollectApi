@@ -35,6 +35,7 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
 
         public async Task<ResponseModel> AddGame(AddGameRequestModel item, ClaimsPrincipal user)
         {
+            if (!user.IsTheRequestedOneId(item.User_id)) return GenericResponses.Forbidden();
             //Specify format of DateTime entries yyyy-mm-dd
 
             var foundUser = userRepository.SingleOrDefault(u => u.UserId == item.User_id);
@@ -119,6 +120,8 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
 
         public ResponseModel DeleteGame(Guid id, ClaimsPrincipal user)
         {
+            if (!user.IsTheRequestedOneId(id)) return GenericResponses.Forbidden();
+
             try
             {
                 var foundItem = userCollectionRepository.GetById(id);
@@ -141,7 +144,8 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
 
         public async Task<ResponseModel> UpdateGame(UpdateGameRequestModel updateGameRequestModel, ClaimsPrincipal user)
         {
-            
+            if (!user.IsTheRequestedOneId(updateGameRequestModel.User_id)) return GenericResponses.Forbidden();
+
             try
             {
                 var foundUser = userRepository.SingleOrDefault(x => x.UserId == updateGameRequestModel.User_id);
@@ -170,8 +174,6 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
                     gameRepository.Add(game);
 
                 }
-
-
 
                 var res = this.userCollectionRepository.Update(foundGame.MapAndFill<UserCollection, UpdateGameRequestModel>(updateGameRequestModel));
 
@@ -205,7 +207,7 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
 
         public async Task<ResponseModel> GetAllGamesByUser(Guid userId, ClaimsPrincipal user)
         {
-            if (!user.IsTheRequestedOneId(userId)) { return GenericResponses.Unauthorized(); }
+            if (!user.IsTheRequestedOneId(userId)) { return GenericResponses.Forbidden(); }
 
             try
             {

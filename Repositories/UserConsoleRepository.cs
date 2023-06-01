@@ -18,10 +18,9 @@ namespace RetroCollectApi.Repositories
         {
             _context.UserConsoles.Add(user);
             _context.SaveChanges();
+            _context.Entry(user).State = EntityState.Detached;
 
-            return _context.UserConsoles
-                .Where(x => x.UserConsoleId == user.UserConsoleId)
-                .FirstOrDefault();
+            return user;
         }
 
         public bool Any(Func<UserConsole, bool> predicate)
@@ -41,26 +40,26 @@ namespace RetroCollectApi.Repositories
 
         public UserConsole GetById(Guid id)
         {
-            return _context.UserConsoles.Where(x => x.UserConsoleId == id).FirstOrDefault();
+            return _context.UserConsoles.Where(x => x.UserConsoleId == id).AsNoTracking().FirstOrDefault();
         }
 
         public UserConsole SingleOrDefault(Func<UserConsole, bool> predicate)
         {
             return _context
                 .UserConsoles
-                .AsNoTracking()
                 .Where(predicate)
+                .AsQueryable()
+                .AsNoTracking()
                 .SingleOrDefault();
         }
 
         public UserConsole Update(UserConsole user)
         {
             _context.UserConsoles.Update(user);
+            _context.Entry(user).Reference(x => x.User).Load();
             _context.SaveChanges();
 
-            return _context.UserConsoles
-                .Where(x => x.UserId == user.UserId)
-                .FirstOrDefault();
+            return user;
         }
     }
 }

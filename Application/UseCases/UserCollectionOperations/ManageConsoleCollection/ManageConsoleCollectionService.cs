@@ -11,7 +11,6 @@ using RetroCollectApi.Repositories;
 using RetroCollectApi.Repositories.Interfaces;
 using System.Data;
 using System.Security.Claims;
-using static RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems.ManageGameCollectionService;
 using Console = RetroCollect.Models.Console;
 
 namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageConsoleCollection
@@ -38,6 +37,7 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
 
         public async Task<ResponseModel> AddConsole(AddItemRequestModel item, ClaimsPrincipal request)
         {
+            if (!request.IsTheRequestedOneId(item.User_id)) return GenericResponses.Forbidden();
             //Specify format of DateTime entries yyyy-mm-dd
 
             var user = userRepository.SingleOrDefault(u => u.UserId == item.User_id);
@@ -118,6 +118,8 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
         }
         public ResponseModel DeleteConsole(Guid id, ClaimsPrincipal request)
         {
+            if (!request.IsTheRequestedOneId(id)) return GenericResponses.Forbidden();
+
             try
             {
                 var foundItem = userConsoleRepository.GetById(id);
@@ -140,6 +142,8 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
 
         public async Task<ResponseModel> UpdateConsole(UpdateConsoleRequestModel updateConsoleRequestModel, ClaimsPrincipal request)
         {
+            if (!request.IsTheRequestedOneId(updateConsoleRequestModel.User_id)) return GenericResponses.Forbidden();
+
             try
             {
                 var foundUser = userRepository.SingleOrDefault(x => x.UserId == updateConsoleRequestModel.User_id);
@@ -168,7 +172,7 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
 
                 var res = this.userConsoleRepository.Update(foundConsole.MapAndFill<UserConsole, UpdateConsoleRequestModel>(updateConsoleRequestModel));
 
-                return res.Ok();
+                return res.MapObjectTo(new UpdateConsoleResponseModel()).Ok();
             }
             catch (ArgumentNullException)
             {
@@ -198,7 +202,7 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
 
         public async Task<ResponseModel> GetAllConsolesByUser(Guid userId, ClaimsPrincipal user)
         {
-            if (user.IsTheRequestedOneId(userId)) { return GenericResponses.Unauthorized(); }
+            if (!user.IsTheRequestedOneId(userId)) { return GenericResponses.Forbidden(); }
 
             try
             {

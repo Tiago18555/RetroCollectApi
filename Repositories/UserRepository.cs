@@ -18,17 +18,15 @@ namespace RetroCollectApi.Repositories
         {
             _context.Users.Add(user);
             _context.SaveChanges();
+            _context.Entry(user).State = EntityState.Detached;
 
-            return _context.Users
-                .Where(x => x.UserId == user.UserId)
-                .AsQueryable()
-                .AsNoTracking()
-                .FirstOrDefault();
+            return user;
         }
 
         public async Task<List<T>> GetAll<T>(Func<User, T> predicate)
         {
             return await Task.FromResult(_context.Users
+                .AsNoTracking()
                 .Select(predicate)
                 .ToList());
         }
@@ -51,11 +49,10 @@ namespace RetroCollectApi.Repositories
         public User Update(User user)
         {
             _context.Users.Update(user);
+            _context.Entry(user).State = EntityState.Modified;
             _context.SaveChanges();
 
-            return _context.Users
-                .Where(x => x.UserId == user.UserId)
-                .FirstOrDefault();
+            return user;
         }
 
         public async Task<List<T>> GetAllComputersByUser<T>(Guid userId, Func<UserComputer, T> predicate)

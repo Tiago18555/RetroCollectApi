@@ -18,10 +18,9 @@ namespace RetroCollectApi.Repositories
         {
             _context.UserComputers.Add(user);
             _context.SaveChanges();
+            _context.Entry(user).State = EntityState.Detached;
 
-            return _context.UserComputers
-                .Where(x => x.UserComputerId == user.UserComputerId)
-                .FirstOrDefault();
+            return user;
         }
 
         public bool Any(Func<UserComputer, bool> predicate)
@@ -41,26 +40,26 @@ namespace RetroCollectApi.Repositories
 
         public UserComputer GetById(Guid id)
         {
-            return _context.UserComputers.Where(x => x.UserComputerId == id).FirstOrDefault();
+            return _context.UserComputers.Where(x => x.UserComputerId == id).AsNoTracking().FirstOrDefault();
         }
 
         public UserComputer SingleOrDefault(Func<UserComputer, bool> predicate)
         {
             return _context
                 .UserComputers
-                .AsNoTracking()
                 .Where(predicate)
+                .AsQueryable()
+                .AsNoTracking()
                 .SingleOrDefault();
         }
 
         public UserComputer Update(UserComputer user)
         {
-            _context.UserComputers.Update(user);
+            _context.UserComputers.Update(user);;
+            _context.Entry(user).Reference(x => x.User).Load();
             _context.SaveChanges();
 
-            return _context.UserComputers
-                .Where(x => x.UserId == user.UserId)
-                .FirstOrDefault();
+            return user;
         }
     }
 }

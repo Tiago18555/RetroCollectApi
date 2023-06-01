@@ -1,5 +1,7 @@
-﻿using RetroCollect.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using RetroCollect.Data;
 using RetroCollect.Models;
+using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchGame;
 using RetroCollectApi.Repositories.Interfaces;
 
 namespace RetroCollectApi.Repositories
@@ -17,15 +19,14 @@ namespace RetroCollectApi.Repositories
         {
             _context.Computers.Add(computer);
             _context.SaveChanges();
+            _context.Entry(computer).State = EntityState.Detached;
 
-            return _context.Computers
-                .Where(x => x.ComputerId == computer.ComputerId)
-                .FirstOrDefault();
+            return computer;
         }
 
         public bool Any(Func<Computer, bool> predicate)
         {
-            return _context.Computers.Any(predicate);
+            return _context.Computers.AsNoTracking().Any(predicate);
         }
     }
 }

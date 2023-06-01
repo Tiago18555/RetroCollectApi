@@ -1,4 +1,5 @@
-﻿using RetroCollect.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using RetroCollect.Data;
 using RetroCollectApi.Repositories.Interfaces;
 using Console = RetroCollect.Models.Console;
 
@@ -17,15 +18,14 @@ namespace RetroCollectApi.Repositories
         {
             _context.Consoles.Add(console);
             _context.SaveChanges();
+            _context.Entry(console).State = EntityState.Detached;
 
-            return _context.Consoles
-                .Where(x => x.ConsoleId == console.ConsoleId)
-                .FirstOrDefault();
+            return console;
         }
 
         public bool Any(Func<Console, bool> predicate)
         {
-            return _context.Consoles.Any(predicate);
+            return _context.Consoles.AsNoTracking().Any(predicate);
         }
     }
 }

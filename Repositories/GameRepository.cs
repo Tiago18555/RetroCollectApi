@@ -18,12 +18,9 @@ namespace RetroCollectApi.Repositories
         {
             _context.Games.Add(game);
             _context.SaveChanges();
+            _context.Entry(game).State = EntityState.Detached;
 
-            return _context.Games
-                .Where(x => x.GameId == game.GameId)
-                .AsQueryable()
-                .AsNoTracking()
-                .FirstOrDefault();
+            return game;
         }
 
         public bool Any(Func<Game, bool> predicate)
