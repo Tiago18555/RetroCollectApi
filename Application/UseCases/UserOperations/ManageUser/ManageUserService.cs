@@ -55,6 +55,12 @@ namespace RetroCollectApi.Application.UseCases.UserOperations.ManageUser
         {
             throw new NotImplementedException();
         }
+
+        public async Task<ResponseModel> GetAllUsers()
+        {
+            var res = await repository.GetAll(x => x);
+            return res.Ok();
+        }
     }
 
 }

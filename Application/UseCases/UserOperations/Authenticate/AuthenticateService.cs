@@ -3,6 +3,7 @@ using RetroCollect.Models;
 using RetroCollectApi.CrossCutting;
 using RetroCollectApi.Repositories.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Text;
 using BCryptNet = BCrypt.Net.BCrypt;
 
@@ -86,13 +87,20 @@ namespace RetroCollectApi.Application.UseCases.UserOperations.Authenticate
             var chaveSimetrica = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:SecretKey"]));
             var credenciais = new SigningCredentials(chaveSimetrica, SecurityAlgorithms.HmacSha256Signature);
 
+            var claims = new List<Claim>
+            {
+                new Claim("user_id", user.UserId.ToString())
+            };
 
             var jwt = new JwtSecurityToken(
                 issuer: configuration["Jwt:ValidIssuer"],
                 expires: DateTime.Now.AddDays(7),
                 audience: configuration["Jwt:ValidAudience"],
-                signingCredentials: credenciais
+                signingCredentials: credenciais,                
+                claims: claims                
             );
+
+            System.Console.WriteLine(new JwtSecurityTokenHandler().WriteToken(jwt));
             return new JwtSecurityTokenHandler().WriteToken(jwt);
         }
     }

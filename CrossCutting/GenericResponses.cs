@@ -12,6 +12,7 @@
         public static ResponseModel NotAcceptable(string message = null) => new() { Result = "Not Acceptable", StatusCode = 406, Message = message };
         public static ResponseModel RequestTimeout(string message = "Tempo limite da requisição atingido") => new() { Result = "Request Timeout", StatusCode = 408, Message = message };
         public static ResponseModel Conflict(string message = "User or email already registered") => new() { Result = "Conflict", StatusCode = 409, Message = message };
+        public static ResponseModel UnsupportedMediaType(string message = null) => new() { Result = "Unsupported Media Type", StatusCode = 415, Message = message };
         public static ResponseModel ServiceUnavailable(string message = "Internal server error") => new() { Result = "Service Unavailable", StatusCode = 503, Message = message };
         public static ResponseModel Authenticated(this object data, string message) => new() { Result = "Authenticated", StatusCode = 200, Data = data, Message = message };
     }

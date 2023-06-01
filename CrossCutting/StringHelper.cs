@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace RetroCollectApi.CrossCutting
 {
-    public static class StringHelper
+    public static partial class StringHelper
     {
         public static string ToSize(this string s)
         {
@@ -63,37 +63,39 @@ namespace RetroCollectApi.CrossCutting
         /// <param name="s">string input</param>
         /// <param name="t">enum type output</param>
         /// <returns></returns>
-        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="InvalidEnumValueException"></exception>
+        /// <exception cref="InvalidEnumTypeException"></exception>
         public static string ToCapitalize(this string s, Type t)
         {
             if(t == typeof(OwnershipStatus))
             {
-                return s switch
+                return s.ToLower() switch
                 {
                     "owned" => "Owned",
                     "desired" => "Desired",
                     "traded" => "Traded",
                     "borrowed" => "Borrowed",
                     "sold" => "sold",
-                    _ => "Invalid"
+                    _ => throw new InvalidEnumValueException($"{t}: Invalid Value")
+
                 };
             }
 
             if(t == typeof(Condition))
             {
-                return s switch
+                return s.ToLower() switch
                 {
                     "new" => "New",
                     "likenew" => "LikeNew",
                     "used" => "Used",
                     "fair" => "Fair",
                     "poor" => "Poor",
-                    _ => "Invalid",
+                    _ => throw new InvalidEnumValueException($"{t}: Invalid Value")
                 };
             }
             else
             {
-                throw new ArgumentException($"{nameof(t)}: Invalid Type");
+                throw new InvalidEnumTypeException($"{nameof(t)}: Invalid Type");
             }
         }
     }

@@ -6,5 +6,7 @@ namespace RetroCollectApi.Application.UseCases.UserOperations.ManageUser
     {
         ResponseModel UpdateUser(UpdateUserRequestModel user);
         ResponseModel UpdatePassword(UpdatePwdRequestModel user);
+        Task<ResponseModel> GetAllUsers();
     }
 }
+

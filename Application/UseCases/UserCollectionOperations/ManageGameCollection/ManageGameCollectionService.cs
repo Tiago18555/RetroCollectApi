@@ -190,7 +190,7 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
 
         public async Task<ResponseModel> GetAllGamesByUser(Guid userId, ClaimsPrincipal user)
         {
-            if (user.IsTheRequestedOneId(userId)) { return GenericResponses.Unauthorized(); }
+            if (!user.IsTheRequestedOneId(userId)) { return GenericResponses.Unauthorized(); }
 
             try
             {

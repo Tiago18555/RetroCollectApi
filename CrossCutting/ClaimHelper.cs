@@ -11,7 +11,7 @@ namespace RetroCollectApi.CrossCutting
         /// <param name="givenId"></param>
         /// <returns><seelang true></seelang> if they match</returns>
         public static bool IsTheRequestedOneId(this ClaimsPrincipal user, Guid givenId) =>
-            givenId.ToString().Equals(user.GetUserId());
+            givenId.Equals(user.GetUserId());
 
 
         /// <summary>
@@ -32,11 +32,11 @@ namespace RetroCollectApi.CrossCutting
         /// <param name="user"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public static long GetUserId(this ClaimsPrincipal user)
+        public static Guid GetUserId(this ClaimsPrincipal user)
         {
-            var result = user.Claims.First(c => c.Type.Equals("Id")).Value;
-            if (result.Equals(null)) { throw new Exception($"Helper/GenericExtensionMethods.cs GetUserId: Método first retornou {result}"); }
-            return long.Parse(result);
+            var result = user.Claims.FirstOrDefault(c => c.Type.Equals("user_id")).Value;
+            if (result.Equals(default) || result.Equals(null)) { throw new Exception($"Helper/GenericExtensionMethods.cs GetUserId: Método first retornou {result}"); }
+            return Guid.Parse(result);
         }
     }
 }

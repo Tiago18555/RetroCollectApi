@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
+using RetroCollect.Models;
 using RetroCollectApi.Application.UseCases.UserOperations.CreateUser;
 using RetroCollectApi.Application.UseCases.UserOperations.ManageUser;
 using Swashbuckle.AspNetCore.Annotations;
@@ -52,6 +53,16 @@ namespace RetroCollectApi.Controllers
         public ObjectResult UpdateUser([FromBody] UpdateUserRequestModel user)
         {
             var result = ManageUserService.UpdateUser(user);
+
+            Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
+            Response.StatusCode = result.StatusCode;
+            return new ObjectResult(result);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            var result = await ManageUserService.GetAllUsers();
 
             Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
             Response.StatusCode = result.StatusCode;
