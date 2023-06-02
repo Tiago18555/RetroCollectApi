@@ -118,12 +118,12 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
         }
         public ResponseModel DeleteConsole(Guid id, ClaimsPrincipal request)
         {
-            if (!request.IsTheRequestedOneId(id)) return GenericResponses.Forbidden();
-
             try
             {
                 var foundItem = userConsoleRepository.GetById(id);
                 if (foundItem == null) { return GenericResponses.NotFound(); }
+
+                if (!request.IsTheRequestedOneId(foundItem.UserId)) return GenericResponses.Forbidden();
 
                 if (userConsoleRepository.Delete(foundItem))
                 {

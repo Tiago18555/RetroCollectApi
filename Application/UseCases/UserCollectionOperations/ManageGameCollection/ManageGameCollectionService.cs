@@ -120,12 +120,12 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
 
         public ResponseModel DeleteGame(Guid id, ClaimsPrincipal user)
         {
-            if (!user.IsTheRequestedOneId(id)) return GenericResponses.Forbidden();
-
             try
             {
                 var foundItem = userCollectionRepository.GetById(id);
                 if (foundItem == null) { return GenericResponses.NotFound(); }
+
+                if (!user.IsTheRequestedOneId(foundItem.UserId)) return GenericResponses.Forbidden();
 
                 if (userCollectionRepository.Delete(foundItem))
                 {

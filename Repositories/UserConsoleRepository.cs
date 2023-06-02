@@ -35,6 +35,7 @@ namespace RetroCollectApi.Repositories
         public bool Delete(UserConsole user)
         {
             _context.UserConsoles.Remove(user);
+            _context.SaveChanges();
 
             return !_context.UserConsoles.Any(x => x.UserConsoleId == user.UserConsoleId); //NONE MATCH
         }

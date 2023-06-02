@@ -35,6 +35,7 @@ namespace RetroCollectApi.Repositories
         public bool Delete(UserComputer user)
         {
             _context.UserComputers.Remove(user);
+            _context.SaveChanges();
 
             return !_context.UserComputers.Any(x => x.UserComputerId == user.UserComputerId); //NONE MATCH
         }

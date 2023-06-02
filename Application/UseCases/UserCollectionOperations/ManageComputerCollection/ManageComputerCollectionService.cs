@@ -117,12 +117,11 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
 
         public ResponseModel DeleteComputer(Guid id, ClaimsPrincipal request)
         {
-            if (!request.IsTheRequestedOneId(id)) return GenericResponses.Forbidden();
-
             try
             {
                 var foundItem = userComputerRepository.GetById(id);
-                if (foundItem == null) { return GenericResponses.NotFound(); }
+                if (foundItem == null) return GenericResponses.NotFound();
+                if (!request.IsTheRequestedOneId(foundItem.UserId)) return GenericResponses.Forbidden();
 
                 if (userComputerRepository.Delete(foundItem))
                 {
