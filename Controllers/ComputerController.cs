@@ -21,6 +21,7 @@ namespace RetroCollectApi.Controllers
             Summary = "Search computers",
             Description = "Search computers or arcades from IGDB Database"
         )]
+        [SwaggerResponse(200, "Search completed")]
         [SwaggerResponse(400, "Invalid request")]
         [SwaggerResponse(406, "Invalid format of request")]
         [SwaggerResponse(500, "Internal server error")]
@@ -38,6 +39,7 @@ namespace RetroCollectApi.Controllers
             Summary = "Get computer by id",
             Description = "Get a specific computer or arcade by your id from IGDB Database"
         )]
+        [SwaggerResponse(200, "Search completed")]
         [SwaggerResponse(400, "Invalid request")]
         [SwaggerResponse(406, "Invalid format of request")]
         [SwaggerResponse(500, "Internal server error")]

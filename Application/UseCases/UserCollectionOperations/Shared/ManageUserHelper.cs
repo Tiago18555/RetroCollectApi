@@ -20,7 +20,7 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.Shared
         /// <exception cref="ArgumentException"></exception>
         public static TTarget MapAndFill<TTarget, TSource>(this object target, TSource source) where TTarget : class //target banco / source request
         {
-            if(typeof(TSource) == typeof(UpdateGameRequestModel) && typeof(TTarget) == typeof(UserCollection))
+            if (typeof(TSource) == typeof(UpdateGameRequestModel) && typeof(TTarget) == typeof(UserCollection))
             {
                 var userCollection = target as UserCollection;
                 var request = source as UpdateGameRequestModel;
@@ -77,7 +77,7 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.Shared
             }
             else
             {
-                throw new ArgumentException($"Invalid Type: {nameof(source)}, ou {nameof(target)}");
+                throw new InvalidClassTypeException($"Invalid Type: {nameof(source)}, or {nameof(target)}");
             }
         }
     }

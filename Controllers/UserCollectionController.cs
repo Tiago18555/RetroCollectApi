@@ -41,7 +41,10 @@ namespace RetroCollectApi.Controllers
                           "Propertie Ownership Status can be { owned, desired, traded, borrowed and sold }"
         )]
         [SwaggerResponse(201, "Item added to collection")]
+        [SwaggerResponse(400, "Invalid format of request")]
+        [SwaggerResponse(403, "Invalid credentials")]
         [SwaggerResponse(406, "Invalid format of request")]
+        [SwaggerResponse(415, "Unsupported media type")]
         [SwaggerResponse(500, "Internal server error")]
         public async Task<IActionResult> AddGame([FromBody] AddGameRequestModel item)
         {
@@ -58,6 +61,7 @@ namespace RetroCollectApi.Controllers
             Summary = "Delete game",
             Description = "Delete game of a specified user collection"
         )]
+        [SwaggerResponse(200, "Deleted successfully")]
         [SwaggerResponse(406, "Invalid format of request")]
         [SwaggerResponse(500, "Internal server error")]
         public IActionResult DeleteGame([FromRoute] Guid userCollectionId)
@@ -74,6 +78,9 @@ namespace RetroCollectApi.Controllers
             Summary = "Update game",
             Description = "Update game of a specified user collection"
         )]
+        [SwaggerResponse(200, "Updated successfully")]
+        [SwaggerResponse(400, "Invalid format of request")]
+        [SwaggerResponse(403, "Invalid credentials")]
         [SwaggerResponse(406, "Invalid format of request")]
         [SwaggerResponse(500, "Internal server error")]
         public async Task<IActionResult> EditGame([FromBody] UpdateGameRequestModel updateGameRequestModel)

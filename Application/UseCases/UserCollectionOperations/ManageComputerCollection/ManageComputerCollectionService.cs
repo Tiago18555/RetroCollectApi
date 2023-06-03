@@ -1,12 +1,9 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RetroCollect.Models;
 using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchComputer;
-using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchConsole;
-using RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageConsoleCollection;
 using RetroCollectApi.Application.UseCases.UserCollectionOperations.Shared;
 using RetroCollectApi.CrossCutting;
 using RetroCollectApi.CrossCutting.Enums.ForModels;
-using RetroCollectApi.Repositories;
 using RetroCollectApi.Repositories.Interfaces;
 using System.Data;
 using System.Security.Claims;
@@ -191,6 +188,11 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
             {
                 throw;
                 //return GenericResponses.NotAcceptable("Formato de dados inválido.");
+            }
+            catch (InvalidClassTypeException msg)
+            {
+                //throw;
+                return GenericResponses.ServiceUnavailable(msg.ToString());
             }
             catch (Exception)
             {

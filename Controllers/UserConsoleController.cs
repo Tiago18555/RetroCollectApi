@@ -40,7 +40,10 @@ namespace RetroCollectApi.Controllers
             Description = "Adds specified console to the specified user collection, and register this item if is not found on database"
         )]
         [SwaggerResponse(201, "Item added to collection")]
+        [SwaggerResponse(400, "Invalid format of request")]
+        [SwaggerResponse(403, "Invalid credentials")]
         [SwaggerResponse(406, "Invalid format of request")]
+        [SwaggerResponse(415, "Unsupported media type")]
         [SwaggerResponse(500, "Internal server error")]
         public async Task<IActionResult> AddConsole([FromBody] AddItemRequestModel item)
         {
@@ -56,6 +59,7 @@ namespace RetroCollectApi.Controllers
             Summary = "Delete console",
             Description = "Delete console of a specified user collection"
         )]
+        [SwaggerResponse(200, "Deleted successfully")]
         [SwaggerResponse(406, "Invalid format of request")]
         [SwaggerResponse(500, "Internal server error")]
         public IActionResult DeleteConsole([FromRoute] Guid userConsoleId)
@@ -72,6 +76,9 @@ namespace RetroCollectApi.Controllers
             Summary = "Update console",
             Description = "Update console of a specified user collection"
         )]
+        [SwaggerResponse(200, "Update successfully")]
+        [SwaggerResponse(400, "Invalid format of request")]
+        [SwaggerResponse(403, "Invalid credentials")]
         [SwaggerResponse(406, "Invalid format of request")]
         [SwaggerResponse(500, "Internal server error")]
         public async Task<IActionResult> EditConsole([FromBody] UpdateConsoleRequestModel console)

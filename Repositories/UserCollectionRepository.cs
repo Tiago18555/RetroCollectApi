@@ -19,7 +19,7 @@ namespace RetroCollectApi.Repositories
             _context.UserCollections.Add(user);
             _context.SaveChanges();
             _context.Entry(user).Reference(x => x.Game).Load();
-            _context.Entry(user).State = EntityState.Detached;
+            _context.Entry(user).State = EntityState.Detached; 
 
             return user;
         }
