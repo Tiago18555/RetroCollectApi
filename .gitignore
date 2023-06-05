@@ -476,6 +476,10 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
+#Configs
+appsettings.json
+appsettings.Development.json
+
 # Anotations
 igdb.txt
 */igdb.txt

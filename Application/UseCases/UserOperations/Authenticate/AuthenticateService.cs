@@ -23,8 +23,11 @@ namespace RetroCollectApi.Application.UseCases.UserOperations.Authenticate
         {
             AuthenticateServiceResponseModel jwtResponse = Authenticate(credentials);
 
+            if (!string.IsNullOrEmpty(jwtResponse.ErrorMsg))
+                return GenericResponses.Forbidden(jwtResponse.ErrorMsg);
+
             return jwtResponse.Token.IsNullOrEmpty() ?
-                GenericResponses.Unauthorized("Email ou senha incorretos.") : jwtResponse.Ok();
+                GenericResponses.Unauthorized("Email ou senha incorretos.") : jwtResponse.Ok();            
         }
 
         public ResponseModel ValidateJwtToken(string token)
@@ -58,6 +61,7 @@ namespace RetroCollectApi.Application.UseCases.UserOperations.Authenticate
             }
         }
 
+        /// <exception cref="AuthException"></exception>
         internal AuthenticateServiceResponseModel Authenticate(AuthenticateServiceRequestModel authenticateServiceRequestModel)
         {
             try
@@ -70,6 +74,9 @@ namespace RetroCollectApi.Application.UseCases.UserOperations.Authenticate
                 {
                     return new AuthenticateServiceResponseModel();
                 }
+
+                if (user.VerifiedAt == DateTime.MinValue) return new AuthenticateServiceResponseModel(true, "Please verify this user on your registered email.");
+
                 return new AuthenticateServiceResponseModel(GenerateToken(user), DateTime.Now.AddDays(7));
 
 
@@ -81,7 +88,9 @@ namespace RetroCollectApi.Application.UseCases.UserOperations.Authenticate
         }
 
 
-
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="EncoderFallbackException"></exception>
         internal string GenerateToken(User user)
         {
             var chaveSimetrica = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:SecretKey"]));

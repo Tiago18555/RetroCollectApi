@@ -15,6 +15,7 @@ namespace RetroCollect.Models
         [MinLength(3)]
         [MaxLength(255)]
         public string Email { get; set; }
+        public DateTime VerifiedAt { get; set; }
 
         [MinLength(3)]
         [MaxLength(255)]
