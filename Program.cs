@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using RetroCollect.Data;
 using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchComputer;
@@ -12,6 +11,7 @@ using RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageConsol
 using RetroCollectApi.Application.UseCases.UserOperations.Authenticate;
 using RetroCollectApi.Application.UseCases.UserOperations.CreateUser;
 using RetroCollectApi.Application.UseCases.UserOperations.ManageUser;
+using RetroCollectApi.Application.UseCases.UserOperations.VerifyAndRecoverUser;
 using RetroCollectApi.Repositories;
 using RetroCollectApi.Repositories.Interfaces;
 using System.Text;
@@ -65,6 +65,8 @@ builder.Services.AddScoped<IManageUserService, ManageUserService>();
 builder.Services.AddScoped<ISearchGameService, SearchGameService>();
 builder.Services.AddScoped<ISearchComputerService, SearchComputerService>();
 builder.Services.AddScoped<ISearchConsoleService, SearchConsoleService>();
+
+builder.Services.AddScoped<IVerifyAndRecoverUserService, VerifyAndRecoverUserService>();
 
 builder.Services.AddScoped<IManageGameCollectionService, ManageGameCollectionService>();
 builder.Services.AddScoped<IManageComputerCollectionService, ManageComputerCollectionService>();

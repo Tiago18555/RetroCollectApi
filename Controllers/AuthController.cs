@@ -1,7 +1,10 @@
 ﻿using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using RetroCollectApi.Application.UseCases.UserOperations.Authenticate;
+using RetroCollectApi.Application.UseCases.UserOperations.VerifyAndRecoverUser;
 using Swashbuckle.AspNetCore.Annotations;
+using System.Net;
 
 namespace RetroCollectApi.Controllers
 {
@@ -10,9 +13,12 @@ namespace RetroCollectApi.Controllers
     public class AuthController : ControllerBase
     {
         IAuthenticateService Authenticate { get; set; }
-        public AuthController(IAuthenticateService authenticate)
+        IVerifyAndRecoverUserService Verify { get; set; }
+
+        public AuthController(IAuthenticateService authenticate, IVerifyAndRecoverUserService verify)
         {
             this.Authenticate = authenticate;
+            this.Verify = verify;
         }
 
         [HttpPost("validate")]
@@ -35,6 +41,24 @@ namespace RetroCollectApi.Controllers
             Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
             Response.StatusCode = result.StatusCode;
             return new ObjectResult(result);
+        }
+
+        [HttpPost("send")]
+        public IActionResult SendEmail([FromBody] EmailDto emailDto)
+        {
+            Verify.SendEmail(emailDto);
+            return Ok();
+
+            //Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
+            //Response.StatusCode = result.StatusCode;
+            //return new ObjectResult(result);
+        }
+
+        [HttpGet("recover/{userid}")]
+        public IActionResult ChangePassword([FromRoute] Guid userid)
+        {
+            var res = Verify.ChangePasswordTemplate(userid);
+            return Content(res, "text/html");
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Microsoft.Extensions.Configuration;
 
 namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.Shared
 {
@@ -6,12 +7,17 @@ namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.Shared
     {
         public static async Task<T> IgdbPostAsync<T>(this HttpClient httpClient, string query, string endpoint)
         {
+            var config = new ConfigurationBuilder()
+            .SetBasePath(AppContext.BaseDirectory)
+            .AddJsonFile("appsettings.Development.json")
+            .Build();
+
             var content = new StringContent(query);
 
             content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/plain");
 
-            httpClient.DefaultRequestHeaders.Add("Client-ID", "7xvfbiwcpi3xzgmwclqxumlsxg7py3");
-            httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer yygovoe0gg64fmec4igxsb9tzcjtg7");
+            httpClient.DefaultRequestHeaders.Add("Client-ID", config.GetSection("Igdb:Client-ID").Value);
+            httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + config.GetSection("Igdb:Token"));
 
             var response = await httpClient.PostAsync($"https://api.igdb.com/v4/{endpoint}", content);
 
