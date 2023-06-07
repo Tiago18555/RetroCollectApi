@@ -44,21 +44,37 @@ namespace RetroCollectApi.Controllers
         }
 
         [HttpPost("send")]
-        public IActionResult SendEmail([FromBody] EmailDto emailDto)
+        [SwaggerOperation(
+            Summary = "Send email",
+            Description = "Send email with instructions and a link for redirect to ChangePassword end-point. Only email or username are allowed on this request, not both"
+        )]
+        [SwaggerResponse(200, "Email sent")]
+        [SwaggerResponse(400, "Invalid format of request")]
+        [SwaggerResponse(404, "User not found")]
+        [SwaggerResponse(500, "Internal server error")]
+        public IActionResult SendEmail([FromBody] SendEmailRequestModel emailDto)
         {
-            Verify.SendEmail(emailDto);
-            return Ok();
+            var result = Verify.SendEmail(emailDto);
 
-            //Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
-            //Response.StatusCode = result.StatusCode;
-            //return new ObjectResult(result);
+            Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
+            Response.StatusCode = result.StatusCode;
+            return new ObjectResult(result);
         }
 
         [HttpGet("recover/{userid}")]
+        [SwaggerOperation(
+            Summary = "Change password",
+            Description = "Get changing-password page"
+        )]
+        [SwaggerResponse(404, "User not found")]
+        [SwaggerResponse(500, "Internal server error")]
         public IActionResult ChangePassword([FromRoute] Guid userid)
         {
-            var res = Verify.ChangePasswordTemplate(userid);
-            return Content(res, "text/html");
+            var result = Verify.ChangePasswordTemplate(userid);
+
+            Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
+            Response.StatusCode = result.StatusCode;
+            return Content(result.Data as string, "text/html");
         }
     }
 }

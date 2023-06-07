@@ -1,9 +1,11 @@
-﻿namespace RetroCollectApi.Application.UseCases.UserOperations.VerifyAndRecoverUser
+﻿using RetroCollectApi.CrossCutting;
+
+namespace RetroCollectApi.Application.UseCases.UserOperations.VerifyAndRecoverUser
 {
     public interface IVerifyAndRecoverUserService
     {
-        void SendEmail(EmailDto request);
-        string ChangePasswordTemplate(Guid userid);
+        ResponseModel SendEmail(SendEmailRequestModel request);
+        ResponseModel ChangePasswordTemplate(Guid userid);
     }
 }
 
