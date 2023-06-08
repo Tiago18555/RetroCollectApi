@@ -5,10 +5,13 @@ using MailKit.Security;
 using RetroCollectApi.Repositories.Interfaces;
 using RetroCollect.Models;
 using RetroCollectApi.CrossCutting;
+using BCryptNet = BCrypt.Net.BCrypt;
+using RetroCollectApi.Application.UseCases.UserOperations.Authenticate;
+using Microsoft.Extensions.Hosting;
 
 namespace RetroCollectApi.Application.UseCases.UserOperations.VerifyAndRecoverUser
 {
-    public class VerifyAndRecoverUserService : IVerifyAndRecoverUserService
+    public partial class VerifyAndRecoverUserService : IVerifyAndRecoverUserService
     {
         private readonly IConfiguration _config;
         private readonly IUserRepository _repository;
@@ -71,17 +74,44 @@ namespace RetroCollectApi.Application.UseCases.UserOperations.VerifyAndRecoverUs
 
         public ResponseModel ChangePasswordTemplate(Guid userid)
         {
-            var username = _repository.SingleOrDefault(u => u.UserId == userid);
-            if (username == null) return GenericResponses.NotFound("User not found");
+            var foundUser = _repository.SingleOrDefault(u => u.UserId == userid);
+            if (foundUser == null) return GenericResponses.NotFound("User not found");
+
+            string host = _config.GetSection("Host").Value;
 
             var template = File.ReadAllText($@"{Environment.CurrentDirectory}\Application\UseCases\UserOperations\VerifyAndRecoverUser\change-password.html");
-            var res = template.Replace("#userName", username.Username);
+            var res = template
+                .Replace("#userName", foundUser.Username)
+                .Replace("'#url*'", $"{host}api/auth/update/{foundUser.UserId}");
+
 
             System.Console.ForegroundColor = ConsoleColor.Green;
             System.Console.WriteLine(res);
             System.Console.ForegroundColor = ConsoleColor.White;
 
             return res.Ok();
+        }
+
+        public ResponseModel ChangePassword(Guid user_id, UpdatePasswordRequestModel pwd)
+        {
+            var foundUser = _repository.SingleOrDefault(u => u.UserId == user_id);
+            if (foundUser == null) { return GenericResponses.NotFound("User Not Found"); }
+            var hashedpwd = BCryptNet.HashPassword(pwd.Password);
+
+            if(BCryptNet.Verify(hashedpwd, foundUser.Password)) { return "Password cannot be equal to old one".Ok(); }
+
+            foundUser.Password = hashedpwd;
+            foundUser.UpdatedAt = DateTime.Now;
+
+            try
+            {
+                _repository.Update(foundUser);
+                return "password updated successfully".Ok();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
     }
 }

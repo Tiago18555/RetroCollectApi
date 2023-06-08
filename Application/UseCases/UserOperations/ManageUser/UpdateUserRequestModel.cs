@@ -24,9 +24,4 @@ namespace RetroCollectApi.Application.UseCases.UserOperations.ManageUser
         public string LastName { get; set; }
 
     }
-    public class UpdatePwdRequestModel
-    {
-        [Required]
-        public string Password { get; set; }
-    }
 }

@@ -55,11 +55,6 @@ namespace RetroCollectApi.Application.UseCases.UserOperations.ManageUser
             }
         }
 
-        public ResponseModel UpdatePassword(UpdatePwdRequestModel user)
-        {
-            throw new NotImplementedException();
-        }
-
         public async Task<ResponseModel> GetAllUsers()
         {
             var res = await repository.GetAll(x => x);

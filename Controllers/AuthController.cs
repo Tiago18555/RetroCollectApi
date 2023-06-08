@@ -3,8 +3,10 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using RetroCollectApi.Application.UseCases.UserOperations.Authenticate;
 using RetroCollectApi.Application.UseCases.UserOperations.VerifyAndRecoverUser;
+using RetroCollectApi.CrossCutting;
 using Swashbuckle.AspNetCore.Annotations;
 using System.Net;
+using static RetroCollectApi.Application.UseCases.UserOperations.VerifyAndRecoverUser.VerifyAndRecoverUserService;
 
 namespace RetroCollectApi.Controllers
 {
@@ -63,18 +65,34 @@ namespace RetroCollectApi.Controllers
 
         [HttpGet("recover/{userid}")]
         [SwaggerOperation(
-            Summary = "Change password",
+            Summary = "Change password page",
             Description = "Get changing-password page"
         )]
         [SwaggerResponse(404, "User not found")]
         [SwaggerResponse(500, "Internal server error")]
-        public IActionResult ChangePassword([FromRoute] Guid userid)
+        public IActionResult ChangePasswordPage([FromRoute] Guid userid)
         {
             var result = Verify.ChangePasswordTemplate(userid);
 
             Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
             Response.StatusCode = result.StatusCode;
             return Content(result.Data as string, "text/html");
+        }
+
+        [HttpPatch("update/{userid}")]
+        [SwaggerOperation(
+            Summary = "Change password",
+            Description = "Update user password"
+        )]
+        [SwaggerResponse(404, "User not found")]
+        [SwaggerResponse(500, "Internal server error")]
+        public IActionResult ChangePassword([FromRoute] Guid userid, [FromBody] UpdatePasswordRequestModel pwd)
+        {
+            var result = Verify.ChangePassword(userid, pwd);
+
+            Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
+            Response.StatusCode = result.StatusCode;
+            return new ObjectResult(result);
         }
     }
 }
