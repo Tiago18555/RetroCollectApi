@@ -5,13 +5,19 @@ namespace RetroCollectApi.CrossCutting
     public static class ClaimHelper
     {
         /// <summary>
-        /// Check if user_id of Claims and other user_id match
+        /// 
         /// </summary>
         /// <param name="user"></param>
         /// <param name="givenId"></param>
         /// <returns><seelang true></seelang> if they match</returns>
-        public static bool IsTheRequestedOneId(this ClaimsPrincipal user, Guid givenId) =>
-            givenId.Equals(user.GetUserId());
+        /// <exception cref="NullClaimException"></exception>
+        public static bool IsTheRequestedOneId(this ClaimsPrincipal user, Guid givenId)
+        {
+            if (user.GetUserId() == Guid.Empty)            
+                throw new NullClaimException(@"Claim 'user' cannot be null");            
+
+            return givenId.Equals(user.GetUserId());
+        }
 
 
         /// <summary>
@@ -34,6 +40,7 @@ namespace RetroCollectApi.CrossCutting
         /// <exception cref="Exception"></exception>
         public static Guid GetUserId(this ClaimsPrincipal user)
         {
+            if (!user.Claims.Any(c => c.Type.Equals("user_id"))) return Guid.Empty;
             var result = user.Claims.FirstOrDefault(c => c.Type.Equals("user_id")).Value;
             if (result.Equals(default) || result.Equals(null)) { throw new Exception($"Helper/GenericExtensionMethods.cs GetUserId: Método first retornou {result}"); }
             return Guid.Parse(result);

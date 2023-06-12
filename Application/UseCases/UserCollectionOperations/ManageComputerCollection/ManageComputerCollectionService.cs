@@ -31,7 +31,14 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
 
         public async Task<ResponseModel> AddComputer(AddItemRequestModel item, ClaimsPrincipal request)
         {
-            if (!request.IsTheRequestedOneId(item.User_id)) return GenericResponses.Forbidden();
+            try
+            {
+                if (!request.IsTheRequestedOneId(item.User_id)) return GenericResponses.Forbidden();
+            }
+            catch (NullClaimException msg)
+            {
+                return GenericResponses.BadRequest(msg.ToString());
+            }
 
 
             //Specify format of DateTime entries yyyy-mm-dd
@@ -75,7 +82,6 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
                 {
                     throw;
                 }
-
             }
 
 
@@ -133,14 +139,18 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
             {
                 throw;
             }
+            catch (NullClaimException msg)
+            {
+                return GenericResponses.BadRequest(msg.ToString());
+            }
         }
 
         public async Task<ResponseModel> UpdateComputer(UpdateComputerRequestModel updateComputerRequestModel, ClaimsPrincipal request)
         {
-            if (!request.IsTheRequestedOneId(updateComputerRequestModel.User_id)) return GenericResponses.Forbidden();
 
             try
             {
+                if (!request.IsTheRequestedOneId(updateComputerRequestModel.User_id)) return GenericResponses.Forbidden();
                 var foundUser = userRepository.SingleOrDefault(x => x.UserId == updateComputerRequestModel.User_id);
                 if (foundUser == null) { return GenericResponses.NotFound("User not found"); }
 
@@ -194,6 +204,10 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
                 //throw;
                 return GenericResponses.ServiceUnavailable(msg.ToString());
             }
+            catch (NullClaimException msg)
+            {
+                return GenericResponses.BadRequest(msg.ToString());
+            }
             catch (Exception)
             {
                 throw;
@@ -202,10 +216,10 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
 
         public async Task<ResponseModel> GetAllComputersByUser(Guid userId, ClaimsPrincipal user)
         {
-            if (!user.IsTheRequestedOneId(userId)) return GenericResponses.Forbidden();
 
             try
             {
+                if (!user.IsTheRequestedOneId(userId)) return GenericResponses.Forbidden();
                 var res = await userRepository.GetAllComputersByUser(userId, x => x.MapObjectTo(new GetAllComputersByUserResponseModel()));
                 return res.Ok();
             }
@@ -213,6 +227,10 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
             {
                 throw;
                 //return GenericResponses.NotAcceptable("Formato de dados inválido");
+            }
+            catch (NullClaimException msg)
+            {
+                return GenericResponses.BadRequest(msg.ToString());
             }
         }
     }

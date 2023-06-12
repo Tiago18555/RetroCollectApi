@@ -17,10 +17,9 @@ namespace RetroCollectApi.Application.UseCases.UserOperations.ManageUser
 
         public ResponseModel UpdateUser(UpdateUserRequestModel userRequestModel, ClaimsPrincipal user)
         {
-            if (!user.IsTheRequestedOneId(userRequestModel.UserId)) return GenericResponses.Forbidden();
-
             try
             {
+                if (!user.IsTheRequestedOneId(userRequestModel.UserId)) return GenericResponses.Forbidden();
                 var foundUser = repository.SingleOrDefault(x => x.UserId == userRequestModel.UserId);
 
                 if (foundUser == null) { return GenericResponses.NotFound("User not found"); }
@@ -48,6 +47,10 @@ namespace RetroCollectApi.Application.UseCases.UserOperations.ManageUser
             {
                 throw;
                 //return GenericResponses.NotAcceptable("Formato de dados inválido.");
+            }
+            catch (NullClaimException msg)
+            {
+                return GenericResponses.BadRequest(msg.Message.ToString());
             }
             catch (Exception)
             {

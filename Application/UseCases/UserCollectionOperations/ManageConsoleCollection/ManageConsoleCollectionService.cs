@@ -37,7 +37,14 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
 
         public async Task<ResponseModel> AddConsole(AddItemRequestModel item, ClaimsPrincipal request)
         {
-            if (!request.IsTheRequestedOneId(item.User_id)) return GenericResponses.Forbidden();
+            try
+            {
+                if (!request.IsTheRequestedOneId(item.User_id)) return GenericResponses.Forbidden();
+            }
+            catch (NullClaimException msg)
+            {
+                return GenericResponses.BadRequest(msg.ToString());
+            }
             //Specify format of DateTime entries yyyy-mm-dd
 
             var user = userRepository.SingleOrDefault(u => u.UserId == item.User_id);
@@ -79,7 +86,6 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
                 {
                     throw;
                 }
-
             }
 
 
@@ -114,6 +120,10 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
             {
                 return GenericResponses.BadRequest("Invalid value for Condition or OwnershipStatus: " + msg);
             }
+            catch (NullClaimException msg)
+            {
+                return GenericResponses.BadRequest(msg.ToString());
+            }
 
         }
         public ResponseModel DeleteConsole(Guid id, ClaimsPrincipal request)
@@ -138,14 +148,18 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
             {
                 throw;
             }
+            catch (NullClaimException msg)
+            {
+                return GenericResponses.BadRequest(msg.ToString());
+            }
         }
 
         public async Task<ResponseModel> UpdateConsole(UpdateConsoleRequestModel updateConsoleRequestModel, ClaimsPrincipal request)
         {
-            if (!request.IsTheRequestedOneId(updateConsoleRequestModel.User_id)) return GenericResponses.Forbidden();
 
             try
             {
+                if (!request.IsTheRequestedOneId(updateConsoleRequestModel.User_id)) return GenericResponses.Forbidden();
                 var foundUser = userRepository.SingleOrDefault(x => x.UserId == updateConsoleRequestModel.User_id);
                 if (foundUser == null) { return GenericResponses.NotFound("User not found"); }
 
@@ -194,6 +208,10 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
                 throw;
                 //return GenericResponses.NotAcceptable("Formato de dados inválido.");
             }
+            catch (NullClaimException msg)
+            {
+                return GenericResponses.BadRequest(msg.ToString());
+            }
             catch (Exception)
             {
                 throw;
@@ -202,10 +220,10 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
 
         public async Task<ResponseModel> GetAllConsolesByUser(Guid userId, ClaimsPrincipal user)
         {
-            if (!user.IsTheRequestedOneId(userId)) { return GenericResponses.Forbidden(); }
 
             try
             {
+                if (!user.IsTheRequestedOneId(userId)) { return GenericResponses.Forbidden(); }
                 var res = await userRepository.GetAllConsolesByUser(userId, x => x.MapObjectTo(new GetAllConsolesByUserResponseModel()));
                 return res.Ok();
             }
@@ -213,6 +231,10 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
             {
                 throw;
                 //return GenericResponses.NotAcceptable("Formato de dados inválido");
+            }
+            catch (NullClaimException msg)
+            {
+                return GenericResponses.BadRequest(msg.ToString());
             }
         }
     }

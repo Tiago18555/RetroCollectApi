@@ -35,7 +35,15 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
 
         public async Task<ResponseModel> AddGame(AddGameRequestModel item, ClaimsPrincipal user)
         {
-            if (!user.IsTheRequestedOneId(item.User_id)) return GenericResponses.Forbidden();
+            try
+            {
+                if (!user.IsTheRequestedOneId(item.User_id)) return GenericResponses.Forbidden();
+            }
+            catch (NullClaimException msg)
+            {
+                return GenericResponses.BadRequest(msg.ToString());
+            }
+
             //Specify format of DateTime entries yyyy-mm-dd
 
             var foundUser = userRepository.SingleOrDefault(u => u.UserId == item.User_id);
@@ -140,14 +148,18 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
             {
                 throw;
             }
+            catch (NullClaimException msg)
+            {
+                return GenericResponses.BadRequest(msg.ToString());
+            }
         }
 
         public async Task<ResponseModel> UpdateGame(UpdateGameRequestModel updateGameRequestModel, ClaimsPrincipal user)
         {
-            if (!user.IsTheRequestedOneId(updateGameRequestModel.User_id)) return GenericResponses.Forbidden();
 
             try
             {
+                if (!user.IsTheRequestedOneId(updateGameRequestModel.User_id)) return GenericResponses.Forbidden();
                 var foundUser = userRepository.SingleOrDefault(x => x.UserId == updateGameRequestModel.User_id);
                 if (foundUser == null) { return GenericResponses.NotFound("User not found"); }
 
@@ -199,6 +211,10 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
                 throw;
                 //return GenericResponses.NotAcceptable("Formato de dados inválido.");
             }
+            catch (NullClaimException msg)
+            {
+                return GenericResponses.BadRequest(msg.ToString());
+            }
             catch (Exception)
             {
                 throw;
@@ -207,10 +223,10 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
 
         public async Task<ResponseModel> GetAllGamesByUser(Guid userId, ClaimsPrincipal user)
         {
-            if (!user.IsTheRequestedOneId(userId)) { return GenericResponses.Forbidden(); }
 
             try
             {
+                if (!user.IsTheRequestedOneId(userId)) { return GenericResponses.Forbidden(); }
                 var res = await userRepository.GetAllCollectionsByUser(userId, x => x.MapObjectTo(new GetAllCollectionsByUserResponseModel()));
                 return res.Ok();
             }
@@ -218,6 +234,10 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
             {
                 throw;
                 //return GenericResponses.NotAcceptable("Formato de dados inválido");
+            }
+            catch (NullClaimException msg)
+            {
+                return GenericResponses.BadRequest(msg.ToString());
             }
         }
     }

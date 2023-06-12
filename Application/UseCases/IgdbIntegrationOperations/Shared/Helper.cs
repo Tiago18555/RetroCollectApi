@@ -17,7 +17,12 @@ namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.Shared
             content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/plain");
 
             httpClient.DefaultRequestHeaders.Add("Client-ID", config.GetSection("Igdb:Client-ID").Value);
-            httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + config.GetSection("Igdb:Token"));
+            httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + config.GetSection("Igdb:Token").Value);
+
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine($"Client-ID: {config.GetSection("Igdb:Client-ID").Value}");
+            Console.WriteLine($"Token: {config.GetSection("Igdb:Token").Value}");
+            Console.ForegroundColor = ConsoleColor.White;
 
             var response = await httpClient.PostAsync($"https://api.igdb.com/v4/{endpoint}", content);
 

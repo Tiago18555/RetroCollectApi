@@ -82,7 +82,7 @@ namespace RetroCollectApi.Application.UseCases.UserOperations.VerifyAndRecoverUs
             var template = File.ReadAllText($@"{Environment.CurrentDirectory}\Application\UseCases\UserOperations\VerifyAndRecoverUser\change-password.html");
             var res = template
                 .Replace("#userName", foundUser.Username)
-                .Replace("'#url*'", $"{host}api/auth/update/{foundUser.UserId}");
+                .Replace("#url*", $"{host}api/auth/update/{foundUser.UserId}");
 
 
             System.Console.ForegroundColor = ConsoleColor.Green;

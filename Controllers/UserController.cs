@@ -31,7 +31,7 @@ namespace RetroCollectApi.Controllers
         [SwaggerResponse(406, "Invalid format of request")]
         [SwaggerResponse(409, "Username or Email is already registered")]
         [SwaggerResponse(500, "Internal server error")]
-        public ObjectResult CreateUser([FromBody] CreateUserRequestModel user)
+        public IActionResult CreateUser([FromBody] CreateUserRequestModel user)
         {
             var result = CreateUserService.CreateUser(user);
 
@@ -50,7 +50,7 @@ namespace RetroCollectApi.Controllers
         [SwaggerResponse(406, "Invalid format of request")]
         [SwaggerResponse(409, "Username or Email is already registered")]
         [SwaggerResponse(500, "Internal server error")]
-        public ObjectResult UpdateUser([FromBody] UpdateUserRequestModel user)
+        public IActionResult UpdateUser([FromBody] UpdateUserRequestModel user)
         {
             var result = ManageUserService.UpdateUser(user, HttpContext.User);
 
