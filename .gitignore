@@ -477,7 +477,6 @@ $RECYCLE.BIN/
 *.lnk
 
 # Configs
-appsettings.json
 appsettings.Development.json
 
 # Anotations
