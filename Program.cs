@@ -1,6 +1,9 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using MongoDB.Driver;
+using MongoDB.Driver.Core.Configuration;
 using RetroCollect.Data;
 using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchComputer;
 using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchConsole;
@@ -12,6 +15,7 @@ using RetroCollectApi.Application.UseCases.UserOperations.Authenticate;
 using RetroCollectApi.Application.UseCases.UserOperations.CreateUser;
 using RetroCollectApi.Application.UseCases.UserOperations.ManageUser;
 using RetroCollectApi.Application.UseCases.UserOperations.VerifyAndRecoverUser;
+using RetroCollectApi.CrossCutting.Providers;
 using RetroCollectApi.Repositories;
 using RetroCollectApi.Repositories.Interfaces;
 using System.Text;
@@ -57,6 +61,8 @@ builder.Services.AddScoped<IConsoleRepository, ConsoleRepository>();
 builder.Services.AddScoped<IComputerRepository, ComputerRepository>();
 builder.Services.AddScoped<IGameRepository, GameRepository>();
 
+builder.Services.AddScoped<IRecoverRepository, RecoverRepository>();
+
 //Services
 builder.Services.AddScoped<IAuthenticateService, AuthenticateService>();
 builder.Services.AddScoped<ICreateUserService, CreateUserService>();
@@ -71,6 +77,19 @@ builder.Services.AddScoped<IVerifyAndRecoverUserService, VerifyAndRecoverUserSer
 builder.Services.AddScoped<IManageGameCollectionService, ManageGameCollectionService>();
 builder.Services.AddScoped<IManageComputerCollectionService, ManageComputerCollectionService>();
 builder.Services.AddScoped<IManageConsoleCollectionService, ManageConsoleCollectionService>();
+
+builder.Services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
+
+
+builder.Services.AddSingleton<IMongoDatabase>(provider =>
+{
+    var configuration = provider.GetRequiredService<IConfiguration>();
+    var connectionString = configuration.GetSection("MongoDB")["ConnectionString"];
+    var databaseName = configuration.GetSection("MongoDatabaseName")["DatabaseName"];
+    var client = new MongoClient(connectionString);
+    return client.GetDatabase(databaseName);
+});
+builder.Services.AddScoped<MongoDBContext>();
 
 #endregion
 

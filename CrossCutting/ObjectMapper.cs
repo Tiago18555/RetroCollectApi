@@ -16,7 +16,6 @@ namespace RetroCollectApi.CrossCutting
         /// <returns>A new tiped object</returns>
         public static TResult MapObjectTo<TSource, TResult>(this TSource objFrom, TResult objTo)
         {
-
             PropertyInfo[] ToProperties = objTo.GetType().GetProperties();
             PropertyInfo[] FromProperties = objFrom.GetType().GetProperties();
 

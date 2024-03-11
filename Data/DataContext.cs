@@ -1,4 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+using MongoDB.Driver;
 using RetroCollect.Models;
 using Console = RetroCollect.Models.Console;
 

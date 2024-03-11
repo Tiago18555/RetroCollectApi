@@ -7,9 +7,11 @@ namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.Shared
     {
         public static async Task<T> IgdbPostAsync<T>(this HttpClient httpClient, string query, string endpoint)
         {
+            await Console.Out.WriteLineAsync(AppContext.BaseDirectory);
             var config = new ConfigurationBuilder()
             .SetBasePath(AppContext.BaseDirectory)
             .AddJsonFile("appsettings.Development.json")
+            .AddJsonFile("appsettings.Docker.json")
             .Build();
 
             var content = new StringContent(query);
@@ -21,7 +23,7 @@ namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.Shared
 
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine($"Client-ID: {config.GetSection("Igdb:Client-ID").Value}");
-            Console.WriteLine($"Token: {config.GetSection("Igdb:Token").Value}");
+            Console.WriteLine($"Token: {config.GetSection("Igdb:Token").Value.Substring(0,5)}...");
             Console.ForegroundColor = ConsoleColor.White;
 
             var response = await httpClient.PostAsync($"https://api.igdb.com/v4/{endpoint}", content);

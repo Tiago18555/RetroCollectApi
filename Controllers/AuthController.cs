@@ -63,32 +63,32 @@ namespace RetroCollectApi.Controllers
             return new ObjectResult(result);
         }
 
-        [HttpGet("recover/{userid}")]
+        [HttpGet("recover/{userid}/{timestamphash}")]
         [SwaggerOperation(
             Summary = "Change password page",
             Description = "Get changing-password page"
         )]
         [SwaggerResponse(404, "User not found")]
         [SwaggerResponse(500, "Internal server error")]
-        public IActionResult ChangePasswordPage([FromRoute] Guid userid)
+        public IActionResult ChangePasswordPage([FromRoute] Guid userid, [FromRoute] string timestamphash)
         {
-            var result = Verify.ChangePasswordTemplate(userid);
+            var result = Verify.ChangePasswordTemplate(userid, timestamphash);
 
             Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
             Response.StatusCode = result.StatusCode;
             return Content(result.Data as string, "text/html");
         }
 
-        [HttpPatch("update/{userid}")]
+        [HttpPatch("update/{userid}/{timestamphash}")]
         [SwaggerOperation(
             Summary = "Change password",
             Description = "Update user password"
         )]
         [SwaggerResponse(404, "User not found")]
         [SwaggerResponse(500, "Internal server error")]
-        public IActionResult ChangePassword([FromRoute] Guid userid, [FromBody] UpdatePasswordRequestModel pwd)
+        public IActionResult ChangePassword([FromRoute] Guid userid, [FromBody] UpdatePasswordRequestModel pwd, [FromRoute] string timestamphash)
         {
-            var result = Verify.ChangePassword(userid, pwd);
+            var result = Verify.ChangePassword(userid, pwd, timestamphash);
 
             Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
             Response.StatusCode = result.StatusCode;

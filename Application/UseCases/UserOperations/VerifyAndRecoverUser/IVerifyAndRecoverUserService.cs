@@ -6,8 +6,8 @@ namespace RetroCollectApi.Application.UseCases.UserOperations.VerifyAndRecoverUs
     public interface IVerifyAndRecoverUserService
     {
         ResponseModel SendEmail(SendEmailRequestModel request);
-        ResponseModel ChangePasswordTemplate(Guid userid);
-        ResponseModel ChangePassword(Guid user_id, UpdatePasswordRequestModel pwd);
+        ResponseModel ChangePasswordTemplate(Guid userid, string timestamphash);
+        ResponseModel ChangePassword(Guid user_id, UpdatePasswordRequestModel pwd, string timestamphash);
     }
 }
 

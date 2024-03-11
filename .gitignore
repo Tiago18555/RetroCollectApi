@@ -478,6 +478,7 @@ $RECYCLE.BIN/
 
 # Configs
 appsettings.Development.json
+appsettings.Docker.json
 
 # Anotations
 igdb.txt
