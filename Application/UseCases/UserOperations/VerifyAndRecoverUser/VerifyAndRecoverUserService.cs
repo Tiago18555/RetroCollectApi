@@ -32,8 +32,10 @@ namespace RetroCollectApi.Application.UseCases.UserOperations.VerifyAndRecoverUs
 
         public ResponseModel VerifyUser(Guid userId)
         {
-            throw new NotImplementedException();
-        }
+            var user = _repository.SingleOrDefault(r => r.UserId == userId);
+            user.VerifiedAt = _timeProvider.UtcNow;
+            return _repository.Update(user).Ok();        
+        }      
 
         public ResponseModel SendEmail(SendEmailRequestModel request)
         {
@@ -78,7 +80,21 @@ namespace RetroCollectApi.Application.UseCases.UserOperations.VerifyAndRecoverUs
 
             var resetLink = $"{host}api/auth/recover/{foundUser.UserId}/{timestampHash}";
 
-            var template = File.ReadAllText($@"{System.Environment.CurrentDirectory}\Application\UseCases\UserOperations\VerifyAndRecoverUser\recover-template.html");
+
+            var template = File.ReadAllText(
+
+                Path.Combine(
+                    System.Environment.CurrentDirectory,
+                    "Application", 
+                    "UseCases", 
+                    "UserOperations", 
+                    "VerifyAndRecoverUser", 
+                    "Resources", 
+                    "recover-template.html"
+                )
+
+            );
+
             var body = template
                 .Replace("#resetLink", resetLink)
                 .Replace("#userName", foundUser.Username);
@@ -171,10 +187,10 @@ namespace RetroCollectApi.Application.UseCases.UserOperations.VerifyAndRecoverUs
 
                 var nextWait = (int)Math.Pow(baseTimeAcumulator / 60, failedAttempts)*60;
 
-                waitTimeRequired = nextWait;
-                  //  nextWait > maxTimeAcumulated
-                 //   ? maxTimeAcumulated
-                //    : nextWait;
+                waitTimeRequired =
+                    nextWait > maxTimeAcumulated
+                    ? maxTimeAcumulated
+                    : nextWait;
 
                 if (secondsSinceLastAttempt <= waitTimeRequired)
                     return (false, waitTimeRequired - secondsSinceLastAttempt);
@@ -195,7 +211,19 @@ namespace RetroCollectApi.Application.UseCases.UserOperations.VerifyAndRecoverUs
 
             string host = _config.GetSection("Host").Value;
 
-            var template = File.ReadAllText(Path.Combine(Environment.CurrentDirectory, "Application", "UseCases", "UserOperations", "VerifyAndRecoverUser", "change-password.html"));
+            var template = File.ReadAllText(
+
+                Path.Combine(
+                    Environment.CurrentDirectory, 
+                    "Application", 
+                    "UseCases", 
+                    "UserOperations", 
+                    "VerifyAndRecoverUser", 
+                    "Resources", 
+                    "change-password.html"
+                )
+
+            );
             var resetLink = $"{host}api/auth/update/{foundUser.UserId}/{timestampHash}";
 
             var res = template

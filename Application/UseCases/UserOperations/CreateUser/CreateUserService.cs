@@ -1,17 +1,25 @@
-﻿using RetroCollect.Models;
+﻿using MailKit.Security;
+using MimeKit.Text;
+using MimeKit;
+using Org.BouncyCastle.Asn1.Ocsp;
+using RetroCollect.Models;
 using RetroCollectApi.CrossCutting;
 using RetroCollectApi.Repositories.Interfaces;
 using System.Data;
+using static Org.BouncyCastle.Math.EC.ECCurve;
 using BCryptNet = BCrypt.Net.BCrypt;
+using MailKit.Net.Smtp;
 
 namespace RetroCollectApi.Application.UseCases.UserOperations.CreateUser
 {
     public class CreateUserService : ICreateUserService
     {
         private IUserRepository repository { get; set; }
-        public CreateUserService(IUserRepository _repository)
+        private readonly IConfiguration config;
+        public CreateUserService(IUserRepository _repository, IConfiguration _config)
         {
             this.repository = _repository;
+            this.config = _config;
         }
 
         public ResponseModel CreateUser(CreateUserRequestModel createUserRequestModel)
@@ -28,9 +36,13 @@ namespace RetroCollectApi.Application.UseCases.UserOperations.CreateUser
 
             try
             {
-                return this.repository.Add(user)
+                var newUser = this.repository.Add(user)
                     .MapObjectTo(new CreateUserResponseModel())
                     .Created();
+
+                SendEmailToVerify(newUser.Data as CreateUserResponseModel);
+
+                return newUser;
             }
             catch (DBConcurrencyException)
             {
@@ -44,6 +56,59 @@ namespace RetroCollectApi.Application.UseCases.UserOperations.CreateUser
             {
                 throw;
             }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="InvalidOperationException"></exception>
+        public string SendEmailToVerify(CreateUserResponseModel user)
+        {
+            if (string.IsNullOrEmpty(user.Email))
+            {
+                throw new ArgumentException("Valor de email não pode ser nulo. at [RetroCollectApi.Application.UseCases.UserOperations.CreateUser]");
+            }
+            string host = config.GetSection("Host").Value;
+
+            var verificationLink = $"{host}api/auth/verify/{user.UserId}";
+
+            var template = File.ReadAllText(
+
+                Path.Combine(
+                    System.Environment.CurrentDirectory,
+                    "Application",
+                    "UseCases",
+                    "UserOperations",
+                    "CreateUser",
+                    "Resources",
+                    "verify-template.html"
+                )
+            );
+
+            var body = template
+                .Replace("#verificationLink", verificationLink)
+                .Replace("#userName", user.Username);
+
+            System.Console.ForegroundColor = ConsoleColor.Green;
+            System.Console.WriteLine(body);
+            System.Console.ForegroundColor = ConsoleColor.White;
+
+            var email = new MimeMessage();
+            email.From.Add(MailboxAddress.Parse(config.GetSection("Email:Username").Value));
+            email.To.Add(MailboxAddress.Parse(user.Email));
+            email.Subject = "RetroCollect Password Recover";
+            email.Body = new TextPart(TextFormat.Html) { Text = body };
+
+            using var smtp = new SmtpClient();
+            smtp.Connect(config.GetSection("Email:Host").Value, 587, SecureSocketOptions.StartTls);
+            smtp.Authenticate(config.GetSection("Email:Username").Value, config.GetSection("Email:Password").Value);
+            smtp.Send(email);
+            smtp.Disconnect(true);
+
+            return "Email sent";
+            
         }
     }
 }

@@ -94,5 +94,15 @@ namespace RetroCollectApi.Controllers
             Response.StatusCode = result.StatusCode;
             return new ObjectResult(result);
         }
+
+        [HttpGet("verify/{userid}")]
+        public IActionResult ValidateUser([FromRoute] Guid userid)
+        {
+            var result = Verify.VerifyUser(userid);
+
+            Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
+            Response.StatusCode = result.StatusCode;
+            return new ObjectResult(result);
+        }
     }
 }

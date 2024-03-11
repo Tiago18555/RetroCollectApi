@@ -75,8 +75,7 @@ namespace RetroCollectApi.Application.UseCases.UserOperations.Authenticate
                     return new AuthenticateServiceResponseModel();
                 }
 
-                //UNCOMMENT THIS LATER
-                //if (user.VerifiedAt == DateTime.MinValue) return new AuthenticateServiceResponseModel(true, "Please verify this user on your registered email.");
+                if (user.VerifiedAt == DateTime.MinValue) return new AuthenticateServiceResponseModel(true, "Please verify this user on your registered email.");
 
                 return new AuthenticateServiceResponseModel(GenerateToken(user), DateTime.Now.AddDays(7));
 
