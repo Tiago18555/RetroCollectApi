@@ -33,6 +33,8 @@ namespace RetroCollectApi.Application.UseCases.UserOperations.VerifyAndRecoverUs
         public ResponseModel VerifyUser(Guid userId)
         {
             var user = _repository.SingleOrDefault(r => r.UserId == userId);
+            if (user.VerifiedAt != DateTime.MinValue)
+                return "This user is already verified".Ok();
             user.VerifiedAt = _timeProvider.UtcNow;
             return _repository.Update(user).Ok();        
         }      
