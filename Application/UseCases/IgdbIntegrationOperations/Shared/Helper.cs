@@ -18,15 +18,19 @@ namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.Shared
 
             content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/plain");
 
-            httpClient.DefaultRequestHeaders.Add("Client-ID", config.GetSection("Igdb:Client-ID").Value);
-            httpClient.DefaultRequestHeaders.Add("Authorization", "Bearer " + config.GetSection("Igdb:Token").Value);
+            string baseHost = config.GetSection("Igdb:BaseHost").Value;
+            string clientId = config.GetSection("Igdb:Client-ID").Value;
+            string token = "Bearer " + config.GetSection("Igdb:Token").Value;
+
+            httpClient.DefaultRequestHeaders.Add("Client-ID", clientId);
+            httpClient.DefaultRequestHeaders.Add("Authorization", token);
 
             Console.ForegroundColor = ConsoleColor.Red;
-            Console.WriteLine($"Client-ID: {config.GetSection("Igdb:Client-ID").Value}");
-            Console.WriteLine($"Token: {config.GetSection("Igdb:Token").Value.Substring(0,5)}...");
+            Console.WriteLine($"Client-ID: {clientId}");
+            Console.WriteLine($"Token: {token.Substring(0,5)}...");
             Console.ForegroundColor = ConsoleColor.White;
 
-            var response = await httpClient.PostAsync($"https://api.igdb.com/v4/{endpoint}", content);
+            var response = await httpClient.PostAsync($"{baseHost}{endpoint}", content);
 
             if (response.IsSuccessStatusCode)
             {

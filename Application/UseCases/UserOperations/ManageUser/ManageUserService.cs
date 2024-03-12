@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using RetroCollect.Models;
 using RetroCollectApi.CrossCutting;
+using RetroCollectApi.CrossCutting.Providers;
 using RetroCollectApi.Repositories.Interfaces;
 using System.Data;
 using System.Security.Claims;
@@ -10,9 +11,11 @@ namespace RetroCollectApi.Application.UseCases.UserOperations.ManageUser
     public class ManageUserService : IManageUserService
     {
         private IUserRepository repository { get; set; }
-        public ManageUserService(IUserRepository repository)
+        private IDateTimeProvider dateTimeProvider { get; set; }
+        public ManageUserService(IUserRepository repository, IDateTimeProvider dateTimeProvider)
         {
             this.repository = repository;
+            this.dateTimeProvider = dateTimeProvider;
         }
 
         public ResponseModel UpdateUser(UpdateUserRequestModel userRequestModel, ClaimsPrincipal user)
@@ -24,7 +27,7 @@ namespace RetroCollectApi.Application.UseCases.UserOperations.ManageUser
 
                 if (foundUser == null) { return GenericResponses.NotFound("User not found"); }
 
-                var res = this.repository.Update(foundUser.MapAndFill(userRequestModel));
+                var res = this.repository.Update(foundUser.MapAndFill(userRequestModel, dateTimeProvider));
 
                 return res.Ok();
             }

@@ -1,25 +1,25 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
-using MongoDB.Driver;
-using MongoDB.Driver.Core.Configuration;
-using RetroCollect.Data;
+using RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageComputerCollection;
+using RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageConsoleCollection;
 using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchComputer;
 using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchConsole;
 using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchGame;
+using RetroCollectApi.Application.UseCases.UserOperations.VerifyAndRecoverUser;
 using RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems;
-using RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageComputerCollection;
-using RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageConsoleCollection;
 using RetroCollectApi.Application.UseCases.UserOperations.Authenticate;
 using RetroCollectApi.Application.UseCases.UserOperations.CreateUser;
 using RetroCollectApi.Application.UseCases.UserOperations.ManageUser;
-using RetroCollectApi.Application.UseCases.UserOperations.VerifyAndRecoverUser;
+using RetroCollectApi.Repositories.Interfaces;
 using RetroCollectApi.CrossCutting.Providers;
 using RetroCollectApi.Repositories;
-using RetroCollectApi.Repositories.Interfaces;
-using System.Text;
+
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text.Json.Serialization;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.EntityFrameworkCore;
+using RetroCollect.Data;
+using MongoDB.Driver;
+using System.Text;
+using Microsoft.Extensions.Hosting;
 
 var builder = WebApplication.CreateBuilder(args);
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
@@ -80,7 +80,6 @@ builder.Services.AddScoped<IManageConsoleCollectionService, ManageConsoleCollect
 
 builder.Services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 
-
 builder.Services.AddSingleton<IMongoDatabase>(provider =>
 {
     var configuration = provider.GetRequiredService<IConfiguration>();
@@ -135,7 +134,8 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseCors(x => x
-    .AllowAnyMethod().AllowAnyHeader()
+    .AllowAnyMethod()
+    .AllowAnyHeader()
     .SetIsOriginAllowed(origin => true)
     .AllowCredentials());
 
@@ -153,3 +153,15 @@ System.Console.ForegroundColor = ConsoleColor.White;
 
 app.Run();
 
+void VerifyConfigurationIntegrity(IConfiguration configuration)
+{
+    // Aqui você verifica a integridade das configurações
+    // Por exemplo, verifique se todas as configurações necessárias estão presentes
+    // e se os valores são válidos. Se alguma configuração estiver faltando ou for inválida, lance uma exceção.
+
+    string requiredSetting = configuration["RequiredSetting"];
+    if (string.IsNullOrEmpty(requiredSetting))
+    {
+        throw new InvalidOperationException("RequiredSetting is missing or empty in appsettings.json.");
+    }
+}

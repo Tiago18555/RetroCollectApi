@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using RetroCollectApi.CrossCutting.Providers;
+using System.ComponentModel.DataAnnotations;
 
 namespace RetroCollectApi.CrossCutting.Validations
 {

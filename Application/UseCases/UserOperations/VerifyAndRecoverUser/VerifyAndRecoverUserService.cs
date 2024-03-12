@@ -63,7 +63,7 @@ namespace RetroCollectApi.Application.UseCases.UserOperations.VerifyAndRecoverUs
             {
                 UserId = foundUser.UserId,
                 Hash = timestampHash,
-                Timestamp = DateTime.UtcNow,
+                Timestamp = _timeProvider.UtcNow,
                 Success = false
             };
 
@@ -180,7 +180,7 @@ namespace RetroCollectApi.Application.UseCases.UserOperations.VerifyAndRecoverUs
             if (lastAttempt != null)
             {
                 var attemptTime = lastAttempt["Timestamp"].ToUniversalTime();
-                var timeSinceLastAttempt = DateTime.UtcNow - attemptTime;
+                var timeSinceLastAttempt = _timeProvider.UtcNow - attemptTime;
 
                 int secondsSinceLastAttempt = (int)timeSinceLastAttempt.TotalSeconds;
                 int failedAttempts = GetFailedAttemptsCount(userId);
@@ -253,7 +253,7 @@ namespace RetroCollectApi.Application.UseCases.UserOperations.VerifyAndRecoverUs
                 return "New password cannot be equal to the old one".Ok();           
 
             foundUser.Password = hashedNewPassword;
-            foundUser.UpdatedAt = DateTime.Now;
+            foundUser.UpdatedAt = _timeProvider.UtcNow;
 
             try
             {

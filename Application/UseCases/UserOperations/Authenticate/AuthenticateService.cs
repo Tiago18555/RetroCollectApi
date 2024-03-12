@@ -1,6 +1,7 @@
 ﻿using Microsoft.IdentityModel.Tokens;
 using RetroCollect.Models;
 using RetroCollectApi.CrossCutting;
+using RetroCollectApi.CrossCutting.Providers;
 using RetroCollectApi.Repositories.Interfaces;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -13,10 +14,12 @@ namespace RetroCollectApi.Application.UseCases.UserOperations.Authenticate
     {
         private IConfiguration configuration { get; set; }
         private IUserRepository repository { get; set; }
-        public AuthenticateService(IUserRepository _repository, IConfiguration configuration)
+        private IDateTimeProvider timeProvider { get; set; }
+        public AuthenticateService(IUserRepository _repository, IConfiguration configuration, IDateTimeProvider dateTimeProvider)
         {
             this.repository = _repository;
             this.configuration = configuration;
+            this.timeProvider = dateTimeProvider;
         }
 
         public ResponseModel Login(AuthenticateServiceRequestModel credentials)
@@ -77,7 +80,7 @@ namespace RetroCollectApi.Application.UseCases.UserOperations.Authenticate
 
                 if (user.VerifiedAt == DateTime.MinValue) return new AuthenticateServiceResponseModel(true, "Please verify this user on your registered email.");
 
-                return new AuthenticateServiceResponseModel(GenerateToken(user), DateTime.Now.AddDays(7));
+                return new AuthenticateServiceResponseModel(GenerateToken(user), timeProvider.UtcNow.AddDays(7));
 
 
             }
@@ -103,7 +106,7 @@ namespace RetroCollectApi.Application.UseCases.UserOperations.Authenticate
 
             var jwt = new JwtSecurityToken(
                 issuer: configuration["Jwt:ValidIssuer"],
-                expires: DateTime.Now.AddDays(7),
+                expires: timeProvider.UtcNow.AddDays(7),
                 audience: configuration["Jwt:ValidAudience"],
                 signingCredentials: credenciais,                
                 claims: claims                
