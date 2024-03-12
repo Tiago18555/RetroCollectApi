@@ -152,16 +152,3 @@ System.Console.ForegroundColor = ConsoleColor.White;
 
 
 app.Run();
-
-void VerifyConfigurationIntegrity(IConfiguration configuration)
-{
-    // Aqui você verifica a integridade das configurações
-    // Por exemplo, verifique se todas as configurações necessárias estão presentes
-    // e se os valores são válidos. Se alguma configuração estiver faltando ou for inválida, lance uma exceção.
-
-    string requiredSetting = configuration["RequiredSetting"];
-    if (string.IsNullOrEmpty(requiredSetting))
-    {
-        throw new InvalidOperationException("RequiredSetting is missing or empty in appsettings.json.");
-    }
-}
