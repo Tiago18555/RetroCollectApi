@@ -12,6 +12,7 @@ using System.Text;
 using MongoDB.Bson;
 using RetroCollectApi.CrossCutting.Providers;
 using MongoDB.Driver;
+using System.ComponentModel.DataAnnotations;
 
 namespace RetroCollectApi.Application.UseCases.UserOperations.VerifyAndRecoverUser
 {
@@ -36,8 +37,11 @@ namespace RetroCollectApi.Application.UseCases.UserOperations.VerifyAndRecoverUs
             if (user.VerifiedAt != DateTime.MinValue)
                 return "This user is already verified".Ok();
             user.VerifiedAt = _timeProvider.UtcNow;
-            return _repository.Update(user).Ok();        
-        }      
+            return _repository
+                .Update(user)
+                .MapObjectTo( new VerifyUserResponseModel() )
+                .Ok();        
+        }
 
         public ResponseModel SendEmail(SendEmailRequestModel request)
         {

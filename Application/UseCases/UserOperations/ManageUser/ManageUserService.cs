@@ -29,7 +29,9 @@ namespace RetroCollectApi.Application.UseCases.UserOperations.ManageUser
 
                 var res = this.repository.Update(foundUser.MapAndFill(userRequestModel, dateTimeProvider));
 
-                return res.Ok();
+                return res
+                    .MapObjectTo( new UpdateUserResponseModel() )
+                    .Ok();
             }
             catch (ArgumentNullException)
             {
