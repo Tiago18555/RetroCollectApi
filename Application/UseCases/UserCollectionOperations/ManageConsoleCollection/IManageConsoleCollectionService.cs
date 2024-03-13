@@ -27,7 +27,7 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
         /// <returns></returns>
         public Task<ResponseModel> UpdateConsole(UpdateConsoleRequestModel item, ClaimsPrincipal user);
 
-        public Task<ResponseModel> GetAllConsolesByUser(Guid userId, ClaimsPrincipal user);
+        public Task<ResponseModel> GetAllConsolesByUser(ClaimsPrincipal user);
 
     }
 }

@@ -29,42 +29,36 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
             this.searchComputerService = searchComputerService;
         }
 
-        public async Task<ResponseModel> AddComputer(AddItemRequestModel item, ClaimsPrincipal request)
+        public async Task<ResponseModel> AddComputer(AddItemRequestModel requestBody, ClaimsPrincipal requestToken)
         {
-            try
+            var user_id = requestToken.GetUserId();
+
+            var user = userRepository.Any(u => u.UserId == user_id);
+            if (!user) { return GenericResponses.NotFound("User not found"); }
+
+            if (!computerRepository.Any(g => g.ComputerId == requestBody.Item_id))
             {
-                if (!request.IsTheRequestedOneId(item.User_id)) return GenericResponses.Forbidden();
-            }
-            catch (NullClaimException msg)
-            {
-                return GenericResponses.BadRequest(msg.ToString());
-            }
-
-
-            //Specify format of DateTime entries yyyy-mm-dd
-
-            var user = userRepository.SingleOrDefault(u => u.UserId == item.User_id);
-            if (user == null) { return GenericResponses.NotFound("User not found"); }
-
-            if (!computerRepository.Any(g => g.ComputerId == item.Item_id))
-            {
-                //Função adicionar computer na entity Computer=>
-                var result = await searchComputerService.RetrieveComputerInfoAsync(item.Item_id);
-
-                var computerInfo = result.Single();
-
-                Computer computer = new()
-                {
-                    ComputerId = computerInfo.ComputerId,
-                    Description = computerInfo.Description,
-                    ImageUrl = computerInfo.ImageUrl,
-                    Name = computerInfo.Name,
-                    IsArcade = computerInfo.IsArcade
-                };
-
                 try
                 {
+                    var result = await searchComputerService.RetrieveComputerInfoAsync(requestBody.Item_id);
+
+                    var computerInfo = result.Single();
+
+                    Computer computer = new()
+                    {
+                        ComputerId = computerInfo.ComputerId,
+                        Description = computerInfo.Description,
+                        ImageUrl = computerInfo.ImageUrl,
+                        Name = computerInfo.Name,
+                        IsArcade = computerInfo.IsArcade
+                    };
+
+
                     var res = computerRepository.Add(computer);
+                }
+                catch (NullClaimException msg)
+                {
+                    return GenericResponses.BadRequest(msg.ToString());
                 }
                 catch (InvalidOperationException)
                 {
@@ -89,12 +83,12 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
             {
                 UserComputer userComputer = new()
                 {
-                    ComputerId = item.Item_id,
-                    UserId = item.User_id,
-                    Condition = Enum.Parse<Condition>(item.Condition.ToCapitalize(typeof(Condition))),
-                    OwnershipStatus = Enum.Parse<OwnershipStatus>(item.OwnershipStatus.ToCapitalize(typeof(OwnershipStatus))),
-                    Notes = item.Notes == null ? null : item.Notes,
-                    PurchaseDate = item.PurchaseDate == DateTime.MinValue ? DateTime.MinValue : item.PurchaseDate
+                    ComputerId = requestBody.Item_id,
+                    UserId = requestBody.User_id,
+                    Condition = Enum.Parse<Condition>(requestBody.Condition.ToCapitalize(typeof(Condition))),
+                    OwnershipStatus = Enum.Parse<OwnershipStatus>(requestBody.OwnershipStatus.ToCapitalize(typeof(OwnershipStatus))),
+                    Notes = requestBody.Notes == null ? null : requestBody.Notes,
+                    PurchaseDate = requestBody.PurchaseDate == DateTime.MinValue ? DateTime.MinValue : requestBody.PurchaseDate
                 };
 
                 var res = userComputerRepository.Add(userComputer);
@@ -118,13 +112,14 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
             }
         }
 
-        public ResponseModel DeleteComputer(Guid id, ClaimsPrincipal request)
+        public ResponseModel DeleteComputer(Guid user_computer_id, ClaimsPrincipal requestToken)
         {
             try
             {
-                var foundItem = userComputerRepository.GetById(id);
-                if (foundItem == null) return GenericResponses.NotFound();
-                if (!request.IsTheRequestedOneId(foundItem.UserId)) return GenericResponses.Forbidden();
+                var user_id = requestToken.GetUserId();
+
+                var foundItem = userComputerRepository.SingleOrDefault(r => r.UserId == user_id && r.UserComputerId == user_computer_id);
+                if (foundItem == null) { return GenericResponses.NotFound(); }
 
                 if (userComputerRepository.Delete(foundItem))
                 {
@@ -145,21 +140,22 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
             }
         }
 
-        public async Task<ResponseModel> UpdateComputer(UpdateComputerRequestModel updateComputerRequestModel, ClaimsPrincipal request)
+        public async Task<ResponseModel> UpdateComputer(UpdateComputerRequestModel requestBody, ClaimsPrincipal requestToken)
         {
 
             try
             {
-                if (!request.IsTheRequestedOneId(updateComputerRequestModel.User_id)) return GenericResponses.Forbidden();
-                var foundUser = userRepository.SingleOrDefault(x => x.UserId == updateComputerRequestModel.User_id);
-                if (foundUser == null) { return GenericResponses.NotFound("User not found"); }
+                var user_id = requestToken.GetUserId();
 
-                var foundComputer = userComputerRepository.SingleOrDefault(x => x.UserComputerId == updateComputerRequestModel.UserComputerId);
-                if (foundComputer == null) { return GenericResponses.NotFound("Item Not Found"); }
+                var foundUser = userRepository.Any(x => x.UserId == user_id);
+                if (!foundUser) { return GenericResponses.NotFound("User not found"); }
 
-                if (!computerRepository.Any(g => g.ComputerId == updateComputerRequestModel.Item_id) && updateComputerRequestModel.Item_id != 0)
+                var foundComputer = userComputerRepository.Any(x => x.UserComputerId == requestBody.UserComputerId);
+                if (!foundComputer) { return GenericResponses.NotFound("Item Not Found"); }
+
+                if (!computerRepository.Any(g => g.ComputerId == requestBody.Item_id) && requestBody.Item_id != 0)
                 {
-                    var result = await searchComputerService.RetrieveComputerInfoAsync(updateComputerRequestModel.Item_id);
+                    var result = await searchComputerService.RetrieveComputerInfoAsync(requestBody.Item_id);
 
                     var computerInfo = result.Single();
 
@@ -175,7 +171,7 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
 
                 }
 
-                var res = this.userComputerRepository.Update(foundComputer.MapAndFill<UserComputer, UpdateComputerRequestModel>(updateComputerRequestModel));
+                var res = this.userComputerRepository.Update(foundComputer.MapAndFill<UserComputer, UpdateComputerRequestModel>(requestBody));
 
                 return res.MapObjectTo(new UpdateComputerResponseModel()).Ok();
             }
@@ -214,13 +210,13 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
             }
         }
 
-        public async Task<ResponseModel> GetAllComputersByUser(Guid userId, ClaimsPrincipal user)
+        public async Task<ResponseModel> GetAllComputersByUser(ClaimsPrincipal requestToken)
         {
 
             try
             {
-                if (!user.IsTheRequestedOneId(userId)) return GenericResponses.Forbidden();
-                var res = await userRepository.GetAllComputersByUser(userId, x => x.MapObjectTo(new GetAllComputersByUserResponseModel()));
+                var user_id = requestToken.GetUserId();
+                var res = await userRepository.GetAllComputersByUser(user_id, x => x.MapObjectTo(new GetAllComputersByUserResponseModel()));
                 return res.Ok();
             }
             catch (ArgumentNullException)

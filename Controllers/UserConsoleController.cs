@@ -27,7 +27,7 @@ namespace RetroCollectApi.Controllers
         [SwaggerResponse(500, "Internal server error")]
         public async Task<IActionResult> GetAllConsoleByUser([FromRoute] Guid userId)
         {
-            var result = await manageConsoleCollectionService.GetAllConsolesByUser(userId, HttpContext.User);
+            var result = await manageConsoleCollectionService.GetAllConsolesByUser(HttpContext.User);
 
             Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
             Response.StatusCode = result.StatusCode;

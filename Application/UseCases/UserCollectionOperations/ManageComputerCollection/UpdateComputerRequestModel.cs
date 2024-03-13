@@ -8,9 +8,6 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
         public int Item_id { get; set; }
 
         [Required]
-        public Guid User_id { get; set; }
-
-        [Required]
         public Guid UserComputerId { get; set; }
 
         [DataType(DataType.DateTime)]

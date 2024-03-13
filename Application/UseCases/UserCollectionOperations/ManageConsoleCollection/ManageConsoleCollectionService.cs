@@ -35,25 +35,17 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
         }
 
 
-        public async Task<ResponseModel> AddConsole(AddItemRequestModel item, ClaimsPrincipal request)
+        public async Task<ResponseModel> AddConsole(AddItemRequestModel requestBody, ClaimsPrincipal requestToken)
         {
-            try
-            {
-                if (!request.IsTheRequestedOneId(item.User_id)) return GenericResponses.Forbidden();
-            }
-            catch (NullClaimException msg)
-            {
-                return GenericResponses.BadRequest(msg.ToString());
-            }
-            //Specify format of DateTime entries yyyy-mm-dd
+            var user_id = requestToken.GetUserId();
 
-            var user = userRepository.SingleOrDefault(u => u.UserId == item.User_id);
-            if (user == null) { return GenericResponses.NotFound("User not found"); }
+            var user = userRepository.Any(u => u.UserId == user_id);
+            if (!user) { return GenericResponses.NotFound("User not found"); }
 
-            if (!consoleRepository.Any(g => g.ConsoleId == item.Item_id))
+            if (!consoleRepository.Any(g => g.ConsoleId == requestBody.Item_id))
             {
                 //Função adicionar console na entity Console=>
-                var result = await searchConsoleService.RetrieveConsoleInfoAsync(item.Item_id);
+                var result = await searchConsoleService.RetrieveConsoleInfoAsync(requestBody.Item_id);
 
                 var consoleInfo = result.Single();
 
@@ -93,12 +85,12 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
             {
                 UserConsole userConsole = new()
                 {
-                    ConsoleId = item.Item_id,
-                    UserId = item.User_id,
-                    Condition = Enum.Parse<Condition>(item.Condition.ToCapitalize(typeof(Condition))),
-                    OwnershipStatus = Enum.Parse<OwnershipStatus>(item.OwnershipStatus.ToCapitalize(typeof(OwnershipStatus))),
-                    Notes = item.Notes == null ? null : item.Notes,
-                    PurchaseDate = item.PurchaseDate == DateTime.MinValue ? DateTime.MinValue : item.PurchaseDate
+                    ConsoleId = requestBody.Item_id,
+                    UserId = requestBody.User_id,
+                    Condition = Enum.Parse<Condition>(requestBody.Condition.ToCapitalize(typeof(Condition))),
+                    OwnershipStatus = Enum.Parse<OwnershipStatus>(requestBody.OwnershipStatus.ToCapitalize(typeof(OwnershipStatus))),
+                    Notes = requestBody.Notes == null ? null : requestBody.Notes,
+                    PurchaseDate = requestBody.PurchaseDate == DateTime.MinValue ? DateTime.MinValue : requestBody.PurchaseDate
                 };
 
                 var res = userConsoleRepository.Add(userConsole);
@@ -126,14 +118,14 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
             }
 
         }
-        public ResponseModel DeleteConsole(Guid id, ClaimsPrincipal request)
+        public ResponseModel DeleteConsole(Guid user_console_id, ClaimsPrincipal requestToken)
         {
             try
             {
-                var foundItem = userConsoleRepository.GetById(id);
-                if (foundItem == null) { return GenericResponses.NotFound(); }
+                var user_id = requestToken.GetUserId();
 
-                if (!request.IsTheRequestedOneId(foundItem.UserId)) return GenericResponses.Forbidden();
+                var foundItem = userConsoleRepository.SingleOrDefault(r => r.UserId == user_id && r.UserConsoleId == user_console_id);
+                if (foundItem == null) { return GenericResponses.NotFound(); }
 
                 if (userConsoleRepository.Delete(foundItem))
                 {
@@ -154,21 +146,22 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
             }
         }
 
-        public async Task<ResponseModel> UpdateConsole(UpdateConsoleRequestModel updateConsoleRequestModel, ClaimsPrincipal request)
+        public async Task<ResponseModel> UpdateConsole(UpdateConsoleRequestModel requestBody, ClaimsPrincipal requestToken)
         {
 
             try
             {
-                if (!request.IsTheRequestedOneId(updateConsoleRequestModel.User_id)) return GenericResponses.Forbidden();
-                var foundUser = userRepository.SingleOrDefault(x => x.UserId == updateConsoleRequestModel.User_id);
-                if (foundUser == null) { return GenericResponses.NotFound("User not found"); }
+                var user_id = requestToken.GetUserId();
 
-                var foundConsole = userConsoleRepository.SingleOrDefault(x => x.UserConsoleId == updateConsoleRequestModel.UserConsoleId);
-                if (foundConsole == null) { return GenericResponses.NotFound("Item Not Found"); }
+                var foundUser = userRepository.Any(x => x.UserId == requestBody.User_id);
+                if (!foundUser) { return GenericResponses.NotFound("User not found"); }
 
-                if (!consoleRepository.Any(g => g.ConsoleId == updateConsoleRequestModel.Item_id) && updateConsoleRequestModel.Item_id != 0)
+                var foundConsole = userConsoleRepository.Any(x => x.UserConsoleId == requestBody.UserConsoleId);
+                if (!foundConsole) { return GenericResponses.NotFound("Item Not Found"); }
+
+                if (!consoleRepository.Any(g => g.ConsoleId == requestBody.Item_id) && requestBody.Item_id != 0)
                 {
-                    var result = await searchConsoleService.RetrieveConsoleInfoAsync(updateConsoleRequestModel.Item_id);
+                    var result = await searchConsoleService.RetrieveConsoleInfoAsync(requestBody.Item_id);
 
                     var consoleInfo = result.Single();
 
@@ -184,7 +177,7 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
 
                 }
 
-                var res = this.userConsoleRepository.Update(foundConsole.MapAndFill<UserConsole, UpdateConsoleRequestModel>(updateConsoleRequestModel));
+                var res = this.userConsoleRepository.Update(foundConsole.MapAndFill<UserConsole, UpdateConsoleRequestModel>(requestBody));
 
                 return res.MapObjectTo(new UpdateConsoleResponseModel()).Ok();
             }
@@ -218,13 +211,13 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
             }
         }
 
-        public async Task<ResponseModel> GetAllConsolesByUser(Guid userId, ClaimsPrincipal user)
+        public async Task<ResponseModel> GetAllConsolesByUser(ClaimsPrincipal requestToken)
         {
 
             try
             {
-                if (!user.IsTheRequestedOneId(userId)) { return GenericResponses.Forbidden(); }
-                var res = await userRepository.GetAllConsolesByUser(userId, x => x.MapObjectTo(new GetAllConsolesByUserResponseModel()));
+                var user_id = requestToken.GetUserId();
+                var res = await userRepository.GetAllConsolesByUser(user_id, x => x.MapObjectTo(new GetAllConsolesByUserResponseModel()));
                 return res.Ok();
             }
             catch (ArgumentNullException)

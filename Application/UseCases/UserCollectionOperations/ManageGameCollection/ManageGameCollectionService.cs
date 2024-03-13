@@ -33,42 +33,33 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
             this.searchGameService = searchGameService;
         }
 
-        public async Task<ResponseModel> AddGame(AddGameRequestModel item, ClaimsPrincipal user)
+        public async Task<ResponseModel> AddGame(AddGameRequestModel requestBody, ClaimsPrincipal requestToken)
         {
-            try
+            var user_id = requestToken.GetUserId();
+
+            var user = userRepository.Any(u => u.UserId == user_id);
+            if (!user) { return GenericResponses.NotFound("User not found"); }
+
+            if (!gameRepository.Any(g => g.GameId == requestBody.Game_id))
             {
-                if (!user.IsTheRequestedOneId(item.User_id)) return GenericResponses.Forbidden();
-            }
-            catch (NullClaimException msg)
-            {
-                return GenericResponses.BadRequest(msg.ToString());
-            }
-
-            //Specify format of DateTime entries yyyy-mm-dd
-
-            var foundUser = userRepository.SingleOrDefault(u => u.UserId == item.User_id);
-            if (foundUser == null) { return GenericResponses.NotFound("User not found"); }
-
-            if (!gameRepository.Any(g => g.GameId == item.Game_id))
-            {
-                //Função adicionar jogo na entity Game  =>
-                var result = await searchGameService.RetrieveGameInfoAsync(item.Game_id);
-
-                var gameInfo = result.Single();
-
-                Game game = new()
-                {
-                    GameId = gameInfo.GameId,
-                    Genres = gameInfo.Genres,
-                    Description = gameInfo.Description,
-                    Summary = gameInfo.Summary,
-                    ImageUrl = gameInfo.Cover,
-                    Title = gameInfo.Title,
-                    ReleaseYear = gameInfo.FirstReleaseDate
-                };
-
                 try
                 {
+                    var result = await searchGameService.RetrieveGameInfoAsync(requestBody.Game_id);
+
+                    var gameInfo = result.Single();
+
+                    Game game = new()
+                    {
+                        GameId = gameInfo.GameId,
+                        Genres = gameInfo.Genres,
+                        Description = gameInfo.Description,
+                        Summary = gameInfo.Summary,
+                        ImageUrl = gameInfo.Cover,
+                        Title = gameInfo.Title,
+                        ReleaseYear = gameInfo.FirstReleaseDate
+                    };
+
+
                     gameRepository.Add(game);
                 }
                 catch (InvalidOperationException)
@@ -94,18 +85,22 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
             {
                 UserCollection userCollection = new()
                 {
-                    ConsoleId = item.PlatformIsComputer == false ? item.Platform_id : 0,
-                    ComputerId = item.PlatformIsComputer == true ? item.Platform_id : 0,
-                    GameId = item.Game_id,
-                    UserId = item.User_id,
-                    Condition = Enum.Parse<Condition>(item.Condition.ToCapitalize(typeof(Condition))),
-                    OwnershipStatus = Enum.Parse<OwnershipStatus>(item.OwnershipStatus.ToCapitalize(typeof(OwnershipStatus))),
-                    Notes = item.Notes == null ? null : item.Notes,
-                    PurchaseDate = item.PurchaseDate == DateTime.MinValue ? DateTime.MinValue : item.PurchaseDate
+                    ConsoleId = requestBody.PlatformIsComputer == false ? requestBody.Platform_id : 0,
+                    ComputerId = requestBody.PlatformIsComputer == true ? requestBody.Platform_id : 0,
+                    GameId = requestBody.Game_id,
+                    UserId = requestBody.User_id,
+                    Condition = Enum.Parse<Condition>(requestBody.Condition.ToCapitalize(typeof(Condition))),
+                    OwnershipStatus = Enum.Parse<OwnershipStatus>(requestBody.OwnershipStatus.ToCapitalize(typeof(OwnershipStatus))),
+                    Notes = requestBody.Notes == null ? null : requestBody.Notes,
+                    PurchaseDate = requestBody.PurchaseDate == DateTime.MinValue ? DateTime.MinValue : requestBody.PurchaseDate
                 };
 
                 var res = userCollectionRepository.Add(userCollection);
                 return res.MapObjectTo(new AddGameResponseModel()).Created();
+            }
+            catch (NullClaimException msg)
+            {
+                return GenericResponses.BadRequest(msg.ToString());
             }
             catch (DBConcurrencyException)
             {
@@ -126,14 +121,14 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
             
         }
 
-        public ResponseModel DeleteGame(Guid id, ClaimsPrincipal user)
+        public ResponseModel DeleteGame(Guid user_collection_id, ClaimsPrincipal requestToken)
         {
             try
             {
-                var foundItem = userCollectionRepository.GetById(id);
-                if (foundItem == null) { return GenericResponses.NotFound(); }
+                var user_id = requestToken.GetUserId();
 
-                if (!user.IsTheRequestedOneId(foundItem.UserId)) return GenericResponses.Forbidden();
+                var foundItem = userCollectionRepository.SingleOrDefault(x => x.UserId == user_id && x.UserCollectionId == user_collection_id);
+                if (foundItem == null) { return GenericResponses.NotFound(); }
 
                 if (userCollectionRepository.Delete(foundItem))
                 {
@@ -221,13 +216,13 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
             }
         }
 
-        public async Task<ResponseModel> GetAllGamesByUser(Guid userId, ClaimsPrincipal user)
+        public async Task<ResponseModel> GetAllGamesByUser(ClaimsPrincipal requestToken)
         {
 
             try
             {
-                if (!user.IsTheRequestedOneId(userId)) { return GenericResponses.Forbidden(); }
-                var res = await userRepository.GetAllCollectionsByUser(userId, x => x.MapObjectTo(new GetAllCollectionsByUserResponseModel()));
+                var user_id = requestToken.GetUserId();
+                var res = await userRepository.GetAllCollectionsByUser(user_id, x => x.MapObjectTo(new GetAllCollectionsByUserResponseModel()));
                 return res.Ok();
             }
             catch (ArgumentNullException)
