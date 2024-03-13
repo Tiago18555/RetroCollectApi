@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Dynamic;
 using System.Reflection;
+using System;
 
 namespace RetroCollectApi.CrossCutting
 {
@@ -13,7 +14,13 @@ namespace RetroCollectApi.CrossCutting
         /// <typeparam name="TResult">The target type</typeparam>
         /// <param name="objFrom">The source object</param>
         /// <param name="objTo">The target object</param>
-        /// <returns>A new tiped object</returns>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="TargetException"></exception>
+        /// <exception cref="TargetInvocationException"></exception>
+        /// <exception cref="MethodAccessException"></exception>
+        /// <exception cref="NotSupportedException"></exception>
+        /// <returns>A new tiped of System.Object</returns>
         public static TResult MapObjectTo<TSource, TResult>(this TSource objFrom, TResult objTo)
         {
             PropertyInfo[] ToProperties = objTo.GetType().GetProperties();

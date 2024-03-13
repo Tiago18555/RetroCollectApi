@@ -20,6 +20,8 @@ using RetroCollect.Data;
 using MongoDB.Driver;
 using System.Text;
 using Microsoft.Extensions.Hosting;
+using RetroCollectApi.Application.UseCases.GameOperations.AddRating;
+using RetroCollectApi.Application.UseCases.GameOperations.ManageRating;
 
 var builder = WebApplication.CreateBuilder(args);
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
@@ -63,6 +65,8 @@ builder.Services.AddScoped<IGameRepository, GameRepository>();
 
 builder.Services.AddScoped<IRecoverRepository, RecoverRepository>();
 
+builder.Services.AddScoped<IRatingRepository, RatingRepository>();
+
 //Services
 builder.Services.AddScoped<IAuthenticateService, AuthenticateService>();
 builder.Services.AddScoped<ICreateUserService, CreateUserService>();
@@ -77,6 +81,9 @@ builder.Services.AddScoped<IVerifyAndRecoverUserService, VerifyAndRecoverUserSer
 builder.Services.AddScoped<IManageGameCollectionService, ManageGameCollectionService>();
 builder.Services.AddScoped<IManageComputerCollectionService, ManageComputerCollectionService>();
 builder.Services.AddScoped<IManageConsoleCollectionService, ManageConsoleCollectionService>();
+
+builder.Services.AddScoped<IAddRatingService, AddRatingService>();
+builder.Services.AddScoped<IManageRatingService, ManageRatingService>();
 
 builder.Services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 

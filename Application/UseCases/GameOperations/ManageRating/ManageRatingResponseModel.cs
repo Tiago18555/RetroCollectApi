@@ -1,6 +1,6 @@
-﻿namespace RetroCollectApi.Application.UseCases.GameOperations.AddRating
+﻿namespace RetroCollectApi.Application.UseCases.GameOperations.ManageRating
 {
-    public class EditRatingResponseModel
+    public class ManageRatingResponseModel
     {
         public Guid RatingId { get; set; }
         public Guid UserId { get; set; }
