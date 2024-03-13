@@ -4,9 +4,6 @@ namespace RetroCollectApi.Application.UseCases.GameOperations.AddRating
 {
     public class AddRatingRequestModel
     {
-        [Required(ErrorMessage = "Field \"user_id\" is required")]
-        public Guid UserId { get; set; }
-
         [Required(ErrorMessage = "Field \"game_id\" is required")]
         public int GameId { get; set; }
 

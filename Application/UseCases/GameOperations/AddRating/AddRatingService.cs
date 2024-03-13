@@ -1,7 +1,9 @@
-﻿using RetroCollect.Models;
+﻿using Org.BouncyCastle.Asn1.Ocsp;
+using RetroCollect.Models;
 using RetroCollectApi.CrossCutting;
 using RetroCollectApi.CrossCutting.Providers;
 using RetroCollectApi.Repositories.Interfaces;
+using System.Security.Claims;
 
 namespace RetroCollectApi.Application.UseCases.GameOperations.AddRating
 {
@@ -20,26 +22,33 @@ namespace RetroCollectApi.Application.UseCases.GameOperations.AddRating
             _dateTimeProvider = dateTimeProvider;
         }
 
-        public ResponseModel AddRating(AddRatingRequestModel request)
+        public ResponseModel AddRating(AddRatingRequestModel requestBody, ClaimsPrincipal requestToken)
         {
-            if (_userRepository.Any(u => u.UserId == request.UserId))
-                return GenericResponses.NotFound("User not found");
-
-            if (_gameRepository.Any(g => g.GameId == request.GameId))
-                return GenericResponses.NotFound("Game not found");
-
-            if (_repository.Any(r => r.UserId == request.UserId && r.GameId == request.GameId))
-                return GenericResponses.BadRequest("User cannot have 2 ratings on the same game");
-
             try
             {
-                var newRating = request.MapObjectTo(new Rating());
+                var user_id = requestToken.GetUserId();
+                var game_id = requestBody.GameId;
+
+                if (_userRepository.Any(u => u.UserId == user_id))
+                    return GenericResponses.NotFound("User not found");
+
+                if (_gameRepository.Any(g => g.GameId == game_id))
+                    return GenericResponses.NotFound("Game not found");
+
+                if (_repository.Any(r => r.UserId == user_id && r.GameId == game_id))
+                    return GenericResponses.BadRequest("User cannot have 2 ratings on the same game");
+
+                var newRating = requestBody.MapObjectTo(new Rating());
 
                 newRating.CreatedAt = _dateTimeProvider.UtcNow;
               
                 return _repository.Add(newRating)
                     .MapObjectTo(new AddRatingResponseModel())
                     .Created();
+            }
+            catch (NullClaimException msg)
+            {
+                return GenericResponses.BadRequest(msg.ToString());
             }
             catch(Exception)
             {
