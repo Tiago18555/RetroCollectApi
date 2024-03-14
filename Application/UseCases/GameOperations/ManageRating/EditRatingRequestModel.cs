@@ -2,7 +2,7 @@
 
 namespace RetroCollectApi.Application.UseCases.GameOperations.ManageRating
 {
-    public class ManageRatingRequestModel
+    public class EditRatingRequestModel
     {
         [Required]
         public Guid RatingId { get; set; }

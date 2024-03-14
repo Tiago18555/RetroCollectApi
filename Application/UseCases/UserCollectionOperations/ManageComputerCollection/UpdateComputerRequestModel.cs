@@ -5,6 +5,8 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
 {
     public class UpdateComputerRequestModel
     {
+        [Required]
+        public Guid User_id { get; set; }
         public int Item_id { get; set; }
 
         [Required]
