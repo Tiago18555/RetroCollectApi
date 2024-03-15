@@ -29,10 +29,10 @@ namespace RetroCollectApi.Application.UseCases.GameOperations.AddRating
                 var user_id = requestToken.GetUserId();
                 var game_id = requestBody.GameId;
 
-                if (_userRepository.Any(u => u.UserId == user_id))
-                    return GenericResponses.NotFound("User not found");
+                if (!_userRepository.Any(u => u.UserId == user_id))
+                    return GenericResponses.NotFound($"User {user_id} not found");
 
-                if (_gameRepository.Any(g => g.GameId == game_id))
+                if (!_gameRepository.Any(g => g.GameId == game_id))
                     return GenericResponses.NotFound("Game not found");
 
                 if (_repository.Any(r => r.UserId == user_id && r.GameId == game_id))
@@ -41,7 +41,8 @@ namespace RetroCollectApi.Application.UseCases.GameOperations.AddRating
                 var newRating = requestBody.MapObjectTo(new Rating());
 
                 newRating.CreatedAt = _dateTimeProvider.UtcNow;
-              
+                newRating.UserId = user_id;
+
                 return _repository.Add(newRating)
                     .MapObjectTo(new AddRatingResponseModel())
                     .Created();

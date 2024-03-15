@@ -63,42 +63,42 @@ namespace RetroCollectApi.Controllers
             return new ObjectResult(result);
         }
 
-        [HttpGet("recover/{userid}/{timestamphash}")]
+        [HttpGet("recover/{user_id}/{timestamp_hash}")]
         [SwaggerOperation(
             Summary = "Change password page",
             Description = "Get changing-password page"
         )]
         [SwaggerResponse(404, "User not found")]
         [SwaggerResponse(500, "Internal server error")]
-        public IActionResult ChangePasswordPage([FromRoute] Guid userid, [FromRoute] string timestamphash)
+        public IActionResult ChangePasswordPage([FromRoute] Guid user_id, [FromRoute] string timestamp_hash)
         {
-            var result = Verify.ChangePasswordTemplate(userid, timestamphash);
+            var result = Verify.ChangePasswordTemplate(user_id, timestamp_hash);
 
             Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
             Response.StatusCode = result.StatusCode;
             return Content(result.Data as string, "text/html");
         }
 
-        [HttpPatch("update/{userid}/{timestamphash}")]
+        [HttpPatch("update/{user_id}/{timestamp_hash}")]
         [SwaggerOperation(
             Summary = "Change password",
             Description = "Update user password"
         )]
         [SwaggerResponse(404, "User not found")]
         [SwaggerResponse(500, "Internal server error")]
-        public IActionResult ChangePassword([FromRoute] Guid userid, [FromBody] UpdatePasswordRequestModel pwd, [FromRoute] string timestamphash)
+        public IActionResult ChangePassword([FromRoute] Guid user_id, [FromBody] UpdatePasswordRequestModel pwd, [FromRoute] string timestamp_hash)
         {
-            var result = Verify.ChangePassword(userid, pwd, timestamphash);
+            var result = Verify.ChangePassword(user_id, pwd, timestamp_hash);
 
             Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
             Response.StatusCode = result.StatusCode;
             return new ObjectResult(result);
         }
 
-        [HttpGet("verify/{userid}")]
-        public IActionResult ValidateUser([FromRoute] Guid userid)
+        [HttpGet("verify/{user_id}")]
+        public IActionResult ValidateUser([FromRoute] Guid user_id)
         {
-            var result = Verify.VerifyUser(userid);
+            var result = Verify.VerifyUser(user_id);
 
             Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
             Response.StatusCode = result.StatusCode;

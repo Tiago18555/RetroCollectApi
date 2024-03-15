@@ -18,7 +18,7 @@ namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.Shared
 
             content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("text/plain");
 
-            string baseHost = config.GetSection("Igdb:BaseHost").Value;
+            string baseHost = config.GetSection("Igdb:BaseUrl").Value;
             string clientId = config.GetSection("Igdb:Client-ID").Value;
             string token = "Bearer " + config.GetSection("Igdb:Token").Value;
 
@@ -29,6 +29,8 @@ namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.Shared
             Console.WriteLine($"Client-ID: {clientId}");
             Console.WriteLine($"Token: {token.Substring(0,5)}...");
             Console.ForegroundColor = ConsoleColor.White;
+
+            await Console.Out.WriteLineAsync($"URL: {baseHost}{endpoint}");
 
             var response = await httpClient.PostAsync($"{baseHost}{endpoint}", content);
 

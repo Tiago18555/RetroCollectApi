@@ -16,7 +16,7 @@ namespace RetroCollectApi.Controllers
             this.manageGameCollectionService = manageGameCollectionService;
         }
 
-        [HttpGet("{userId}")]
+        [HttpGet("{user_id}")]
         [SwaggerOperation(
             Summary = "List game collection",
             Description = "List all game collection for a specified user"
@@ -24,7 +24,7 @@ namespace RetroCollectApi.Controllers
         [SwaggerResponse(200, "List found")]
         [SwaggerResponse(406, "Invalid format of request")]
         [SwaggerResponse(500, "Internal server error")]
-        public async Task<IActionResult> GetAllGamesByUser([FromRoute] Guid userId)
+        public async Task<IActionResult> GetAllGamesByUser([FromRoute] Guid user_id)
         {
             var result = await manageGameCollectionService.GetAllGamesByUser(HttpContext.User);
 
@@ -56,7 +56,7 @@ namespace RetroCollectApi.Controllers
         }
 
 
-        [HttpDelete("{userCollectionId}")]
+        [HttpDelete("{user_collection_id}")]
         [SwaggerOperation(
             Summary = "Delete game",
             Description = "Delete game of a specified user collection"
@@ -64,9 +64,9 @@ namespace RetroCollectApi.Controllers
         [SwaggerResponse(200, "Deleted successfully")]
         [SwaggerResponse(406, "Invalid format of request")]
         [SwaggerResponse(500, "Internal server error")]
-        public IActionResult DeleteGame([FromRoute] Guid userCollectionId)
+        public IActionResult DeleteGame([FromRoute] Guid user_collection_id)
         {
-            var result = manageGameCollectionService.DeleteGame(userCollectionId, HttpContext.User);
+            var result = manageGameCollectionService.DeleteGame(user_collection_id, HttpContext.User);
 
             Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
             Response.StatusCode = result.StatusCode;

@@ -84,18 +84,5 @@ namespace RetroCollectApi.Repositories
 
             return rating;
         }
-
-        /*
-        
-        public UserCollection Update(UserCollection user)
-        {
-            _context.UserCollections.Update(user);
-            _context.Entry(user).Reference(x => x.Game).Load();
-            _context.Entry(user).Reference(x => x.User).Load();
-            _context.SaveChanges();
-
-            return user;
-        }
-         */
     }
 }

@@ -94,7 +94,7 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
                 };
 
                 var res = userConsoleRepository.Add(userConsole);
-                return res.MapObjectTo(new AddItemResponseModel()).Created();
+                return res.MapObjectTo(new AddConsoleResponseModel()).Created();
             }
             catch (DBConcurrencyException)
             {

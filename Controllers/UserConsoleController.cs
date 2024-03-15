@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
-using RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageComputerCollection;
 using RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageConsoleCollection;
 using RetroCollectApi.Application.UseCases.UserCollectionOperations.Shared;
 using Swashbuckle.AspNetCore.Annotations;
@@ -17,7 +16,7 @@ namespace RetroCollectApi.Controllers
             this.manageConsoleCollectionService = manageConsoleCollectionService;
         }
 
-        [HttpGet("{userId}")]
+        [HttpGet("{user_id}")]
         [SwaggerOperation(
             Summary = "List console collection",
             Description = "List all consoles for a specified user"
@@ -25,7 +24,7 @@ namespace RetroCollectApi.Controllers
         [SwaggerResponse(200, "List found")]
         [SwaggerResponse(406, "Invalid format of request")]
         [SwaggerResponse(500, "Internal server error")]
-        public async Task<IActionResult> GetAllConsoleByUser([FromRoute] Guid userId)
+        public async Task<IActionResult> GetAllConsoleByUser([FromRoute] Guid user_id)
         {
             var result = await manageConsoleCollectionService.GetAllConsolesByUser(HttpContext.User);
 
@@ -54,7 +53,7 @@ namespace RetroCollectApi.Controllers
             return new ObjectResult(result);
         }
 
-        [HttpDelete("{userConsoleId}")]
+        [HttpDelete("{user_console_id}")]
         [SwaggerOperation(
             Summary = "Delete console",
             Description = "Delete console of a specified user collection"
@@ -62,9 +61,9 @@ namespace RetroCollectApi.Controllers
         [SwaggerResponse(200, "Deleted successfully")]
         [SwaggerResponse(406, "Invalid format of request")]
         [SwaggerResponse(500, "Internal server error")]
-        public IActionResult DeleteConsole([FromRoute] Guid userConsoleId)
+        public IActionResult DeleteConsole([FromRoute] Guid user_console_id)
         {
-            var result = manageConsoleCollectionService.DeleteConsole(userConsoleId, HttpContext.User);
+            var result = manageConsoleCollectionService.DeleteConsole(user_console_id, HttpContext.User);
 
             Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
             Response.StatusCode = result.StatusCode;

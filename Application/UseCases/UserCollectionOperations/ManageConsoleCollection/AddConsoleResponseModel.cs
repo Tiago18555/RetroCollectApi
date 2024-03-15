@@ -2,12 +2,11 @@
 using RetroCollectApi.CrossCutting.Enums.ForModels;
 using System.Text.Json.Serialization;
 
-namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
+namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageConsoleCollection
 {
-    public class AddGameResponseModel
+    public class AddConsoleResponseModel
     {
-
-        public Guid UserCollectionId { get; set; }
+        public Guid UserConsoleId { get; set; }
 
         private Condition Condition { get; set; }
         public string condition => Enum.GetName(typeof(Condition), Condition);
@@ -19,16 +18,9 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
         public string ownership_status => Enum.GetName(typeof(OwnershipStatus), OwnershipStatus);
 
         public Guid UserId { get; set; }
+
         [JsonIgnore]
         public User User { get; set; }
-        public string UserName => User == null ? null : User.Username;
-
-        public int GameId { get; set; }
-        [JsonIgnore]
-        public Game Game { get; set; }
-        public string GameTitle => Game == null ? null : Game.Title;
-
-        public int ComputerId { get; set; }
-        public int ConsoleId { get; set; }
+        public string username => User != null ? User.Username : null;
     }
 }

@@ -23,6 +23,7 @@ namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchG
         [JsonProperty("collection")]
         public Collection Collection { get; set; }
 
+        [JsonProperty("cover")]
         private Cover _Cover { get; set; }
         public string Cover => _Cover.Image_Id;
 

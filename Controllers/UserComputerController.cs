@@ -18,7 +18,7 @@ namespace RetroCollectApi.Controllers
             this.manageComputerCollectionService = manageComputerCollectionService;
         }
 
-        [HttpGet("{userId}")]
+        [HttpGet("{user_id}")]
         [SwaggerOperation(
             Summary = "List computer collection",
             Description = "List all computers for a specified user"
@@ -26,7 +26,7 @@ namespace RetroCollectApi.Controllers
         [SwaggerResponse(200, "List found")]
         [SwaggerResponse(406, "Invalid format of request")]
         [SwaggerResponse(500, "Internal server error")]
-        public async Task<IActionResult> GetAllComputerByUser([FromRoute] Guid userId)
+        public async Task<IActionResult> GetAllComputerByUser([FromRoute] Guid user_id)
         {
             var result = await manageComputerCollectionService.GetAllComputersByUser(HttpContext.User);
 
@@ -55,7 +55,7 @@ namespace RetroCollectApi.Controllers
             return new ObjectResult(result);
         }
 
-        [HttpDelete("{userComputerId}")]
+        [HttpDelete("{user_computer_id}")]
         [SwaggerOperation(
             Summary = "Delete computer",
             Description = "Delete computer of a specified user collection"
@@ -63,9 +63,9 @@ namespace RetroCollectApi.Controllers
         [SwaggerResponse(200, "Deleted successfully")]
         [SwaggerResponse(406, "Invalid format of request")]
         [SwaggerResponse(500, "Internal server error")]
-        public IActionResult DeleteComputer([FromRoute] Guid userComputerId)
+        public IActionResult DeleteComputer([FromRoute] Guid user_computer_id)
         {
-            var result = manageComputerCollectionService.DeleteComputer(userComputerId, HttpContext.User);
+            var result = manageComputerCollectionService.DeleteComputer(user_computer_id, HttpContext.User);
 
             Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
             Response.StatusCode = result.StatusCode;

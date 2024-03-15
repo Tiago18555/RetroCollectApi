@@ -92,7 +92,7 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
                 };
 
                 var res = userComputerRepository.Add(userComputer);
-                return res.MapObjectTo(new AddItemResponseModel()).Created();
+                return res.MapObjectTo(new AddComputerResponseModel()).Created();
             }
             catch (DBConcurrencyException)
             {

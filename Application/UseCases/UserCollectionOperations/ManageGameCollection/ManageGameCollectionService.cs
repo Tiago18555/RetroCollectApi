@@ -80,7 +80,6 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
                 }
             }
 
-
             try
             {
                 UserCollection userCollection = new()

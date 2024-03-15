@@ -1,11 +1,12 @@
 ﻿using RetroCollect.Models;
 using RetroCollectApi.CrossCutting.Enums.ForModels;
+using System.Text.Json.Serialization;
 
-namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.Shared
+namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageComputerCollection
 {
-    public class AddItemResponseModel
+    public class AddComputerResponseModel
     {
-        public Guid UserCollectionId { get; set; }
+        public Guid UserComputerId { get; set; }
 
         private Condition Condition { get; set; }
         public string condition => Enum.GetName(typeof(Condition), Condition);
@@ -17,6 +18,9 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.Shared
         public string ownership_status => Enum.GetName(typeof(OwnershipStatus), OwnershipStatus);
 
         public Guid UserId { get; set; }
+
+        [JsonIgnore]
         public User User { get; set; }
+        public string username => User != null ? User.Username : null;
     }
 }
