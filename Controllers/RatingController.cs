@@ -30,9 +30,9 @@ namespace RetroCollectApi.Controllers
         [SwaggerResponse(400, "Resource not found")]
         [SwaggerResponse(406, "Invalid format of request")]
         [SwaggerResponse(500, "Internal server error")]
-        public IActionResult AddRating([FromBody] AddRatingRequestModel request)
+        public async Task<IActionResult> AddRating([FromBody] AddRatingRequestModel request)
         {
-            var result = addRating.AddRating(request, HttpContext.User);
+            var result = await addRating.AddRating(request, HttpContext.User);
 
             Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
             Response.StatusCode = result.StatusCode;

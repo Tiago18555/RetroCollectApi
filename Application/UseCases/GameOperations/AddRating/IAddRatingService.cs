@@ -6,6 +6,6 @@ namespace RetroCollectApi.Application.UseCases.GameOperations.AddRating
 {
     public interface IAddRatingService
     {
-        ResponseModel AddRating(AddRatingRequestModel requestBody, ClaimsPrincipal requestToken);
+        Task<ResponseModel> AddRating(AddRatingRequestModel requestBody, ClaimsPrincipal requestToken);
     }
 }

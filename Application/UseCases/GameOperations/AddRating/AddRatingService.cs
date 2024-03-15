@@ -1,9 +1,11 @@
-﻿using Org.BouncyCastle.Asn1.Ocsp;
+﻿using Microsoft.EntityFrameworkCore;
 using RetroCollect.Models;
+using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchGame;
 using RetroCollectApi.CrossCutting;
 using RetroCollectApi.CrossCutting.Providers;
 using RetroCollectApi.Repositories.Interfaces;
 using System.Security.Claims;
+using Game = RetroCollect.Models.Game;
 
 namespace RetroCollectApi.Application.UseCases.GameOperations.AddRating
 {
@@ -13,16 +15,18 @@ namespace RetroCollectApi.Application.UseCases.GameOperations.AddRating
         private IGameRepository _gameRepository;
         private IUserRepository _userRepository;
         private IDateTimeProvider _dateTimeProvider;
+        private ISearchGameService _searchGameService;
 
-        public AddRatingService(IRatingRepository repository, IGameRepository gameRepository, IUserRepository userRepository, IDateTimeProvider dateTimeProvider)
+        public AddRatingService(IRatingRepository repository, IGameRepository gameRepository, IUserRepository userRepository, IDateTimeProvider dateTimeProvider, ISearchGameService searchGameService)
         {
             _repository = repository;
             _gameRepository = gameRepository;
             _userRepository = userRepository;
             _dateTimeProvider = dateTimeProvider;
+            _searchGameService = searchGameService;
         }
 
-        public ResponseModel AddRating(AddRatingRequestModel requestBody, ClaimsPrincipal requestToken)
+        public async Task<ResponseModel> AddRating(AddRatingRequestModel requestBody, ClaimsPrincipal requestToken)
         {
             try
             {
@@ -32,11 +36,30 @@ namespace RetroCollectApi.Application.UseCases.GameOperations.AddRating
                 if (!_userRepository.Any(u => u.UserId == user_id))
                     return GenericResponses.NotFound($"User {user_id} not found");
 
-                if (!_gameRepository.Any(g => g.GameId == game_id))
-                    return GenericResponses.NotFound("Game not found");
 
                 if (_repository.Any(r => r.UserId == user_id && r.GameId == game_id))
                     return GenericResponses.BadRequest("User cannot have 2 ratings on the same game");
+
+                if (!_gameRepository.Any(g => g.GameId == game_id))
+                {                    
+                    var result = await _searchGameService.RetrieveGameInfoAsync(game_id);
+
+                    var gameInfo = result.Single();
+
+                    Game game = new()
+                    {
+                        GameId = gameInfo.GameId,
+                        Genres = gameInfo.Genres,
+                        Description = gameInfo.Description ?? "",
+                        Summary = gameInfo.Summary ?? "",
+                        ImageUrl = gameInfo.Cover ?? "",
+                        Title = gameInfo.Title ?? "",
+                        ReleaseYear = gameInfo.FirstReleaseDate
+                    };
+
+
+                    _gameRepository.Add(game);                    
+                }
 
                 var newRating = requestBody.MapObjectTo(new Rating());
 
@@ -44,14 +67,30 @@ namespace RetroCollectApi.Application.UseCases.GameOperations.AddRating
                 newRating.UserId = user_id;
 
                 return _repository.Add(newRating)
-                    .MapObjectTo(new AddRatingResponseModel())
+                    .MapObjectsTo(new AddRatingResponseModel())
                     .Created();
             }
             catch (NullClaimException msg)
             {
                 return GenericResponses.BadRequest(msg.ToString());
             }
-            catch(Exception)
+            catch (InvalidOperationException)
+            {
+                throw;
+            }
+            catch (ArgumentNullException)
+            {
+                throw;
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                throw;
+            }
+            catch (DbUpdateException)
+            {
+                throw;
+            }
+            catch (Exception)
             {
                 throw;
             }

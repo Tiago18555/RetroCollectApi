@@ -14,7 +14,7 @@ namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchG
         [JsonProperty("artworks")]
         private List<Artwork> Artworks { get; set; }
 
-        public List<string> ArtworkUrls => Artworks.Select(prop => prop.ImageId).ToList();
+        public List<string> ArtworkUrls => Artworks?.Select(prop => prop.ImageId ?? "").ToList();
 
         [JsonProperty("category")]
         private int _Category { get; set; }
@@ -32,7 +32,7 @@ namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchG
 
         [JsonProperty("genres")]
         private List<Genre> _Genres { get; set; }
-        public List<string> Genres => _Genres.Select(prop => prop.Name).ToList();
+        public List<string> Genres => _Genres?.Select(prop => prop.Name ?? "").ToList();
 
         [JsonProperty("involved_companies")]
         public List<InvolvedCompany> InvolvedCompanies { get; set; }
@@ -45,7 +45,7 @@ namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchG
 
         [JsonProperty("screenshots")]
         private List<Screenshot> _Screenshots { get; set; }
-        public List<string> Screenshots => _Screenshots.Select(prop => prop.ImageId).ToList();
+        public List<string> Screenshots => _Screenshots?.Select(prop => prop.ImageId ?? "").ToList();
 
         [JsonProperty("storyline")]
         public string Storyline { get; set; }
@@ -55,7 +55,7 @@ namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchG
 
         [JsonProperty("themes")]
         private List<Theme> _Themes { get; set; }
-        public List<string> Themes => _Themes.Select(prop => prop.Name).ToList();
+        public List<string> Themes => _Themes?.Select(prop => prop.Name ?? "").ToList();
 
         [JsonProperty("url")]
         public string Url { get; set; }
@@ -65,7 +65,7 @@ namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchG
 
         [JsonProperty("websites")]
         private List<Website> _Websites { get; set; }
-        public List<string> Websites => _Websites.Select(prop => prop.Url).ToList();
+        public List<string> Websites => _Websites?.Select(prop => prop.Url ?? "").ToList();
     }
 
     public class GameInfo
@@ -78,7 +78,7 @@ namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchG
 
         [JsonProperty("genres")]
         private List<Genre> _Genres { get; set; }
-        public List<string> Genres => _Genres.Select(prop => prop.Name).ToList();
+        public List<string> Genres => _Genres?.Select(prop => prop.Name).ToList();
 
         [JsonProperty("name")]
         public string Title { get; set; }
@@ -94,7 +94,7 @@ namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchG
 
         [JsonProperty("cover")]
         private Cover _Cover { get; set; }
-        public string Cover => _Cover.Image_Id;
+        public string Cover => _Cover.Image_Id ?? "";
     }
 
     #endregion
@@ -173,7 +173,7 @@ namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchG
 
         [JsonProperty("platform_logo")]
         private PlatformLogo _PlatformLogo { get; set; }
-        public string PlatformLogo => _PlatformLogo.ImageId;
+        public string PlatformLogo => _PlatformLogo.ImageId ?? "";
     }
 
     public struct PlatformLogo
