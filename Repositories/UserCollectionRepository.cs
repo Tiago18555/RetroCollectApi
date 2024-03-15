@@ -41,12 +41,12 @@ namespace RetroCollectApi.Repositories
             return !_context.UserCollections.Any(x => x.UserCollectionId == user.UserCollectionId); //NONE MATCH
         }
 
-        public UserCollection GetById(Guid id)
+        public T GetById<T>(Guid id, Func<UserCollection, T> predicate) where T : class
         {
-            return _context
-                .UserCollections
+            return _context.UserCollections
                 .Where(x => x.UserCollectionId == id)
                 .AsNoTracking()
+                .Select(predicate)
                 .FirstOrDefault();
         }
 

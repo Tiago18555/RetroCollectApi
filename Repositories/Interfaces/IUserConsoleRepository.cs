@@ -16,7 +16,7 @@ namespace RetroCollectApi.Repositories.Interfaces
 
         /// <exception cref="ArgumentNullException"></exception>
         /// <returns>returns the Entity found or the default value for entity</returns>
-        UserConsole GetById(Guid id);
+        T GetById<T>(Func<UserConsole, T> predicate, Guid id) where T : class;
 
         /// <exception cref="ArgumentNullException"></exception>
         bool Any(Func<UserConsole, bool> predicate);

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using RetroCollect.Models;
 using RetroCollectApi.CrossCutting;
 using RetroCollectApi.CrossCutting.Providers;
@@ -47,7 +48,7 @@ namespace RetroCollectApi.Application.UseCases.GameOperations.ManageRating
 
                 return
                     _repository.Update(foundRating)
-                    .MapObjectTo(new EditRatingResponseModel())
+                    .MapObjectsTo(new EditRatingResponseModel())
                     .Ok();
             }
             catch (DBConcurrencyException)

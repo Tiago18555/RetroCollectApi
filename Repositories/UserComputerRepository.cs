@@ -40,9 +40,13 @@ namespace RetroCollectApi.Repositories
             return !_context.UserComputers.Any(x => x.UserComputerId == user.UserComputerId); //NONE MATCH
         }
 
-        public UserComputer GetById(Guid id)
+        public T GetById<T>(Guid id, Func<UserComputer, T> predicate) where T : class
         {
-            return _context.UserComputers.Where(x => x.UserComputerId == id).AsNoTracking().FirstOrDefault();
+            return _context.UserComputers
+                .Where(x => x.UserComputerId == id)
+                .AsNoTracking()
+                .Select(predicate)
+                .FirstOrDefault();
         }
 
         public UserComputer SingleOrDefault(Func<UserComputer, bool> predicate)

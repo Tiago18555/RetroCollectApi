@@ -41,9 +41,13 @@ namespace RetroCollectApi.Repositories
             return !_context.UserConsoles.Any(x => x.UserConsoleId == user.UserConsoleId); //NONE MATCH
         }
 
-        public UserConsole GetById(Guid id)
+        public T GetById<T>(Func<UserConsole, T> predicate, Guid id) where T : class
         {
-            return _context.UserConsoles.Where(x => x.UserConsoleId == id).AsNoTracking().FirstOrDefault();
+            return _context.UserConsoles
+                .Where(x => x.UserConsoleId == id)
+                .AsNoTracking()
+                .Select(predicate)
+                .FirstOrDefault();
         }
 
         public UserConsole SingleOrDefault(Func<UserConsole, bool> predicate)
