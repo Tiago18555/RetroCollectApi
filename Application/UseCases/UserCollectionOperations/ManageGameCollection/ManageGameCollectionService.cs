@@ -95,7 +95,7 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
                 };
 
                 var res = userCollectionRepository.Add(userCollection);
-                return res.MapObjectTo(new AddGameResponseModel()).Created();
+                return res.MapObjectsTo(new AddGameResponseModel()).Created();
             }
             catch (NullClaimException msg)
             {
@@ -183,7 +183,7 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
 
                 var res = this.userCollectionRepository.Update(foundGame.MapAndFill<UserCollection, UpdateGameRequestModel>(updateGameRequestModel));
 
-                return res.MapObjectTo(new UpdateGameResponseModel()).Ok();
+                return res.MapObjectsTo(new UpdateGameResponseModel()).Ok();
             }
             catch (ArgumentNullException)
             {
@@ -221,7 +221,7 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
             try
             {
                 var user_id = requestToken.GetUserId();
-                var res = await userRepository.GetAllCollectionsByUser(user_id, x => x.MapObjectTo(new GetAllCollectionsByUserResponseModel()));
+                var res = await userRepository.GetAllCollectionsByUser(user_id, x => x.MapObjectsTo(new GetAllCollectionsByUserResponseModel()));
                 return res.Ok();
             }
             catch (ArgumentNullException)

@@ -92,7 +92,7 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
                 };
 
                 var res = userComputerRepository.Add(userComputer);
-                return res.MapObjectTo(new AddComputerResponseModel()).Created();
+                return res.MapObjectsTo(new AddComputerResponseModel()).Created();
             }
             catch (DBConcurrencyException)
             {
@@ -173,7 +173,7 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
 
                 var res = this.userComputerRepository.Update(foundComputer.MapAndFill<UserComputer, UpdateComputerRequestModel>(requestBody));
 
-                return res.MapObjectTo(new UpdateComputerResponseModel()).Ok();
+                return res.MapObjectsTo(new UpdateComputerResponseModel()).Ok();
             }
             catch (ArgumentNullException)
             {
@@ -216,7 +216,7 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
             try
             {
                 var user_id = requestToken.GetUserId();
-                var res = await userRepository.GetAllComputersByUser(user_id, x => x.MapObjectTo(new GetAllComputersByUserResponseModel()));
+                var res = await userRepository.GetAllComputersByUser(user_id, x => x.MapObjectsTo(new GetAllComputersByUserResponseModel()));
                 return res.Ok();
             }
             catch (ArgumentNullException)

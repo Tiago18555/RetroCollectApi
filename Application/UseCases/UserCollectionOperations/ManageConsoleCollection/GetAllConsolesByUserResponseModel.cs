@@ -1,7 +1,6 @@
-﻿using RetroCollect.Models;
+﻿using RetroCollectApi.Application.Shared;
 using RetroCollectApi.CrossCutting.Enums.ForModels;
-using System.Text.Json.Serialization;
-using Console = RetroCollect.Models.Console;
+
 
 namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageConsoleCollection
 {
@@ -17,10 +16,6 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
 
         private OwnershipStatus OwnershipStatus { get; set; }
         public string ownership_status => Enum.GetName(typeof(OwnershipStatus), OwnershipStatus);
-
-        public int ConsoleId { get; set; }
-        [JsonIgnore]
-        public Console Console { get; set; }
-        public string ConsoleName => Console == null ? null : Console.Name;
+        public InternalConsole Console { get; set; }
     }
 }

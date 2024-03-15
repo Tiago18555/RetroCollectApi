@@ -94,7 +94,7 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
                 };
 
                 var res = userConsoleRepository.Add(userConsole);
-                return res.MapObjectTo(new AddConsoleResponseModel()).Created();
+                return res.MapObjectsTo(new AddConsoleResponseModel()).Created();
             }
             catch (DBConcurrencyException)
             {
@@ -179,7 +179,7 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
 
                 var res = this.userConsoleRepository.Update(foundConsole.MapAndFill<UserConsole, UpdateConsoleRequestModel>(requestBody));
 
-                return res.MapObjectTo(new UpdateConsoleResponseModel()).Ok();
+                return res.MapObjectsTo(new UpdateConsoleResponseModel()).Ok();
             }
             catch (ArgumentNullException)
             {
@@ -217,7 +217,7 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
             try
             {
                 var user_id = requestToken.GetUserId();
-                var res = await userRepository.GetAllConsolesByUser(user_id, x => x.MapObjectTo(new GetAllConsolesByUserResponseModel()));
+                var res = await userRepository.GetAllConsolesByUser(user_id, x => x.MapObjectsTo(new GetAllConsolesByUserResponseModel()));
                 return res.Ok();
             }
             catch (ArgumentNullException)

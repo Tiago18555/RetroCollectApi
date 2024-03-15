@@ -1,6 +1,5 @@
-﻿using RetroCollect.Models;
+﻿using RetroCollectApi.Application.Shared;
 using RetroCollectApi.CrossCutting.Enums.ForModels;
-using System.Text.Json.Serialization;
 
 namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageComputerCollection
 {
@@ -16,12 +15,7 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageCo
 
         private OwnershipStatus OwnershipStatus { get; set; }
         public string ownership_status => Enum.GetName(typeof(OwnershipStatus), OwnershipStatus);
-
-        public int ComputerId { get; set; }
-        [JsonIgnore]
-        public Computer Computer { get; set; }
-        public string ComputerName => Computer == null ? null : Computer.Name;
-
+        public InternalComputer Computer { get; set; }
         public int ConsoleId { get; set; }
     }
 }

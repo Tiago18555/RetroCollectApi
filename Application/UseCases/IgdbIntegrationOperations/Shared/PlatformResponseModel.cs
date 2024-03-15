@@ -23,7 +23,7 @@ namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.Shared
 
         [JsonProperty("platform_logo")]
         private PlatformLogo _PlatformLogo { get; set; }
-        public string PlatformLogo => _PlatformLogo.ImageId;
+        public string PlatformLogo => _PlatformLogo.ImageId ?? "";
 
         [JsonProperty("slug")]
         public string Slug { get; set; }

@@ -1,4 +1,5 @@
 ﻿using RetroCollect.Models;
+using RetroCollectApi.Application.Shared;
 using RetroCollectApi.CrossCutting.Enums.ForModels;
 using System.Text.Json.Serialization;
 
@@ -18,11 +19,7 @@ namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
 
             private OwnershipStatus OwnershipStatus { get; set; }
             public string ownership_status => Enum.GetName(typeof(OwnershipStatus), OwnershipStatus);
-            public int GameId { get; set; }
-            [JsonIgnore]
-            public Game Game { get; set; }
-            public string GameTitle => Game == null ? null : Game.Title;
-
+            public InternalGame Game { get; set; }
             public int ComputerId { get; set; }
             public int ConsoleId { get; set; }
         }

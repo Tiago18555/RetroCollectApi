@@ -1,5 +1,5 @@
 ﻿using RetroCollect.Models;
-using RetroCollectApi.Application.UseCases.GameOperations.Shared;
+using RetroCollectApi.Application.Shared;
 using System.Text.Json.Serialization;
 
 namespace RetroCollectApi.Application.UseCases.GameOperations.AddRating
