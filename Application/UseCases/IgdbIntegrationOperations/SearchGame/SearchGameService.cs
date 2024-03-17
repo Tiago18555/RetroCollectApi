@@ -1,7 +1,7 @@
-﻿using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.Shared;
-using RetroCollectApi.CrossCutting;
+﻿using Application.CrossCutting;
+using Application.UseCases.IgdbIntegrationOperations.Shared;
 
-namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchGame
+namespace Application.UseCases.IgdbIntegrationOperations.SearchGame
 {
     public class SearchGameService : ISearchGameService
     {

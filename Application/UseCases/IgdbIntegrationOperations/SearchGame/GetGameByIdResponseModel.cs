@@ -1,9 +1,8 @@
 ﻿
+using Domain.Enums;
 using Newtonsoft.Json;
-using RetroCollect.Models;
-using RetroCollectApi.CrossCutting.Enums.IgdbResponse;
 
-namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchGame
+namespace Application.UseCases.IgdbIntegrationOperations.SearchGame
 {
     #region ParentObject
     public class GetGameByIdResponseModel

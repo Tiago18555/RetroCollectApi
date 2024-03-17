@@ -1,8 +1,7 @@
-﻿using RetroCollect.Models;
-using RetroCollectApi.CrossCutting;
-using RetroCollectApi.CrossCutting.Providers;
+﻿using Application.CrossCutting.Providers;
+using Domain.Entities;
 
-namespace RetroCollectApi.Application.UseCases.UserOperations.ManageUser
+namespace Application.UseCases.UserOperations.ManageUser
 {
     public static class ManageUserHelper
     {

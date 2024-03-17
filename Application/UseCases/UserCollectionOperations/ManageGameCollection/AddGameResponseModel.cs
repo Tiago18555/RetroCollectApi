@@ -1,8 +1,7 @@
-﻿using RetroCollect.Models;
-using RetroCollectApi.Application.Shared;
-using RetroCollectApi.CrossCutting.Enums.ForModels;
+﻿using Application.Shared;
+using Domain.Enums;
 
-namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
+namespace Application.UseCases.UserCollectionOperations.AddItems
 {
     public class AddGameResponseModel
     {

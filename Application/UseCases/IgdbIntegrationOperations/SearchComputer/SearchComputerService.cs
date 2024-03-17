@@ -1,10 +1,8 @@
-﻿using Newtonsoft.Json;
-using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchConsole;
-using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchGame;
-using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.Shared;
-using RetroCollectApi.CrossCutting;
+﻿using Application.CrossCutting;
+using Application.UseCases.IgdbIntegrationOperations.Shared;
+using Newtonsoft.Json;
 
-namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchComputer
+namespace Application.UseCases.IgdbIntegrationOperations.SearchComputer
 {
     public class SearchComputerService : ISearchComputerService
     {

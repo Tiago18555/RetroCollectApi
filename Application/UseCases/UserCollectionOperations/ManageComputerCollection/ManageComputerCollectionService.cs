@@ -1,14 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
-using RetroCollect.Models;
-using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchComputer;
-using RetroCollectApi.Application.UseCases.UserCollectionOperations.Shared;
-using RetroCollectApi.CrossCutting;
-using RetroCollectApi.CrossCutting.Enums.ForModels;
-using RetroCollectApi.Repositories.Interfaces;
+﻿using Application.CrossCutting;
+using Application.UseCases.IgdbIntegrationOperations.SearchComputer;
+using Application.UseCases.UserCollectionOperations.Shared;
+using Domain.Entities;
+using Domain.Enums;
+using Domain.Exceptions;
+using Domain.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System.Data;
 using System.Security.Claims;
 
-namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageComputerCollection
+namespace Application.UseCases.UserCollectionOperations.ManageComputerCollection
 {
     public class ManageComputerCollectionService : IManageComputerCollectionService
     {

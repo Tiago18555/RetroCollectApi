@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace RetroCollectApi.Application.Shared
+namespace Application.Shared
 {
     public struct InternalComputer
     {

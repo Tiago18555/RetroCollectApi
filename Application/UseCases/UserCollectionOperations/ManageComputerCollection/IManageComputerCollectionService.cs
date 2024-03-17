@@ -1,8 +1,8 @@
-﻿using RetroCollectApi.Application.UseCases.UserCollectionOperations.Shared;
-using RetroCollectApi.CrossCutting;
-using System.Security.Claims;
+﻿using System.Security.Claims;
+using Application.CrossCutting;
+using Application.UseCases.UserCollectionOperations.Shared;
 
-namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageComputerCollection
+namespace Application.UseCases.UserCollectionOperations.ManageComputerCollection
 {
     public interface IManageComputerCollectionService
     {

@@ -2,19 +2,17 @@
 using MailKit.Net.Smtp;
 using MimeKit.Text;
 using MailKit.Security;
-using RetroCollectApi.Repositories.Interfaces;
-using RetroCollect.Models;
-using RetroCollectApi.CrossCutting;
 using BCryptNet = BCrypt.Net.BCrypt;
-using RetroCollectApi.Application.UseCases.UserOperations.Authenticate;
-using Microsoft.Extensions.Hosting;
-using System.Text;
 using MongoDB.Bson;
-using RetroCollectApi.CrossCutting.Providers;
 using MongoDB.Driver;
-using System.ComponentModel.DataAnnotations;
+using Microsoft.Extensions.Configuration;
+using Domain.Repositories.Interfaces;
+using Application.CrossCutting.Providers;
+using Application.CrossCutting;
+using Domain.Entities;
+using Domain.Exceptions;
 
-namespace RetroCollectApi.Application.UseCases.UserOperations.VerifyAndRecoverUser
+namespace Application.UseCases.UserOperations.VerifyAndRecoverUser
 {
     public partial class VerifyAndRecoverUserService : IVerifyAndRecoverUserService
     {

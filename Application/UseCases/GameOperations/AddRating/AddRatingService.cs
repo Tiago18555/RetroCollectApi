@@ -1,13 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore;
-using RetroCollect.Models;
-using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchGame;
-using RetroCollectApi.CrossCutting;
-using RetroCollectApi.CrossCutting.Providers;
-using RetroCollectApi.Repositories.Interfaces;
+﻿using Application.CrossCutting;
+using Application.CrossCutting.Providers;
+using Application.UseCases.IgdbIntegrationOperations.SearchGame;
+using Domain.Entities;
+using Domain.Exceptions;
+using Domain.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-using Game = RetroCollect.Models.Game;
+using Game = Domain.Entities.Game;
 
-namespace RetroCollectApi.Application.UseCases.GameOperations.AddRating
+namespace Application.UseCases.GameOperations.AddRating
 {
     public class AddRatingService : IAddRatingService
     {

@@ -1,7 +1,7 @@
-﻿using RetroCollectApi.CrossCutting.Validations;
+﻿using Application.CrossCutting.Validations;
 using System.ComponentModel.DataAnnotations;
 
-namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
+namespace Application.UseCases.UserCollectionOperations.AddItems
 {
     public class AddGameRequestModel
     {

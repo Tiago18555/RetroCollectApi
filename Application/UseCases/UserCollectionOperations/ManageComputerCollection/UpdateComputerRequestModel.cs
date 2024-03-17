@@ -1,7 +1,7 @@
-﻿using RetroCollectApi.CrossCutting.Validations;
+﻿using Application.CrossCutting.Validations;
 using System.ComponentModel.DataAnnotations;
 
-namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageComputerCollection
+namespace Application.UseCases.UserCollectionOperations.ManageComputerCollection
 {
     public class UpdateComputerRequestModel
     {

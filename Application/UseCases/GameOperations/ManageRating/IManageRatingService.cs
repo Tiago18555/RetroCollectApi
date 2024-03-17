@@ -1,7 +1,7 @@
-﻿using RetroCollectApi.CrossCutting;
+﻿using Application.CrossCutting;
 using System.Security.Claims;
 
-namespace RetroCollectApi.Application.UseCases.GameOperations.ManageRating
+namespace Application.UseCases.GameOperations.ManageRating
 {
     public interface IManageRatingService
     {

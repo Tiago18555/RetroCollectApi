@@ -1,6 +1,6 @@
-﻿using RetroCollectApi.CrossCutting;
+﻿using Application.CrossCutting;
 
-namespace RetroCollectApi.Application.UseCases.UserOperations.Authenticate
+namespace Application.UseCases.UserOperations.Authenticate
 {
     public interface IAuthenticateService
     {

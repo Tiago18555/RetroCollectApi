@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace RetroCollectApi.Application.UseCases.UserOperations.Authenticate
+namespace Application.UseCases.UserOperations.Authenticate
 {
     public class AuthenticateServiceRequestModel
     {

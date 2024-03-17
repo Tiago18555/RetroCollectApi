@@ -1,16 +1,15 @@
-﻿using MailKit.Security;
-using MimeKit.Text;
-using MimeKit;
-using Org.BouncyCastle.Asn1.Ocsp;
-using RetroCollect.Models;
-using RetroCollectApi.CrossCutting;
-using RetroCollectApi.Repositories.Interfaces;
-using System.Data;
-using static Org.BouncyCastle.Math.EC.ECCurve;
+﻿using System.Data;
 using BCryptNet = BCrypt.Net.BCrypt;
+using Application.CrossCutting;
+using Domain.Entities;
+using Domain.Repositories.Interfaces;
+using Microsoft.Extensions.Configuration;
+using MailKit.Security;
+using MimeKit;
+using MimeKit.Text;
 using MailKit.Net.Smtp;
 
-namespace RetroCollectApi.Application.UseCases.UserOperations.CreateUser
+namespace Application.UseCases.UserOperations.CreateUser
 {
     public class CreateUserService : ICreateUserService
     {

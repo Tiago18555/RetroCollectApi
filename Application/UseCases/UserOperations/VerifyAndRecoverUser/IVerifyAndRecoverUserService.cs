@@ -1,7 +1,7 @@
-﻿using RetroCollectApi.CrossCutting;
-using static RetroCollectApi.Application.UseCases.UserOperations.VerifyAndRecoverUser.VerifyAndRecoverUserService;
+﻿using Application.CrossCutting;
+using static Application.UseCases.UserOperations.VerifyAndRecoverUser.VerifyAndRecoverUserService;
 
-namespace RetroCollectApi.Application.UseCases.UserOperations.VerifyAndRecoverUser
+namespace Application.UseCases.UserOperations.VerifyAndRecoverUser
 {
     public interface IVerifyAndRecoverUserService
     {

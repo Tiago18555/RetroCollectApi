@@ -1,12 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
-using RetroCollect.Models;
-using RetroCollectApi.CrossCutting;
-using RetroCollectApi.CrossCutting.Providers;
-using RetroCollectApi.Repositories.Interfaces;
+﻿using Application.CrossCutting;
+using Application.CrossCutting.Providers;
+using Domain.Exceptions;
+using Domain.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System.Data;
 using System.Security.Claims;
 
-namespace RetroCollectApi.Application.UseCases.UserOperations.ManageUser
+namespace Application.UseCases.UserOperations.ManageUser
 {
     public class ManageUserService : IManageUserService
     {

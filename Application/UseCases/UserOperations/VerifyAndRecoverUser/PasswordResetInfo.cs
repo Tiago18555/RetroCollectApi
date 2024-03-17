@@ -1,4 +1,4 @@
-﻿namespace RetroCollectApi.Application.UseCases.UserOperations.VerifyAndRecoverUser
+﻿namespace Application.UseCases.UserOperations.VerifyAndRecoverUser
 {
     public partial class VerifyAndRecoverUserService
     {

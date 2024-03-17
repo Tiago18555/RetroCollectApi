@@ -1,4 +1,4 @@
-﻿namespace RetroCollectApi.Application.UseCases.UserOperations.CreateUser
+﻿namespace Application.UseCases.UserOperations.CreateUser
 {
     public class CreateUserResponseModel
     {

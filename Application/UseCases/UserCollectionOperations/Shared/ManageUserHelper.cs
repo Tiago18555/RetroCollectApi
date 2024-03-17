@@ -1,11 +1,11 @@
-﻿using RetroCollect.Models;
-using RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems;
-using RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageComputerCollection;
-using RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageConsoleCollection;
-using RetroCollectApi.CrossCutting;
-using RetroCollectApi.CrossCutting.Enums.ForModels;
+﻿using Application.UseCases.UserCollectionOperations.AddItems;
+using Application.UseCases.UserCollectionOperations.ManageComputerCollection;
+using Application.UseCases.UserCollectionOperations.ManageConsoleCollection;
+using Domain.Entities;
+using Domain.Enums;
+using Domain.Exceptions;
 
-namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.Shared
+namespace Application.UseCases.UserCollectionOperations.Shared
 {
     public static class ManageUserCollectionHelper
     {

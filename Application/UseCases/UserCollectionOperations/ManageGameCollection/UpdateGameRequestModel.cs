@@ -1,8 +1,8 @@
-﻿using Newtonsoft.Json;
-using RetroCollectApi.CrossCutting.Validations;
+﻿using Application.CrossCutting.Validations;
+using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 
-namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
+namespace Application.UseCases.UserCollectionOperations.AddItems
 {
     public class UpdateGameRequestModel
     {

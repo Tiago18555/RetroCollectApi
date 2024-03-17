@@ -1,6 +1,6 @@
-﻿using RetroCollectApi.CrossCutting;
+﻿using Application.CrossCutting;
 
-namespace RetroCollectApi.Application.UseCases.UserOperations.CreateUser
+namespace Application.UseCases.UserOperations.CreateUser
 {
     public interface ICreateUserService
     {

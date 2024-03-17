@@ -1,7 +1,7 @@
-﻿using Newtonsoft.Json;
-using RetroCollectApi.CrossCutting.Enums.IgdbResponse;
+﻿using Domain.Enums;
+using Newtonsoft.Json;
 
-namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.Shared
+namespace Application.UseCases.IgdbIntegrationOperations.Shared
 {
     public class PlatformResponseModel
     {

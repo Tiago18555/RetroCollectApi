@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.Shared
+namespace Application.UseCases.IgdbIntegrationOperations.Shared
 {
     public struct Versions
     {

@@ -1,7 +1,7 @@
-﻿using Newtonsoft.Json;
-using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.Shared;
+﻿using Application.UseCases.IgdbIntegrationOperations.Shared;
+using Newtonsoft.Json;
 
-namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchConsole
+namespace Application.UseCases.IgdbIntegrationOperations.SearchConsole
 {
     public struct SearchConsoleResponseModel
     {

@@ -1,7 +1,7 @@
 ﻿
 using Newtonsoft.Json;
 
-namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchGame
+namespace Application.UseCases.IgdbIntegrationOperations.SearchGame
 {
     public class SearchGameResponseModel
     {

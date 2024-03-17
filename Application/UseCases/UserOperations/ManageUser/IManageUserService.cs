@@ -1,7 +1,7 @@
-﻿using RetroCollectApi.CrossCutting;
+﻿using Application.CrossCutting;
 using System.Security.Claims;
 
-namespace RetroCollectApi.Application.UseCases.UserOperations.ManageUser
+namespace Application.UseCases.UserOperations.ManageUser
 {
     public interface IManageUserService
     {

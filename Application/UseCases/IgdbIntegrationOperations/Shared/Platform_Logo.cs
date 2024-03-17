@@ -1,4 +1,4 @@
-﻿namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.Shared
+﻿namespace Application.UseCases.IgdbIntegrationOperations.Shared
 {
     public struct Platform_Logo
     {

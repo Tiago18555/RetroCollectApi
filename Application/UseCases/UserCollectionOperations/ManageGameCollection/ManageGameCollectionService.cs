@@ -1,18 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore;
-using RetroCollect.Models;
-using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchGame;
-using RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageConsoleCollection;
-using RetroCollectApi.Application.UseCases.UserCollectionOperations.Shared;
-using RetroCollectApi.CrossCutting;
-using RetroCollectApi.CrossCutting.Enums.ForModels;
-using RetroCollectApi.Repositories;
-using RetroCollectApi.Repositories.Interfaces;
-using System.ComponentModel.DataAnnotations;
+﻿using Application.CrossCutting;
+using Application.UseCases.IgdbIntegrationOperations.SearchGame;
+using Application.UseCases.UserCollectionOperations.Shared;
+using Domain.Entities;
+using Domain.Enums;
+using Domain.Exceptions;
+using Domain.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System.Data;
 using System.Security.Claims;
-using Game = RetroCollect.Models.Game;
+using Game = Domain.Entities.Game;
 
-namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
+namespace Application.UseCases.UserCollectionOperations.AddItems
 {
     public partial class ManageGameCollectionService : IManageGameCollectionService
     {

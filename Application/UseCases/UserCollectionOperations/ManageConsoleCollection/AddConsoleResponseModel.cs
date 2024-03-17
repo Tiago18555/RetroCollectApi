@@ -1,9 +1,7 @@
-﻿using RetroCollect.Models;
-using RetroCollectApi.Application.Shared;
-using RetroCollectApi.CrossCutting.Enums.ForModels;
-using System.Text.Json.Serialization;
+﻿using Application.Shared;
+using Domain.Enums;
 
-namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageConsoleCollection
+namespace Application.UseCases.UserCollectionOperations.ManageConsoleCollection
 {
     public class AddConsoleResponseModel
     {

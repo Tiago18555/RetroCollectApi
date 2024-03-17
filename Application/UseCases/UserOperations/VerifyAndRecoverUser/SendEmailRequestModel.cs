@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace RetroCollectApi.Application.UseCases.UserOperations.VerifyAndRecoverUser
+namespace Application.UseCases.UserOperations.VerifyAndRecoverUser
 {
     public class SendEmailRequestModel
     {

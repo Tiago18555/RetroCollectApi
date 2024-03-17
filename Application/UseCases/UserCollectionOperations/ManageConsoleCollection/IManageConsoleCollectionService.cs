@@ -1,8 +1,8 @@
-﻿using RetroCollectApi.Application.UseCases.UserCollectionOperations.Shared;
-using RetroCollectApi.CrossCutting;
+﻿using Application.CrossCutting;
+using Application.UseCases.UserCollectionOperations.Shared;
 using System.Security.Claims;
 
-namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageConsoleCollection
+namespace Application.UseCases.UserCollectionOperations.ManageConsoleCollection
 {
     public interface IManageConsoleCollectionService
     {

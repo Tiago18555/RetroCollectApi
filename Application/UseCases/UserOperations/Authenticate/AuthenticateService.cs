@@ -1,14 +1,15 @@
-﻿using Microsoft.IdentityModel.Tokens;
-using RetroCollect.Models;
-using RetroCollectApi.CrossCutting;
-using RetroCollectApi.CrossCutting.Providers;
-using RetroCollectApi.Repositories.Interfaces;
+﻿using Application.CrossCutting;
+using Application.CrossCutting.Providers;
+using Domain.Entities;
+using Domain.Repositories.Interfaces;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using BCryptNet = BCrypt.Net.BCrypt;
 
-namespace RetroCollectApi.Application.UseCases.UserOperations.Authenticate
+namespace Application.UseCases.UserOperations.Authenticate
 {
     public class AuthenticateService : IAuthenticateService
     {
@@ -29,7 +30,7 @@ namespace RetroCollectApi.Application.UseCases.UserOperations.Authenticate
             if (!string.IsNullOrEmpty(jwtResponse.ErrorMsg))
                 return GenericResponses.Forbidden(jwtResponse.ErrorMsg);
 
-            return jwtResponse.Token.IsNullOrEmpty() ?
+            return string.IsNullOrEmpty(jwtResponse.Token) ?
                 GenericResponses.Unauthorized("Email ou senha incorretos.") : jwtResponse.Ok();            
         }
 

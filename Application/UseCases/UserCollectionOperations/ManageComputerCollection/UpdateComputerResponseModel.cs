@@ -1,7 +1,7 @@
-﻿using RetroCollectApi.Application.Shared;
-using RetroCollectApi.CrossCutting.Enums.ForModels;
+﻿using Application.Shared;
+using Domain.Enums;
 
-namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageComputerCollection
+namespace Application.UseCases.UserCollectionOperations.ManageComputerCollection
 {
     public class UpdateComputerResponseModel
     {

@@ -1,8 +1,7 @@
-﻿using RetroCollectApi.CrossCutting;
-using System.ComponentModel.DataAnnotations;
+﻿using Application.CrossCutting;
 using System.Security.Claims;
 
-namespace RetroCollectApi.Application.UseCases.GameOperations.AddRating
+namespace Application.UseCases.GameOperations.AddRating
 {
     public interface IAddRatingService
     {

@@ -1,4 +1,4 @@
-﻿namespace RetroCollectApi.Application.UseCases.UserOperations.ManageUser
+﻿namespace Application.UseCases.UserOperations.ManageUser
 {
     public class UpdateUserResponseModel
     {

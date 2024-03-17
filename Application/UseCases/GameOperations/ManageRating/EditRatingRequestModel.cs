@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace RetroCollectApi.Application.UseCases.GameOperations.ManageRating
+namespace Application.UseCases.GameOperations.ManageRating
 {
     public class EditRatingRequestModel
     {

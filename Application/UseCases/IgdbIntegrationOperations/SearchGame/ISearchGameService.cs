@@ -1,6 +1,6 @@
-﻿using RetroCollectApi.CrossCutting;
+﻿using Application.CrossCutting;
 
-namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchGame
+namespace Application.UseCases.IgdbIntegrationOperations.SearchGame
 {
     public interface ISearchGameService
     {

@@ -1,8 +1,6 @@
-﻿using RetroCollect.Models;
-using RetroCollectApi.Application.Shared;
-using System.Text.Json.Serialization;
+﻿using Application.Shared;
 
-namespace RetroCollectApi.Application.UseCases.GameOperations.AddRating
+namespace Application.UseCases.GameOperations.AddRating
 {
     public class AddRatingResponseModel
     {

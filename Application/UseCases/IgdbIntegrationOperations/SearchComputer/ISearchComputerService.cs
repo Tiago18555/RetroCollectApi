@@ -1,7 +1,6 @@
-﻿using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchConsole;
-using RetroCollectApi.CrossCutting;
+﻿using Application.CrossCutting;
 
-namespace RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchComputer
+namespace Application.UseCases.IgdbIntegrationOperations.SearchComputer
 {
     public interface ISearchComputerService
     {

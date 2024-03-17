@@ -1,7 +1,7 @@
-﻿using RetroCollectApi.CrossCutting.Validations;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using Application.CrossCutting.Validations;
 
-namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.Shared
+namespace Application.UseCases.UserCollectionOperations.Shared
 {
     public class AddItemRequestModel
     {

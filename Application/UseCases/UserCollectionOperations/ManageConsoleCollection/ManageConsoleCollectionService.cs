@@ -1,19 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore;
-using RetroCollect.Models;
-using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchConsole;
-using RetroCollectApi.Application.UseCases.IgdbIntegrationOperations.SearchGame;
-using RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems;
-using RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageComputerCollection;
-using RetroCollectApi.Application.UseCases.UserCollectionOperations.Shared;
-using RetroCollectApi.CrossCutting;
-using RetroCollectApi.CrossCutting.Enums.ForModels;
-using RetroCollectApi.Repositories;
-using RetroCollectApi.Repositories.Interfaces;
+﻿using Application.CrossCutting;
+using Application.UseCases.IgdbIntegrationOperations.SearchConsole;
+using Application.UseCases.UserCollectionOperations.Shared;
+using Domain.Entities;
+using Domain.Enums;
+using Domain.Exceptions;
+using Domain.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore;
 using System.Data;
 using System.Security.Claims;
-using Console = RetroCollect.Models.Console;
+using Console = Domain.Entities.Console;
 
-namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.ManageConsoleCollection
+namespace Application.UseCases.UserCollectionOperations.ManageConsoleCollection
 {
     public class ManageConsoleCollectionService : IManageConsoleCollectionService
     {

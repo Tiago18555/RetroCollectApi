@@ -1,8 +1,7 @@
-﻿using RetroCollectApi.CrossCutting;
-using RetroCollectApi.Repositories;
+﻿using Application.CrossCutting;
 using System.Security.Claims;
 
-namespace RetroCollectApi.Application.UseCases.UserCollectionOperations.AddItems
+namespace Application.UseCases.UserCollectionOperations.AddItems
 {
 
     public interface IManageGameCollectionService
