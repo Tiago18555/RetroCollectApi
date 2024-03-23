@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
 using Domain.Exceptions;
 
-namespace Application.CrossCutting
+namespace CrossCutting
 {
     public static class ClaimHelper
     {

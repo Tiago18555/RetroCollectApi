@@ -10,6 +10,7 @@ using Application.UseCases.UserOperations.Authenticate;
 using Application.UseCases.UserOperations.CreateUser;
 using Application.UseCases.UserOperations.ManageUser;
 using Application.UseCases.UserOperations.VerifyAndRecoverUser;
+using Application.UseCases.UserWishlistOperations.GameOperations;
 using Microsoft.Extensions.DependencyInjection;
 
 public static class ApplicationExtension
@@ -32,6 +33,8 @@ public static class ApplicationExtension
 
         services.AddScoped<IAddRatingService, AddRatingService>();
         services.AddScoped<IManageRatingService, ManageRatingService>();
+
+        services.AddScoped<IWishlistService, WishlistService>();
 
         return services;
     }

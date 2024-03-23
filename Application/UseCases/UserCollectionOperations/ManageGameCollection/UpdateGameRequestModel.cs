@@ -1,4 +1,4 @@
-﻿using Application.CrossCutting.Validations;
+﻿using CrossCutting.Validations;
 using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 

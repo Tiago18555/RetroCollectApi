@@ -1,4 +1,4 @@
-﻿using Application.CrossCutting.Validations;
+﻿using CrossCutting.Validations;
 using System.ComponentModel.DataAnnotations;
 
 namespace Application.UseCases.UserCollectionOperations.ManageComputerCollection

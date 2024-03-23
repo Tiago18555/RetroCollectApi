@@ -7,7 +7,7 @@ using static Application.UseCases.UserOperations.VerifyAndRecoverUser.VerifyAndR
 
 namespace WebApi.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
     {

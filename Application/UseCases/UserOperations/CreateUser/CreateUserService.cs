@@ -1,6 +1,6 @@
 ﻿using System.Data;
 using BCryptNet = BCrypt.Net.BCrypt;
-using Application.CrossCutting;
+using CrossCutting;
 using Domain.Entities;
 using Domain.Repositories.Interfaces;
 using Microsoft.Extensions.Configuration;
@@ -67,16 +67,17 @@ namespace Application.UseCases.UserOperations.CreateUser
         {
             if (string.IsNullOrEmpty(user.Email))
             {
-                throw new ArgumentException("Valor de email não pode ser nulo. at [RetroCollectApi.Application.UseCases.UserOperations.CreateUser]");
+                throw new ArgumentException($"Valor de email não pode ser nulo. at {System.Environment.CurrentDirectory}");
             }
             string host = config.GetSection("Host").Value;
 
-            var verificationLink = $"{host}api/auth/verify/{user.UserId}";
+            var verificationLink = $"{host}auth/verify/{user.UserId}";
 
             var template = File.ReadAllText(
 
                 Path.Combine(
                     System.Environment.CurrentDirectory,
+                    "..",
                     "Application",
                     "UseCases",
                     "UserOperations",

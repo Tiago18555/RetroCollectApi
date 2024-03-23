@@ -1,4 +1,4 @@
-﻿using Application.CrossCutting;
+﻿using CrossCutting;
 using System.Security.Claims;
 
 namespace Application.UseCases.UserOperations.ManageUser

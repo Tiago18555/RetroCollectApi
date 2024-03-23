@@ -1,4 +1,4 @@
-﻿namespace Application.CrossCutting
+﻿namespace CrossCutting
 {
     public static class GenericResponses
     {

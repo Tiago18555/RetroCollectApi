@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Application.CrossCutting.Validations;
+using CrossCutting.Validations;
 
 namespace Application.UseCases.UserCollectionOperations.Shared
 {

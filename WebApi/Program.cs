@@ -7,7 +7,7 @@ using System.Text;
 using Infrastructure.Data;
 using Domain.Repositories.Interfaces;
 using Infrastructure.Repositories;
-using Application.CrossCutting.Providers;
+using CrossCutting.Providers;
 
 var builder = WebApplication.CreateBuilder(args);
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
@@ -49,9 +49,11 @@ builder.Services.AddScoped<IConsoleRepository, ConsoleRepository>();
 builder.Services.AddScoped<IComputerRepository, ComputerRepository>();
 builder.Services.AddScoped<IGameRepository, GameRepository>();
 
-builder.Services.AddScoped<IRecoverRepository, RecoverRepository>();
+builder.Services.AddScoped<IRecoverRepository, MongoRepository>();
 
 builder.Services.AddScoped<IRatingRepository, RatingRepository>();
+
+builder.Services.AddScoped<IWishlistRepository, WishlistRepository>();
 
 builder.Services.AddUseCases();
 

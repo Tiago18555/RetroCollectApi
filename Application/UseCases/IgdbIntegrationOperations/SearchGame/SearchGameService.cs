@@ -1,4 +1,4 @@
-﻿using Application.CrossCutting;
+﻿using CrossCutting;
 using Application.UseCases.IgdbIntegrationOperations.Shared;
 
 namespace Application.UseCases.IgdbIntegrationOperations.SearchGame

@@ -4,7 +4,7 @@ using System.Reflection;
 using System;
 using System.Runtime.ConstrainedExecution;
 
-namespace Application.CrossCutting
+namespace CrossCutting
 {
     public static class ObjectMapper
     {

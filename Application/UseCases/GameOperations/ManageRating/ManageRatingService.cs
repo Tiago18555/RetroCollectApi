@@ -1,5 +1,5 @@
-﻿using Application.CrossCutting;
-using Application.CrossCutting.Providers;
+﻿using CrossCutting;
+using CrossCutting.Providers;
 using Domain.Exceptions;
 using Domain.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -31,8 +31,6 @@ namespace Application.UseCases.GameOperations.ManageRating
                 var rating_id = requestBody.RatingId;
 
                 var foundRating = _repository.SingleOrDefault(x => x.RatingId == rating_id);
-
-
 
                 if (foundRating == null)
                     return GenericResponses.NotFound($"Rating {rating_id} not found");
@@ -87,7 +85,7 @@ namespace Application.UseCases.GameOperations.ManageRating
                 if (success)                
                     return "Rating Deleted".Ok();
 
-                return GenericResponses.ServiceUnavailable("Unknown error at RetroCollectApi.Application.UseCases.GameOperations.ManageRating on RemoveRating");
+                return GenericResponses.ServiceUnavailable($"Unknown error at {System.Environment.CurrentDirectory} on RemoveRating");
             }
             catch (ArgumentNullException e)
             {

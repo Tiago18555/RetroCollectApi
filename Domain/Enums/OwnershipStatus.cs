@@ -3,7 +3,6 @@
     public enum OwnershipStatus
     {
         Owned,
-        Desired,
         Traded,
         Borrowed,
         Sold

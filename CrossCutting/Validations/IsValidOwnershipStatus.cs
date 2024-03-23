@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Application.CrossCutting.Validations
+namespace CrossCutting.Validations
 {
     public class IsValidOwnershipStatus : ValidationAttribute
     {
@@ -10,11 +10,10 @@ namespace Application.CrossCutting.Validations
             return value.ToString().ToLower().Trim() switch
             {
                 "owned" => ValidationResult.Success,
-                "desired" => ValidationResult.Success,
                 "traded" => ValidationResult.Success,
                 "borrowed" => ValidationResult.Success,
                 "sold" => ValidationResult.Success,
-                _ => new ValidationResult("Please enter a correct value: \"owned\", \"desired\", \"traded\", \"borrowed\" or \"sold\"")
+                _ => new ValidationResult("Please enter a correct value: \"owned\", \"traded\", \"borrowed\" or \"sold\"")
             };
         }
     }

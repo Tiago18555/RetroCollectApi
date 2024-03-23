@@ -1,4 +1,4 @@
-﻿using Application.CrossCutting;
+﻿using CrossCutting;
 using static Application.UseCases.UserOperations.VerifyAndRecoverUser.VerifyAndRecoverUserService;
 
 namespace Application.UseCases.UserOperations.VerifyAndRecoverUser

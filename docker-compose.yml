@@ -12,7 +12,7 @@ services:
       POSTGRES_PASSWORD: batatapalha
     volumes:
       - postgres-data:/var/lib/postgresql/data
-      - ./RetroCollectApi/Data/postgres-init.sql:/docker-entrypoint-initdb.d/meu-script-inserts.sql
+      #- ./RetroCollectApi/Data/postgres-init.sql:/docker-entrypoint-initdb.d/meu-script-inserts.sql
 
   mongo:
     image: mongo:latest
@@ -21,7 +21,7 @@ services:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
-      - ./RetroCollectApi/Data/mongodb-init.js:/docker-entrypoint-initdb.d/create-collection.js
+      - ./mongodb-init.js:/docker-entrypoint-initdb.d/create-collection.js
       
   retrocollectapi:
     image: ${DOCKER_REGISTRY-}retrocollectapi
@@ -39,7 +39,7 @@ services:
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
-      - ./RetroCollectApi:/home/app
+      - ./RetroCollect:/home/app
     depends_on:
       - postgres
       - mongo

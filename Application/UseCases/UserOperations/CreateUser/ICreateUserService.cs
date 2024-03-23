@@ -1,4 +1,4 @@
-﻿using Application.CrossCutting;
+﻿using CrossCutting;
 
 namespace Application.UseCases.UserOperations.CreateUser
 {

@@ -7,8 +7,8 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using Microsoft.Extensions.Configuration;
 using Domain.Repositories.Interfaces;
-using Application.CrossCutting.Providers;
-using Application.CrossCutting;
+using CrossCutting.Providers;
+using CrossCutting;
 using Domain.Entities;
 using Domain.Exceptions;
 
@@ -82,13 +82,14 @@ namespace Application.UseCases.UserOperations.VerifyAndRecoverUser
 
             _recoverRepository.InsertDocument("RecoverCollection", resetInfo.ToBsonDocument());
 
-            var resetLink = $"{host}api/auth/recover/{foundUser.UserId}/{timestampHash}";
+            var resetLink = $"{host}auth/recover/{foundUser.UserId}/{timestampHash}";
 
 
             var template = File.ReadAllText(
 
                 Path.Combine(
                     System.Environment.CurrentDirectory,
+                    "..",
                     "Application", 
                     "UseCases", 
                     "UserOperations", 
@@ -218,7 +219,8 @@ namespace Application.UseCases.UserOperations.VerifyAndRecoverUser
             var template = File.ReadAllText(
 
                 Path.Combine(
-                    Environment.CurrentDirectory, 
+                    Environment.CurrentDirectory,
+                    "..",
                     "Application", 
                     "UseCases", 
                     "UserOperations", 
@@ -228,7 +230,7 @@ namespace Application.UseCases.UserOperations.VerifyAndRecoverUser
                 )
 
             );
-            var resetLink = $"{host}api/auth/update/{foundUser.UserId}/{timestampHash}";
+            var resetLink = $"{host}auth/update/{foundUser.UserId}/{timestampHash}";
 
             var res = template
                 .Replace("#userName", foundUser.Username)

@@ -1,5 +1,5 @@
 using Xunit;
-using Application.CrossCutting;
+using CrossCutting;
 
 namespace Tests
 {

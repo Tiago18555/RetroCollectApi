@@ -1,6 +1,6 @@
 ﻿using Domain.Enums;
 using Xunit;
-using Application.CrossCutting;
+using CrossCutting;
 using Domain.Exceptions;
 
 namespace Tests

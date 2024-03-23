@@ -1,4 +1,4 @@
-﻿namespace Application.CrossCutting.Providers
+﻿namespace CrossCutting.Providers
 {
     public class DateTimeProvider: IDateTimeProvider
     {

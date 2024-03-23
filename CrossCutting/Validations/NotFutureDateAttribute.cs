@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Application.CrossCutting.Validations
+namespace CrossCutting.Validations
 {
     public class NotFutureDateAttribute : ValidationAttribute
     {

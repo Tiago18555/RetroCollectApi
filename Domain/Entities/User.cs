@@ -30,5 +30,6 @@ namespace Domain.Entities
         public IEnumerable<UserComputer> UserComputers { get; set; }
         public IEnumerable<UserCollection> UserCollections { get; set; }
         public IEnumerable<Rating> Ratings { get; set; }
+        public IEnumerable<Wishlist> Wishlists { get; set; }
     }
 }

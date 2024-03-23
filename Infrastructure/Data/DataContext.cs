@@ -14,6 +14,7 @@ namespace Infrastructure.Data
         public DbSet<UserComputer> UserComputers { get; set; }
         public DbSet<UserConsole> UserConsoles { get; set; }
         public DbSet<Rating> Ratings { get; set; }
+        public DbSet<Wishlist> Wishlists { get; set; }
         public DataContext(DbContextOptions<DataContext> opt) : base(opt) { }
     }
 }

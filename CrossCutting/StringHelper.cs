@@ -2,7 +2,7 @@
 using Domain.Enums;
 using Domain.Exceptions;
 
-namespace Application.CrossCutting
+namespace CrossCutting
 {
     public static partial class StringHelper
     {

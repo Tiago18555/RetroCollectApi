@@ -1,5 +1,5 @@
-﻿using Application.CrossCutting;
-using Application.CrossCutting.Providers;
+﻿using CrossCutting;
+using CrossCutting.Providers;
 using Domain.Exceptions;
 using Domain.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;

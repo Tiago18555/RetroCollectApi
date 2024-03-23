@@ -5,11 +5,11 @@ using MongoDB.Driver;
 
 namespace Infrastructure.Repositories
 {
-    public class RecoverRepository: Domain.Repositories.Interfaces.IRecoverRepository
+    public class MongoRepository: IRecoverRepository
     {
         private readonly MongoDBContext _context;
 
-        public RecoverRepository(MongoDBContext context)
+        public MongoRepository(MongoDBContext context)
         {
             _context = context;
         }

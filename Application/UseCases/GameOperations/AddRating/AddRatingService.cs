@@ -1,5 +1,5 @@
-﻿using Application.CrossCutting;
-using Application.CrossCutting.Providers;
+﻿using CrossCutting;
+using CrossCutting.Providers;
 using Application.UseCases.IgdbIntegrationOperations.SearchGame;
 using Domain.Entities;
 using Domain.Exceptions;

@@ -1,4 +1,4 @@
-﻿using Application.CrossCutting;
+﻿using CrossCutting;
 using Application.UseCases.UserCollectionOperations.Shared;
 using System.Security.Claims;
 

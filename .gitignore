@@ -483,3 +483,5 @@ appsettings.Docker.json
 # Anotations
 igdb.txt
 */igdb.txt
+todo.txt
+*/todo.txt
