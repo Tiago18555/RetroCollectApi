@@ -1,4 +1,4 @@
-﻿namespace Application.UseCases.UserWishlistOperations.GameOperations
+﻿namespace Application.UseCases.UserWishlistOperations
 {
     public class AddToUserWishlistResponseModel
     {

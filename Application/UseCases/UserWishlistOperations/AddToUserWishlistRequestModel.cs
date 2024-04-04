@@ -1,10 +1,10 @@
 ﻿using Domain.Entities;
 using System.ComponentModel.DataAnnotations;
 
-namespace Application.UseCases.UserWishlistOperations.GameOperations
+namespace Application.UseCases.UserWishlistOperations
 {
     public class AddToUserWishlistRequestModel
     {
-        public int GameId { get; set; }
+        public int Id { get; set; }
     }
 }

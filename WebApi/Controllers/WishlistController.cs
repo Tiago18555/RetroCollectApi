@@ -1,4 +1,4 @@
-﻿using Application.UseCases.UserWishlistOperations.GameOperations;
+﻿using Application.UseCases.UserWishlistOperations;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;

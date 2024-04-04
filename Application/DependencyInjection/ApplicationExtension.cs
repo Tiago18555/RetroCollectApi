@@ -10,7 +10,7 @@ using Application.UseCases.UserOperations.Authenticate;
 using Application.UseCases.UserOperations.CreateUser;
 using Application.UseCases.UserOperations.ManageUser;
 using Application.UseCases.UserOperations.VerifyAndRecoverUser;
-using Application.UseCases.UserWishlistOperations.GameOperations;
+using Application.UseCases.UserWishlistOperations;
 using Microsoft.Extensions.DependencyInjection;
 
 public static class ApplicationExtension
