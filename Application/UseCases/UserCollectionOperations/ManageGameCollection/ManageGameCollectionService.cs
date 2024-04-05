@@ -219,7 +219,18 @@ namespace Application.UseCases.UserCollectionOperations.AddItems
             try
             {
                 var user_id = requestToken.GetUserId();
-                var res = await userRepository.GetAllCollectionsByUser(user_id, x => x.MapObjectsTo(new GetAllCollectionsByUserResponseModel()));
+                var res = await userRepository.GetAllCollectionsByUser(user_id, x => new UserCollection()
+                {
+                    UserCollectionId = x.UserCollectionId,
+                    Game = x.Game,
+                    Condition = x.Condition,
+                    PurchaseDate = x.PurchaseDate,
+                    Notes = x.Notes,
+                    OwnershipStatus = x.OwnershipStatus
+                });
+
+                res.ForEach(x => x.MapObjectsTo(new GetAllCollectionsByUserResponseModel()));
+
                 return res.Ok();
             }
             catch (ArgumentNullException)
@@ -232,5 +243,21 @@ namespace Application.UseCases.UserCollectionOperations.AddItems
                 return GenericResponses.BadRequest(msg.ToString());
             }
         }
+
+        /*
+                         var user_id = requestToken.GetUserId();
+                var res = await userRepository.GetAllConsolesByUser(user_id, x => new UserConsole()
+                {
+                    UserConsoleId = x.UserConsoleId,
+                    Console = x.Console,
+                    Condition = x.Condition,
+                    PurchaseDate = x.PurchaseDate,
+                    Notes = x.Notes,
+                    OwnershipStatus = x.OwnershipStatus
+                });
+
+                res.ForEach(x => x.MapObjectsTo(new GetAllConsolesByUserResponseModel()));
+                return res.Ok();
+         */
     }
 }

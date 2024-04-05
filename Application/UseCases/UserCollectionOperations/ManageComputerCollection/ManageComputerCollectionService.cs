@@ -216,8 +216,19 @@ namespace Application.UseCases.UserCollectionOperations.ManageComputerCollection
 
             try
             {
-                var user_id = requestToken.GetUserId();
-                var res = await userRepository.GetAllComputersByUser(user_id, x => x.MapObjectsTo(new GetAllComputersByUserResponseModel()));
+                var user_id = requestToken.GetUserId(); 
+                var res = await userRepository.GetAllComputersByUser(user_id, x => new UserComputer()
+                {
+                    UserComputerId = x.UserComputerId,
+                    Computer = x.Computer,
+                    Condition = x.Condition,
+                    PurchaseDate = x.PurchaseDate,
+                    Notes = x.Notes,
+                    OwnershipStatus = x.OwnershipStatus
+                });
+
+                res.ForEach(x => x.MapObjectsTo(new GetAllComputersByUserResponseModel()));
+
                 return res.Ok();
             }
             catch (ArgumentNullException)

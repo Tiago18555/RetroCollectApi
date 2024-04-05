@@ -36,11 +36,14 @@ namespace Application.UseCases.IgdbIntegrationOperations.SearchConsole
             return res;
         }
 
-        public async Task<ResponseModel> SearchBy(string name)
+        public async Task<ResponseModel> SearchBy(string name, int limit = 0)
         {
             if (string.IsNullOrEmpty(name)) { return GenericResponses.NotFound("Field \"search cannot be empty\""); }
 
-            string query = $"fields name, platform_logo.image_id, versions.platform_version_release_dates.y; limit 50; where category = (1, 5); search \"{name.CleanKeyword()}\"; ";
+            string query = $"fields name, platform_logo.image_id, versions.platform_version_release_dates.y; limit 50; where category = (1, 5); search \"{name.CleanKeyword()}\"; limit {limit};";
+
+            if(limit == 0)
+                query = $"fields name, platform_logo.image_id, versions.platform_version_release_dates.y; limit 50; where category = (1, 5); search \"{name.CleanKeyword()}\"; ";
 
             Console.WriteLine(query);
 

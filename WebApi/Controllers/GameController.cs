@@ -31,10 +31,11 @@ namespace WebApi.Controllers
             [FromQuery] string companie,
             [FromQuery] string language,
             [FromQuery] string theme,
-            [FromQuery] string releaseyear
+            [FromQuery] string releaseyear,
+            [FromQuery] int limit
         )
         {
-            var result = await searchGameService.SearchBy(search, genre, keyword, companie, language, theme, releaseyear);
+            var result = await searchGameService.SearchBy(search, genre, keyword, companie, language, theme, releaseyear, limit);
 
             Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
             Response.StatusCode = result.StatusCode;

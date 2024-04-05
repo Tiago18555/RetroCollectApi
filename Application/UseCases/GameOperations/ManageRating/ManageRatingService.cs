@@ -1,8 +1,11 @@
-﻿using CrossCutting;
+﻿using Application.UseCases.UserWishlistOperations;
+using CrossCutting;
 using CrossCutting.Providers;
 using Domain.Exceptions;
 using Domain.Repositories.Interfaces;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Data;
 using System.Security.Claims;
 
@@ -66,6 +69,38 @@ namespace Application.UseCases.GameOperations.ManageRating
             }
         }
 
+        public async Task<ResponseModel> GetAllRatingsByGame(int gameId, int pageSize, int pageNumber)
+        {
+            if (_gameRepository.Any(u => u.GameId == gameId))
+                return GenericResponses.NotFound("Game not found");
+
+            List<RatingResponseModel> result;
+
+            if (pageSize == 0)
+                result = await _repository.GetRatingsByGame(gameId, x => x.MapObjectTo(new RatingResponseModel()));
+            else
+                result = await _repository.GetRatingsByGame(gameId, x => x.MapObjectTo(new RatingResponseModel()), pageSize, pageNumber);
+
+            return result.Ok();
+        }
+
+        public async Task<ResponseModel> GetAllRatingsByUser(ClaimsPrincipal requestToken, int pageSize, int pageNumber)
+        {
+            var user_id = requestToken.GetUserId();
+
+            if (_userRepository.Any(u => u.UserId == user_id))
+                return GenericResponses.NotFound("User not found");
+
+            List<RatingResponseModel> result;
+
+            if (pageSize == 0)
+                result = await _repository.GetRatingsByUser(user_id, x => x.MapObjectTo(new RatingResponseModel()));
+            else
+                result = await _repository.GetRatingsByUser(user_id, x => x.MapObjectTo(new RatingResponseModel()), pageSize, pageNumber);
+
+            return result.Ok();
+        }
+
         public ResponseModel RemoveRating(Guid ratingId, ClaimsPrincipal requestToken)
         {
             try
@@ -100,5 +135,9 @@ namespace Application.UseCases.GameOperations.ManageRating
                 throw;
             }
         }
+    }
+    public class RatingResponseModel
+    {
+
     }
 }

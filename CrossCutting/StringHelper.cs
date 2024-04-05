@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Reflection.Metadata.Ecma335;
 using Domain.Enums;
 using Domain.Exceptions;
 
@@ -29,7 +30,8 @@ namespace CrossCutting
                 "language" => "where language_supports.language ~",
                 "theme" => "where themes.name ~",
                 "releaseyear" => "where first_release_date ~",
-                _ => "invalid: " + s
+                "limit" => "limit",
+                _ => $"invalid: {s}"
             };
         }
 
@@ -44,9 +46,11 @@ namespace CrossCutting
                 if (param.Key.ToQueryParam().StartsWith("invalid:"))
                     throw new Exception("Invalid query param.");
 
-                queryOut += $"{param.Key.ToQueryParam()} \"{param.Value.CleanKeyword()}\"; ";
+                if (!param.Key.ToQueryParam().StartsWith("limit"))
+                    queryOut += $"{param.Key.ToQueryParam()} \"{param.Value.CleanKeyword()}\"; ";
+                else
+                    queryOut += $"{param.Key.ToQueryParam()} {param.Value.CleanKeyword()}; ";
             });
-
 
             System.Console.WriteLine($"QUERYOUT = {queryOut}");
 

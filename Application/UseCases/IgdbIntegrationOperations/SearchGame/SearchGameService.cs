@@ -56,7 +56,7 @@ namespace Application.UseCases.IgdbIntegrationOperations.SearchGame
             return res;
         }
 
-        public async Task<ResponseModel> SearchBy(string search, string genre, string keyword, string companie, string language, string theme, string releaseyear)
+        public async Task<ResponseModel> SearchBy(string search, string genre, string keyword, string companie, string language, string theme, string releaseyear, int limit)
         {
 
             var queryParams = new Dictionary<string, string>();
@@ -82,6 +82,9 @@ namespace Application.UseCases.IgdbIntegrationOperations.SearchGame
 
             if (!string.IsNullOrEmpty(releaseyear))
                 queryParams["releaseyear"] = releaseyear;
+
+            if (limit > 0 && limit < 500)
+                queryParams["limit"] = limit.ToString();
 
 
             var query = queryParams.BuildSearchQuery(50);

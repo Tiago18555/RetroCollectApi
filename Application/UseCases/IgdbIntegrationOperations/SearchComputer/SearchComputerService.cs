@@ -26,10 +26,10 @@ namespace Application.UseCases.IgdbIntegrationOperations.SearchComputer
         {
             if (string.IsNullOrEmpty(name)) { return GenericResponses.NotFound("Field \"search cannot be empty\""); }
 
-            string query = $"fields name, platform_logo.image_id, versions.platform_version_release_dates.y;\r\nlimit 50;\r\nwhere category = (2, 6);\r\nsearch \"{name.CleanKeyword()}\"; limit {limit}";
+            string query = $"fields name, platform_logo.image_id, versions.platform_version_release_dates.y;\r\nlimit 50;\r\nwhere category = (2, 6);\r\nsearch \"{name.CleanKeyword()}\"; limit {limit};";
 
             if(limit == 0)
-                query = $"fields name, platform_logo.image_id, versions.platform_version_release_dates.y;\r\nlimit 50;\r\nwhere category = (2, 6);\r\nsearch \"{name.CleanKeyword()}\"";
+                query = $"fields name, platform_logo.image_id, versions.platform_version_release_dates.y;\r\nlimit 50;\r\nwhere category = (2, 6);\r\nsearch \"{name.CleanKeyword()}\";";
 
             Console.WriteLine(query);
 

@@ -5,7 +5,7 @@ namespace Application.UseCases.UserCollectionOperations.ManageConsoleCollection
 {
     public class GetAllConsolesByUserResponseModel
     {
-        public Guid UserCollectionId { get; set; }
+        public Guid UserConsoleId { get; set; }
 
         private Condition Condition { get; set; }
         public string condition => Enum.GetName(typeof(Condition), Condition);

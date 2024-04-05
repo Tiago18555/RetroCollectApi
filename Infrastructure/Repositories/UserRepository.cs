@@ -3,6 +3,10 @@ using Infrastructure.Data;
 using Domain.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
+using CrossCutting;
+using System.Runtime.InteropServices;
+using System.Linq.Expressions;
+using Domain.Enums;
 
 namespace Infrastructure.Repositories
 {
@@ -24,12 +28,12 @@ namespace Infrastructure.Repositories
             return user;
         }
 
-        public async Task<List<T>> GetAll<T>(Func<User, T> predicate)
+        public async Task<List<T>> GetAll<T>(Expression<Func<User, T>> predicate)
         {
-            return await Task.FromResult(_context.Users
+            return await _context.Users
                 .AsNoTracking()
                 .Select(predicate)
-                .ToList());
+                .ToListAsync();
         }
 
         public bool Any(Func<User, bool> predicate)
@@ -56,17 +60,31 @@ namespace Infrastructure.Repositories
             return user;
         }
 
-        public async Task<List<T>> GetAllComputersByUser<T>(Guid userId, Func<UserComputer, T> predicate)
+        public async Task<List<T>> GetAllComputersByUser<T>(Guid userId, Expression<Func<UserComputer, T>> predicate)
         {
-            return await Task.FromResult(_context.UserComputers
+            return await _context.UserComputers
                 .Include(x => x.Computer)
                 .AsNoTracking()
                 .Where(x => x.UserId == userId)
                 .Select(predicate)
-                .ToList());
+                .ToListAsync();
         }
 
-        public async Task<List<T>> GetAllConsolesByUser<T>(Guid userId, Func<UserConsole, T> predicate)
+        public async Task<List<T>> GetAllComputersByUser<T>(Guid userId, Expression<Func<UserComputer, T>> predicate, int pageNumber, int pageSize)
+        {
+            var offset = (pageNumber - 1) * pageSize;
+
+            return await _context.UserComputers
+                        .Include(x => x.Computer)
+                        .AsNoTracking()
+                        .Where(x => x.UserId == userId)
+                        .Skip(offset)
+                        .Take(pageSize)
+                        .Select(predicate)
+                        .ToListAsync();
+        }
+
+        public async Task<List<T>> GetAllConsolesByUser<T>(Guid userId, Expression<Func<UserConsole, T>> predicate)
         {
             return await Task.FromResult(_context.UserConsoles
                 .Include(x => x.Console)
@@ -76,12 +94,40 @@ namespace Infrastructure.Repositories
                 .ToList());
         }
 
-        public async Task<List<T>> GetAllCollectionsByUser<T>(Guid userId, Func<UserCollection, T> predicate)
+        public async Task<List<T>> GetAllConsolesByUser<T>(Guid userId, Expression<Func<UserConsole, T>> predicate, int pageNumber, int pageSize)
+        {
+            var offset = (pageNumber - 1) * pageSize;
+
+            return await Task.FromResult(_context.UserConsoles
+                .Include(x => x.Console)
+                .AsNoTracking()
+                .Where(x => x.UserId == userId)
+                .Skip(offset)
+                .Take(pageSize)
+                .Select(predicate)
+                .ToList());
+        }
+
+        public async Task<List<T>> GetAllCollectionsByUser<T>(Guid userId, Expression<Func<UserCollection, T>> predicate)
         {
             return await Task.FromResult(_context.UserCollections
                  .Include(x => x.Game)
                  .AsNoTracking()
                  .Where(x => x.UserId == userId)
+                 .Select(predicate)
+                 .ToList());
+        }
+
+        public async Task<List<T>> GetAllCollectionsByUser<T>(Guid userId, Expression<Func<UserCollection, T>> predicate, int pageNumber, int pageSize)
+        {
+            var offset = (pageNumber - 1) * pageSize;
+
+            return await Task.FromResult(_context.UserCollections
+                 .Include(x => x.Game)
+                 .AsNoTracking()
+                 .Where(x => x.UserId == userId)
+                 .Skip(offset)
+                 .Take(pageSize)
                  .Select(predicate)
                  .ToList());
         }

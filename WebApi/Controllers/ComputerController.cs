@@ -25,9 +25,9 @@ namespace WebApi.Controllers
         [SwaggerResponse(400, "Invalid request")]
         [SwaggerResponse(406, "Invalid format of request")]
         [SwaggerResponse(500, "Internal server error")]
-        public async Task<IActionResult> SearchComputer([FromQuery] string search)
+        public async Task<IActionResult> SearchComputer([FromQuery] string search, [FromQuery] int limit)
         {
-            var result = await searchComputerService.SearchBy(search);
+            var result = await searchComputerService.SearchBy(search, limit);
 
             Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
             Response.StatusCode = result.StatusCode;

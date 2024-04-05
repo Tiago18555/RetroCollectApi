@@ -214,7 +214,17 @@ namespace Application.UseCases.UserCollectionOperations.ManageConsoleCollection
             try
             {
                 var user_id = requestToken.GetUserId();
-                var res = await userRepository.GetAllConsolesByUser(user_id, x => x.MapObjectsTo(new GetAllConsolesByUserResponseModel()));
+                var res = await userRepository.GetAllConsolesByUser(user_id, x => new UserConsole()
+                {
+                    UserConsoleId = x.UserConsoleId,
+                    Console = x.Console,
+                    Condition = x.Condition,
+                    PurchaseDate = x.PurchaseDate,
+                    Notes = x.Notes,
+                    OwnershipStatus = x.OwnershipStatus
+                });
+
+                res.ForEach(x => x.MapObjectsTo(new GetAllConsolesByUserResponseModel()));
                 return res.Ok();
             }
             catch (ArgumentNullException)

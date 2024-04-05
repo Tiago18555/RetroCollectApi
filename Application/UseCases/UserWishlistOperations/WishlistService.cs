@@ -41,11 +41,34 @@ namespace Application.UseCases.UserWishlistOperations
                  ).Ok();
         }
 
-        public async Task<ResponseModel> GetAllByUser(ClaimsPrincipal RequestToken)
+        public async Task<ResponseModel> GetAllByGame(int gameId, int limit, int page)
+        {
+            if (_gameRepository.Any(u => u.GameId == gameId))
+                return GenericResponses.NotFound("Game not found");
+
+            List<WishlistResponseModel> result;
+
+            if (limit == 0)
+                result = await _repository.GetWishlistsByGame(gameId, x => x.MapObjectTo(new WishlistResponseModel()));
+            else
+                result = await _repository.GetWishlistsByGame(gameId, x => x.MapObjectTo(new WishlistResponseModel()), page, limit);
+
+            return result.Ok();
+        }
+
+        public async Task<ResponseModel> GetAllByUser(ClaimsPrincipal RequestToken, int limit = 0, int page = 0)
         {
             var user_id = RequestToken.GetUserId();
 
-            var result = await _repository.GetWishlistsByUser(user_id, x => x.MapObjectTo(new WishlistResponseModel()));
+            if (_userRepository.Any(u => u.UserId == user_id))
+                return GenericResponses.NotFound("User not found");
+
+            List<WishlistResponseModel> result;
+
+            if(limit == 0)            
+                result = await _repository.GetWishlistsByUser(user_id, x => x.MapObjectTo(new WishlistResponseModel()));
+            else
+                result = await _repository.GetWishlistsByUser(user_id, x => x.MapObjectTo(new WishlistResponseModel()), page, limit);
 
             return result.Ok();
         }

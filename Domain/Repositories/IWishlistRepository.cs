@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using System.Linq.Expressions;
 
 namespace Domain.Repositories.Interfaces
 {
@@ -13,14 +14,21 @@ namespace Domain.Repositories.Interfaces
         /// <returns><see langword="true" /> if the entity has deleted successfully</returns>
         bool Delete(Wishlist wishlist);
 
-        /// <exception cref="DbUpdateConcurrencyException"></exception>
-        /// <exception cref="DbUpdateException"></exception>
         /// <exception cref="ArgumentNullException"></exception>
-        /// <returns>The entity found, or <see langword="null" />.</returns>
-        Task<List<T>> GetWishlistsByUser<T>(Guid userId, Func<Wishlist, T> predicate);
+        /// <exception cref="OperationCanceledException"></exception>
+        Task<List<T>> GetWishlistsByUser<T>(Guid userId, Expression<Func<Wishlist, T>> predicate);
 
         /// <exception cref="ArgumentNullException"></exception>
-        Task<List<T>> GetWishlistsByGame<T>(int gameId, Func<Wishlist, T> predicate);
+        /// <exception cref="OperationCanceledException"></exception>
+        Task<List<T>> GetWishlistsByUser<T>(Guid userId, Expression<Func<Wishlist, T>> predicate, int pageNumber, int pageSize);
+
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="OperationCanceledException"></exception>
+        Task<List<T>> GetWishlistsByGame<T>(int gameId, Expression<Func<Wishlist, T>> predicate);
+
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="OperationCanceledException"></exception>
+        Task<List<T>> GetWishlistsByGame<T>(int gameId, Expression<Func<Wishlist, T>> predicate, int pageNumber, int pageSize);
 
         /// <exception cref="ArgumentNullException"></exception>
         bool Any(Func<Wishlist, bool> predicate);

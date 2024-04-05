@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using System.Linq.Expressions;
 
 namespace Domain.Repositories.Interfaces
 {
@@ -20,10 +21,20 @@ namespace Domain.Repositories.Interfaces
         Rating Update(Rating rating);
 
         /// <exception cref="ArgumentNullException"></exception>
-        Task<List<T>> GetRatingsByUser<T>(Guid userId, Func<Rating, T> predicate);
+        /// <exception cref="OperationCanceledException"></exception>
+        Task<List<T>> GetRatingsByUser<T>(Guid userId, Expression<Func<Rating, T>> predicate);
 
         /// <exception cref="ArgumentNullException"></exception>
-        Task<List<T>> GetRatingsByGame<T>(int gameId, Func<Rating, T> predicate);
+        /// <exception cref="OperationCanceledException"></exception>
+        Task<List<T>> GetRatingsByUser<T>(Guid userId, Expression<Func<Rating, T>> predicate, int pageNumber, int pageSize);
+
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="OperationCanceledException"></exception>
+        Task<List<T>> GetRatingsByGame<T>(int gameId, Expression<Func<Rating, T>> predicate);
+
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <exception cref="OperationCanceledException"></exception>
+        Task<List<T>> GetRatingsByGame<T>(int gameId, Expression<Func<Rating, T>> predicate, int pageNumber, int pageSize);
 
         /// <exception cref="ArgumentNullException"></exception>
         bool Any(Func<Rating, bool> predicate);

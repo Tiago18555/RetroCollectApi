@@ -1,4 +1,5 @@
 ﻿using Domain.Entities;
+using System.Linq.Expressions;
 
 namespace Domain.Repositories.Interfaces
 {
@@ -11,7 +12,7 @@ namespace Domain.Repositories.Interfaces
         User Add(User user);
 
         /// <exception cref="ArgumentNullException"></exception>
-        Task<List<T>> GetAll<T>(Func<User, T> predicate);
+        Task<List<T>> GetAll<T>(Expression<Func<User, T>> predicate);
 
 
         /// <exception cref="ArgumentNullException"></exception>
@@ -29,16 +30,26 @@ namespace Domain.Repositories.Interfaces
 
         #endregion
 
-        #region User Collections
+        #region User Collections 
+        //Task<List<T>> GetAllComputersByUser<T>(Guid userId, Expression<Func<UserComputer, T>> predicate)
 
         /// <exception cref="ArgumentNullException"></exception>
-        Task<List<T>> GetAllComputersByUser<T>(Guid userId, Func<UserComputer, T> predicate);
+        Task<List<T>> GetAllComputersByUser<T>(Guid userId, Expression<Func<UserComputer, T>> predicate);
 
         /// <exception cref="ArgumentNullException"></exception>
-        Task<List<T>> GetAllConsolesByUser<T>(Guid userId, Func<UserConsole, T> predicate);
+        Task<List<T>> GetAllComputersByUser<T>(Guid userId, Expression<Func<UserComputer, T>> predicate, int pageNumber, int pageSize);
 
         /// <exception cref="ArgumentNullException"></exception>
-        Task<List<T>> GetAllCollectionsByUser<T>(Guid userId, Func<UserCollection, T> predicate);
+        Task<List<T>> GetAllConsolesByUser<T>(Guid userId, Expression<Func<UserConsole, T>> predicate);
+
+        /// <exception cref="ArgumentNullException"></exception>
+        Task<List<T>> GetAllConsolesByUser<T>(Guid userId, Expression<Func<UserConsole, T>> predicate, int pageNumber, int pageSize);
+
+        /// <exception cref="ArgumentNullException"></exception>
+        Task<List<T>> GetAllCollectionsByUser<T>(Guid userId, Expression<Func<UserCollection, T>> predicate);
+
+        /// <exception cref="ArgumentNullException"></exception>
+        Task<List<T>> GetAllCollectionsByUser<T>(Guid userId, Expression<Func<UserCollection, T>> predicate, int pageNumber, int pageSize);
 
         #endregion
 
