@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20240323024640_add wishlist")]
-    partial class addwishlist
+    [Migration("20240405021844_WishlistRelation")]
+    partial class WishlistRelation
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

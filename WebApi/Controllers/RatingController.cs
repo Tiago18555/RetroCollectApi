@@ -73,6 +73,38 @@ namespace WebApi.Controllers
             return new ObjectResult(result);
         }
 
+        [HttpGet("user")]
+        [SwaggerOperation(
+            Summary = "List ratings by user",
+            Description = "List all ratings made by specific user"
+        )]
+        [SwaggerResponse(200, "Ratings found")]
+        [SwaggerResponse(500, "Internal server error")]
+        public async Task<IActionResult> GetAllRatingsByUser([FromQuery] int page_size, [FromQuery] int page_number)
+        {
+            var result = await manageRating.GetAllRatingsByUser(HttpContext.User, page_size, page_number);
+
+            Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
+            Response.StatusCode = result.StatusCode;
+            return new ObjectResult(result);
+        }
+
+        [HttpGet("game/{id}")]
+        [SwaggerOperation(
+            Summary = "List ratings by game",
+            Description = "List all ratings from a specific game"
+        )]
+        [SwaggerResponse(200, "Ratings found")]
+        [SwaggerResponse(500, "Internal server error")]
+        public async Task<IActionResult> GetAllRatingsByGame([FromRoute] int id, [FromQuery] int page_size, [FromQuery] int page_number)
+        {
+            var result = await manageRating.GetAllRatingsByGame(id, page_size, page_number);
+
+            Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
+            Response.StatusCode = result.StatusCode;
+            return new ObjectResult(result);
+        }
+
     }
 }
 

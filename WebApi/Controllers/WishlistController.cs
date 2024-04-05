@@ -34,8 +34,6 @@ namespace WebApi.Controllers
             return new ObjectResult(result);
         }
 
-        //public ResponseModel Add(AddToUserWishlistRequestModel RequestBody, ClaimsPrincipal RequestToken)
-
         [HttpDelete("{game_id}")]
         [SwaggerOperation(
             Summary = "Delete game from wishlist",
@@ -48,6 +46,38 @@ namespace WebApi.Controllers
         public IActionResult DeleteWishlist([FromRoute] int game_id)
         {
             var result = wishlistService.Remove(game_id, HttpContext.User);
+
+            Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
+            Response.StatusCode = result.StatusCode;
+            return new ObjectResult(result);
+        }
+
+        [HttpGet("")]
+        [SwaggerOperation(
+            Summary = "Show user wishlist",
+            Description = ""
+        )]
+        [SwaggerResponse(200, "Wishlist found")]
+        [SwaggerResponse(500, "Internal server error")]
+        public async Task<IActionResult> ShowUserWishlist([FromQuery] int page_size, [FromQuery] int page_number)
+        {
+            var result = await wishlistService.GetAllByUser(HttpContext.User, page_size, page_number);
+
+            Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
+            Response.StatusCode = result.StatusCode;
+            return new ObjectResult(result);
+        }
+
+        [HttpGet("game/{id}")]
+        [SwaggerOperation(
+            Summary = "Show wishlists of a game",
+            Description = ""
+        )]
+        [SwaggerResponse(200, "Wishlist found")]
+        [SwaggerResponse(500, "Internal server error")]
+        public async Task<IActionResult> ShowGameWishlist([FromRoute] int id, [FromQuery] int page_size, [FromQuery] int page_number)
+        {
+            var result = await wishlistService.GetAllByGame(id, page_size, page_number);
 
             Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
             Response.StatusCode = result.StatusCode;

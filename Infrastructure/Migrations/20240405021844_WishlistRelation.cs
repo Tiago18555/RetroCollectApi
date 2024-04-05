@@ -7,7 +7,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 namespace Infrastructure.Migrations
 {
-    public partial class addwishlist : Migration
+    public partial class WishlistRelation : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
