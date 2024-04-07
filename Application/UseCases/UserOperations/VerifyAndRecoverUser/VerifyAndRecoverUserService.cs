@@ -17,25 +17,25 @@ namespace Application.UseCases.UserOperations.VerifyAndRecoverUser
     public partial class VerifyAndRecoverUserService : IVerifyAndRecoverUserService
     {
         private readonly IConfiguration _config;
-        private readonly IUserRepository _repository;
+        private readonly IUserRepository _userRepository;
         private readonly IRecoverRepository _recoverRepository;
         private readonly IDateTimeProvider _timeProvider;
 
         public VerifyAndRecoverUserService(IConfiguration config, IUserRepository repository, IRecoverRepository recoverRepository, IDateTimeProvider timeProvider)
         {
             _config = config;
-            _repository = repository;
+            _userRepository = repository;
             _recoverRepository = recoverRepository;
             _timeProvider = timeProvider;
         }
 
         public ResponseModel VerifyUser(Guid userId)
         {
-            var user = _repository.SingleOrDefault(r => r.UserId == userId);
+            var user = _userRepository.SingleOrDefault(r => r.UserId == userId);
             if (user.VerifiedAt != DateTime.MinValue)
                 return "This user is already verified".Ok();
             user.VerifiedAt = _timeProvider.UtcNow;
-            return _repository
+            return _userRepository
                 .Update(user)
                 .MapObjectTo( new VerifyUserResponseModel() )
                 .Ok();        
@@ -55,8 +55,8 @@ namespace Application.UseCases.UserOperations.VerifyAndRecoverUser
 
             User foundUser = 
                 !string.IsNullOrEmpty(request.Email) ? 
-                _repository.SingleOrDefault(u => u.Email == request.Email) : 
-                _repository.SingleOrDefault(u => u.Username == request.UserName);
+                _userRepository.SingleOrDefault(u => u.Email == request.Email) : 
+                _userRepository.SingleOrDefault(u => u.Username == request.UserName);
 
             if (foundUser == null) return GenericResponses.NotFound("User not found");
 
@@ -211,7 +211,7 @@ namespace Application.UseCases.UserOperations.VerifyAndRecoverUser
 
         public ResponseModel ChangePasswordTemplate(Guid userId, string timestampHash)
         {
-            var foundUser = _repository.SingleOrDefault(u => u.UserId == userId);
+            var foundUser = _userRepository.SingleOrDefault(u => u.UserId == userId);
             if (foundUser == null) return GenericResponses.NotFound("User not found");
 
             string host = _config.GetSection("Host").Value;
@@ -245,7 +245,7 @@ namespace Application.UseCases.UserOperations.VerifyAndRecoverUser
 
         public ResponseModel ChangePassword(Guid userId, UpdatePasswordRequestModel pwd, string timestampHash)
         {
-            var foundUser = _repository.SingleOrDefault(u => u.UserId == userId);
+            var foundUser = _userRepository.SingleOrDefault(u => u.UserId == userId);
 
             if (foundUser == null)            
                 return GenericResponses.NotFound("User Not Found");            
@@ -263,7 +263,7 @@ namespace Application.UseCases.UserOperations.VerifyAndRecoverUser
 
             try
             {
-                _repository.Update(foundUser);
+                _userRepository.Update(foundUser);
                 _recoverRepository.UpdateDocument("RecoverCollection", "UserId", foundUser.UserId, "Success", true);
                 return "Password updated successfully".Ok();
             }

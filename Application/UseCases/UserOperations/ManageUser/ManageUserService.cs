@@ -10,12 +10,12 @@ namespace Application.UseCases.UserOperations.ManageUser
 {
     public class ManageUserService : IManageUserService
     {
-        private IUserRepository repository { get; set; }
-        private IDateTimeProvider dateTimeProvider { get; set; }
+        private readonly IUserRepository _repository;
+        private readonly IDateTimeProvider _dateTimeProvider;
         public ManageUserService(IUserRepository repository, IDateTimeProvider dateTimeProvider)
         {
-            this.repository = repository;
-            this.dateTimeProvider = dateTimeProvider;
+            this._repository = repository;
+            this._dateTimeProvider = dateTimeProvider;
         }
 
         public ResponseModel UpdateUser(UpdateUserRequestModel userRequestModel, ClaimsPrincipal user)
@@ -23,11 +23,11 @@ namespace Application.UseCases.UserOperations.ManageUser
             try
             {
                 if (!user.IsTheRequestedOneId(userRequestModel.UserId)) return GenericResponses.Forbidden();
-                var foundUser = repository.SingleOrDefault(x => x.UserId == userRequestModel.UserId);
+                var foundUser = _repository.SingleOrDefault(x => x.UserId == userRequestModel.UserId);
 
                 if (foundUser == null) { return GenericResponses.NotFound("User not found"); }
 
-                var res = this.repository.Update(foundUser.MapAndFill(userRequestModel, dateTimeProvider));
+                var res = this._repository.Update(foundUser.MapAndFill(userRequestModel, _dateTimeProvider));
 
                 return res
                     .MapObjectTo( new UpdateUserResponseModel() )
@@ -65,7 +65,7 @@ namespace Application.UseCases.UserOperations.ManageUser
 
         public async Task<ResponseModel> GetAllUsers()
         {
-            var res = await repository.GetAll(x => x);
+            var res = await _repository.GetAll(x => x);
             return res.Ok();
         }
     }

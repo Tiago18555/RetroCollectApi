@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
-namespace Application.UseCases.IgdbIntegrationOperations.Shared
+namespace Infrastructure
 {
     public static class Helper
     {

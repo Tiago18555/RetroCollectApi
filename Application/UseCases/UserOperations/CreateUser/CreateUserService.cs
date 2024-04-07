@@ -13,19 +13,19 @@ namespace Application.UseCases.UserOperations.CreateUser
 {
     public class CreateUserService : ICreateUserService
     {
-        private IUserRepository repository { get; set; }
-        private readonly IConfiguration config;
-        public CreateUserService(IUserRepository _repository, IConfiguration _config)
+        private readonly IUserRepository _repository;
+        private readonly IConfiguration _config;
+        public CreateUserService(IUserRepository repository, IConfiguration config)
         {
-            this.repository = _repository;
-            this.config = _config;
+            this._repository = repository;
+            this._config = config;
         }
 
         public ResponseModel CreateUser(CreateUserRequestModel createUserRequestModel)
         {
             User user = createUserRequestModel.MapObjectTo(new User());
 
-            if (repository.Any(x => x.Username == createUserRequestModel.Username || x.Email == createUserRequestModel.Email))
+            if (_repository.Any(x => x.Username == createUserRequestModel.Username || x.Email == createUserRequestModel.Email))
             {
                 return GenericResponses.Conflict();
             }
@@ -35,7 +35,7 @@ namespace Application.UseCases.UserOperations.CreateUser
 
             try
             {
-                var newUser = this.repository.Add(user)
+                var newUser = this._repository.Add(user)
                     .MapObjectTo(new CreateUserResponseModel())
                     .Created();
 
@@ -69,7 +69,7 @@ namespace Application.UseCases.UserOperations.CreateUser
             {
                 throw new ArgumentException($"Valor de email não pode ser nulo. at {System.Environment.CurrentDirectory}");
             }
-            string host = config.GetSection("Host").Value;
+            string host = _config.GetSection("Host").Value;
 
             var verificationLink = $"{host}auth/verify/{user.UserId}";
 
@@ -96,14 +96,14 @@ namespace Application.UseCases.UserOperations.CreateUser
             System.Console.ForegroundColor = ConsoleColor.White;
 
             var email = new MimeMessage();
-            email.From.Add(MailboxAddress.Parse(config.GetSection("Email:Username").Value));
+            email.From.Add(MailboxAddress.Parse(_config.GetSection("Email:Username").Value));
             email.To.Add(MailboxAddress.Parse(user.Email));
             email.Subject = "RetroCollect Password Recover";
             email.Body = new TextPart(TextFormat.Html) { Text = body };
 
             using var smtp = new SmtpClient();
-            smtp.Connect(config.GetSection("Email:Host").Value, 587, SecureSocketOptions.StartTls);
-            smtp.Authenticate(config.GetSection("Email:Username").Value, config.GetSection("Email:Password").Value);
+            smtp.Connect(_config.GetSection("Email:Host").Value, 587, SecureSocketOptions.StartTls);
+            smtp.Authenticate(_config.GetSection("Email:Username").Value, _config.GetSection("Email:Password").Value);
             smtp.Send(email);
             smtp.Disconnect(true);
 

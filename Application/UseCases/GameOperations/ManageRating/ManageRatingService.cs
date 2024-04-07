@@ -13,14 +13,14 @@ namespace Application.UseCases.GameOperations.ManageRating
 {
     public class ManageRatingService : IManageRatingService
     {
-        private IRatingRepository _repository;
-        private IGameRepository _gameRepository;
-        private IUserRepository _userRepository;
-        private IDateTimeProvider _dateTimeProvider;
+        private readonly IRatingRepository _ratingRepository;
+        private readonly IGameRepository _gameRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IDateTimeProvider _dateTimeProvider;
 
         public ManageRatingService(IRatingRepository repository, IGameRepository gameRepository, IUserRepository userRepository, IDateTimeProvider dateTimeProvider)
         {
-            _repository = repository;
+            _ratingRepository = repository;
             _gameRepository = gameRepository;
             _userRepository = userRepository;
             _dateTimeProvider = dateTimeProvider;
@@ -33,7 +33,7 @@ namespace Application.UseCases.GameOperations.ManageRating
                 var user_id = requestToken.GetUserId();
                 var rating_id = requestBody.RatingId;
 
-                var foundRating = _repository.SingleOrDefault(x => x.RatingId == rating_id);
+                var foundRating = _ratingRepository.SingleOrDefault(x => x.RatingId == rating_id);
 
                 if (foundRating == null)
                     return GenericResponses.NotFound($"Rating {rating_id} not found");
@@ -47,7 +47,7 @@ namespace Application.UseCases.GameOperations.ManageRating
                 foundRating.UpdatedAt = _dateTimeProvider.UtcNow;
 
                 return
-                    _repository.Update(foundRating)
+                    _ratingRepository.Update(foundRating)
                     .MapObjectsTo(new EditRatingResponseModel())
                     .Ok();
             }
@@ -77,9 +77,9 @@ namespace Application.UseCases.GameOperations.ManageRating
             List<RatingResponseModel> result;
 
             if (pageSize == 0)
-                result = await _repository.GetRatingsByGame(gameId, x => x.MapObjectTo(new RatingResponseModel()));
+                result = await _ratingRepository.GetRatingsByGame(gameId, x => x.MapObjectTo(new RatingResponseModel()));
             else
-                result = await _repository.GetRatingsByGame(gameId, x => x.MapObjectTo(new RatingResponseModel()), pageSize, pageNumber);
+                result = await _ratingRepository.GetRatingsByGame(gameId, x => x.MapObjectTo(new RatingResponseModel()), pageSize, pageNumber);
 
             return result.Ok();
         }
@@ -94,9 +94,9 @@ namespace Application.UseCases.GameOperations.ManageRating
             List<RatingResponseModel> result;
 
             if (pageSize == 0)
-                result = await _repository.GetRatingsByUser(user_id, x => x.MapObjectTo(new RatingResponseModel()));
+                result = await _ratingRepository.GetRatingsByUser(user_id, x => x.MapObjectTo(new RatingResponseModel()));
             else
-                result = await _repository.GetRatingsByUser(user_id, x => x.MapObjectTo(new RatingResponseModel()), pageSize, pageNumber);
+                result = await _ratingRepository.GetRatingsByUser(user_id, x => x.MapObjectTo(new RatingResponseModel()), pageSize, pageNumber);
 
             return result.Ok();
         }
@@ -108,14 +108,14 @@ namespace Application.UseCases.GameOperations.ManageRating
                 var user_id = requestToken.GetUserId();
                 var rating_id = ratingId;
 
-                var foundRating = _repository.SingleOrDefault(x => x.RatingId == rating_id);
+                var foundRating = _ratingRepository.SingleOrDefault(x => x.RatingId == rating_id);
                 if (foundRating == null)
                     return GenericResponses.NotFound("Rating not found");
 
                 if (foundRating.UserId != user_id)
                     return GenericResponses.Forbidden("This rating is invalid");
 
-                var success = _repository.Delete(foundRating);
+                var success = _ratingRepository.Delete(foundRating);
 
                 if (success)                
                     return "Rating Deleted".Ok();

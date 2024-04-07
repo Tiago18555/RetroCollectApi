@@ -1,6 +1,4 @@
-﻿using System.Diagnostics;
-using System.Reflection.Metadata.Ecma335;
-using Domain.Enums;
+﻿using Domain.Enums;
 using Domain.Exceptions;
 
 namespace CrossCutting

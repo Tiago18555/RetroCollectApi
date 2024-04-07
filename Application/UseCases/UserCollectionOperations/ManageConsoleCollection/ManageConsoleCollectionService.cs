@@ -14,10 +14,10 @@ namespace Application.UseCases.UserCollectionOperations.ManageConsoleCollection
 {
     public class ManageConsoleCollectionService : IManageConsoleCollectionService
     {
-        private IUserRepository userRepository { get; set; }
-        private IConsoleRepository consoleRepository { get; set; }
-        private IUserConsoleRepository userConsoleRepository { get; set; }
-        private ISearchConsoleService searchConsoleService { get; set; }
+        private readonly IUserRepository _userRepository;
+        private readonly IConsoleRepository _consoleRepository;
+        private readonly IUserConsoleRepository _userConsoleRepository;
+        private readonly ISearchConsoleService _searchConsoleService;
         public ManageConsoleCollectionService(
             IUserRepository userRepository,
             IConsoleRepository consoleRepository,
@@ -25,10 +25,10 @@ namespace Application.UseCases.UserCollectionOperations.ManageConsoleCollection
             ISearchConsoleService searchConsoleService
         )
         {
-            this.userRepository = userRepository;
-            this.consoleRepository = consoleRepository;
-            this.userConsoleRepository = userConsoleRepository;
-            this.searchConsoleService = searchConsoleService;
+            this._userRepository = userRepository;
+            this._consoleRepository = consoleRepository;
+            this._userConsoleRepository = userConsoleRepository;
+            this._searchConsoleService = searchConsoleService;
         }
 
 
@@ -36,13 +36,13 @@ namespace Application.UseCases.UserCollectionOperations.ManageConsoleCollection
         {
             var user_id = requestToken.GetUserId();
 
-            var user = userRepository.Any(u => u.UserId == user_id);
+            var user = _userRepository.Any(u => u.UserId == user_id);
             if (!user) { return GenericResponses.NotFound("User not found"); }
 
-            if (!consoleRepository.Any(g => g.ConsoleId == requestBody.Item_id))
+            if (!_consoleRepository.Any(g => g.ConsoleId == requestBody.Item_id))
             {
                 //Função adicionar console na entity Console=>
-                var result = await searchConsoleService.RetrieveConsoleInfoAsync(requestBody.Item_id);
+                var result = await _searchConsoleService.RetrieveConsoleInfoAsync(requestBody.Item_id);
 
                 var consoleInfo = result.Single();
 
@@ -57,7 +57,7 @@ namespace Application.UseCases.UserCollectionOperations.ManageConsoleCollection
 
                 try
                 {
-                    var res = consoleRepository.Add(console);
+                    var res = _consoleRepository.Add(console);
                 }
                 catch (InvalidOperationException)
                 {
@@ -90,7 +90,7 @@ namespace Application.UseCases.UserCollectionOperations.ManageConsoleCollection
                     PurchaseDate = requestBody.PurchaseDate == DateTime.MinValue ? DateTime.MinValue : requestBody.PurchaseDate
                 };
 
-                var res = userConsoleRepository.Add(userConsole);
+                var res = _userConsoleRepository.Add(userConsole);
                 return res.MapObjectsTo(new AddConsoleResponseModel()).Created();
             }
             catch (DBConcurrencyException)
@@ -121,10 +121,10 @@ namespace Application.UseCases.UserCollectionOperations.ManageConsoleCollection
             {
                 var user_id = requestToken.GetUserId();
 
-                var foundItem = userConsoleRepository.SingleOrDefault(r => r.UserId == user_id && r.UserConsoleId == user_console_id);
+                var foundItem = _userConsoleRepository.SingleOrDefault(r => r.UserId == user_id && r.UserConsoleId == user_console_id);
                 if (foundItem == null) { return GenericResponses.NotFound(); }
 
-                if (userConsoleRepository.Delete(foundItem))
+                if (_userConsoleRepository.Delete(foundItem))
                 {
                     return GenericResponses.Ok("Console deleted");
                 }
@@ -150,15 +150,15 @@ namespace Application.UseCases.UserCollectionOperations.ManageConsoleCollection
             {
                 var user_id = requestToken.GetUserId();
 
-                var foundUser = userRepository.Any(x => x.UserId == requestBody.User_id);
+                var foundUser = _userRepository.Any(x => x.UserId == requestBody.User_id);
                 if (!foundUser) { return GenericResponses.NotFound("User not found"); }
 
-                var foundConsole = userConsoleRepository.Any(x => x.UserConsoleId == requestBody.UserConsoleId);
+                var foundConsole = _userConsoleRepository.Any(x => x.UserConsoleId == requestBody.UserConsoleId);
                 if (!foundConsole) { return GenericResponses.NotFound("Item Not Found"); }
 
-                if (!consoleRepository.Any(g => g.ConsoleId == requestBody.Item_id) && requestBody.Item_id != 0)
+                if (!_consoleRepository.Any(g => g.ConsoleId == requestBody.Item_id) && requestBody.Item_id != 0)
                 {
-                    var result = await searchConsoleService.RetrieveConsoleInfoAsync(requestBody.Item_id);
+                    var result = await _searchConsoleService.RetrieveConsoleInfoAsync(requestBody.Item_id);
 
                     var consoleInfo = result.Single();
 
@@ -170,11 +170,11 @@ namespace Application.UseCases.UserCollectionOperations.ManageConsoleCollection
                         Name= consoleInfo.Name,
                         IsPortable= consoleInfo.IsPortable                        
                     };
-                    consoleRepository.Add(console);
+                    _consoleRepository.Add(console);
 
                 }
 
-                var res = this.userConsoleRepository.Update(foundConsole.MapAndFill<UserConsole, UpdateConsoleRequestModel>(requestBody));
+                var res = this._userConsoleRepository.Update(foundConsole.MapAndFill<UserConsole, UpdateConsoleRequestModel>(requestBody));
 
                 return res.MapObjectsTo(new UpdateConsoleResponseModel()).Ok();
             }
@@ -214,7 +214,7 @@ namespace Application.UseCases.UserCollectionOperations.ManageConsoleCollection
             try
             {
                 var user_id = requestToken.GetUserId();
-                var res = await userRepository.GetAllConsolesByUser(user_id, x => new UserConsole()
+                var res = await _userRepository.GetAllConsolesByUser(user_id, x => new UserConsole()
                 {
                     UserConsoleId = x.UserConsoleId,
                     Console = x.Console,

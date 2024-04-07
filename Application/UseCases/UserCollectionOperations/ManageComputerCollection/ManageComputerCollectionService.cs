@@ -13,10 +13,10 @@ namespace Application.UseCases.UserCollectionOperations.ManageComputerCollection
 {
     public class ManageComputerCollectionService : IManageComputerCollectionService
     {
-        private IUserRepository userRepository { get; set; }
-        private IComputerRepository computerRepository { get; set; }
-        private IUserComputerRepository userComputerRepository { get; set; }
-        private ISearchComputerService searchComputerService { get; set; }
+        private readonly IUserRepository _userRepository;
+        private readonly IComputerRepository _computerRepository;
+        private readonly IUserComputerRepository _userComputerRepository;
+        private readonly ISearchComputerService _searchComputerService;
         public ManageComputerCollectionService(
             IUserRepository userRepository,
             IComputerRepository computerRepository,
@@ -24,24 +24,24 @@ namespace Application.UseCases.UserCollectionOperations.ManageComputerCollection
             ISearchComputerService searchComputerService
         )
         {
-            this.userRepository = userRepository;
-            this.computerRepository = computerRepository;
-            this.userComputerRepository = userComputerRepository;
-            this.searchComputerService = searchComputerService;
+            this._userRepository = userRepository;
+            this._computerRepository = computerRepository;
+            this._userComputerRepository = userComputerRepository;
+            this._searchComputerService = searchComputerService;
         }
 
         public async Task<ResponseModel> AddComputer(AddItemRequestModel requestBody, ClaimsPrincipal requestToken)
         {
             var user_id = requestToken.GetUserId();
 
-            var user = userRepository.Any(u => u.UserId == user_id);
+            var user = _userRepository.Any(u => u.UserId == user_id);
             if (!user) { return GenericResponses.NotFound("User not found"); }
 
-            if (!computerRepository.Any(g => g.ComputerId == requestBody.Item_id))
+            if (!_computerRepository.Any(g => g.ComputerId == requestBody.Item_id))
             {
                 try
                 {
-                    var result = await searchComputerService.RetrieveComputerInfoAsync(requestBody.Item_id);
+                    var result = await _searchComputerService.RetrieveComputerInfoAsync(requestBody.Item_id);
 
                     var computerInfo = result.Single();
 
@@ -55,7 +55,7 @@ namespace Application.UseCases.UserCollectionOperations.ManageComputerCollection
                     };
 
 
-                    var res = computerRepository.Add(computer);
+                    var res = _computerRepository.Add(computer);
                 }
                 catch (NullClaimException msg)
                 {
@@ -92,7 +92,7 @@ namespace Application.UseCases.UserCollectionOperations.ManageComputerCollection
                     PurchaseDate = requestBody.PurchaseDate == DateTime.MinValue ? DateTime.MinValue : requestBody.PurchaseDate
                 };
 
-                var res = userComputerRepository.Add(userComputer);
+                var res = _userComputerRepository.Add(userComputer);
                 return res.MapObjectsTo(new AddComputerResponseModel()).Created();
             }
             catch (DBConcurrencyException)
@@ -119,10 +119,10 @@ namespace Application.UseCases.UserCollectionOperations.ManageComputerCollection
             {
                 var user_id = requestToken.GetUserId();
 
-                var foundItem = userComputerRepository.SingleOrDefault(r => r.UserId == user_id && r.UserComputerId == user_computer_id);
+                var foundItem = _userComputerRepository.SingleOrDefault(r => r.UserId == user_id && r.UserComputerId == user_computer_id);
                 if (foundItem == null) { return GenericResponses.NotFound(); }
 
-                if (userComputerRepository.Delete(foundItem))
+                if (_userComputerRepository.Delete(foundItem))
                 {
                     return GenericResponses.Ok("Computer deleted");
                 }
@@ -148,15 +148,15 @@ namespace Application.UseCases.UserCollectionOperations.ManageComputerCollection
             {
                 var user_id = requestToken.GetUserId();
 
-                var foundUser = userRepository.Any(x => x.UserId == user_id);
+                var foundUser = _userRepository.Any(x => x.UserId == user_id);
                 if (!foundUser) { return GenericResponses.NotFound("User not found"); }
 
-                var foundComputer = userComputerRepository.Any(x => x.UserComputerId == requestBody.UserComputerId);
+                var foundComputer = _userComputerRepository.Any(x => x.UserComputerId == requestBody.UserComputerId);
                 if (!foundComputer) { return GenericResponses.NotFound("Item Not Found"); }
 
-                if (!computerRepository.Any(g => g.ComputerId == requestBody.Item_id) && requestBody.Item_id != 0)
+                if (!_computerRepository.Any(g => g.ComputerId == requestBody.Item_id) && requestBody.Item_id != 0)
                 {
-                    var result = await searchComputerService.RetrieveComputerInfoAsync(requestBody.Item_id);
+                    var result = await _searchComputerService.RetrieveComputerInfoAsync(requestBody.Item_id);
 
                     var computerInfo = result.Single();
 
@@ -168,11 +168,11 @@ namespace Application.UseCases.UserCollectionOperations.ManageComputerCollection
                         Name = computerInfo.Name,
                         IsArcade = computerInfo.IsArcade
                     };
-                    computerRepository.Add(computer);
+                    _computerRepository.Add(computer);
 
                 }
 
-                var res = this.userComputerRepository.Update(foundComputer.MapAndFill<UserComputer, UpdateComputerRequestModel>(requestBody));
+                var res = this._userComputerRepository.Update(foundComputer.MapAndFill<UserComputer, UpdateComputerRequestModel>(requestBody));
 
                 return res.MapObjectsTo(new UpdateComputerResponseModel()).Ok();
             }
@@ -217,7 +217,7 @@ namespace Application.UseCases.UserCollectionOperations.ManageComputerCollection
             try
             {
                 var user_id = requestToken.GetUserId(); 
-                var res = await userRepository.GetAllComputersByUser(user_id, x => new UserComputer()
+                var res = await _userRepository.GetAllComputersByUser(user_id, x => new UserComputer()
                 {
                     UserComputerId = x.UserComputerId,
                     Computer = x.Computer,

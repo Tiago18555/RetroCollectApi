@@ -14,10 +14,10 @@ namespace Application.UseCases.UserCollectionOperations.AddItems
 {
     public partial class ManageGameCollectionService : IManageGameCollectionService
     {
-        private IUserRepository userRepository { get; set; }
-        private IGameRepository gameRepository { get; set; }
-        private IUserCollectionRepository userCollectionRepository { get; set; }
-        private ISearchGameService searchGameService { get; set; }
+        private readonly IUserRepository _userRepository;
+        private readonly IGameRepository _gameRepository;
+        private readonly IUserCollectionRepository _userCollectionRepository;
+        private readonly ISearchGameService _searchGameService;
         public ManageGameCollectionService(
             IUserRepository userRepository,
             IGameRepository gameRepository,
@@ -25,24 +25,24 @@ namespace Application.UseCases.UserCollectionOperations.AddItems
             ISearchGameService searchGameService
         )
         {
-            this.userRepository = userRepository;
-            this.gameRepository = gameRepository;
-            this.userCollectionRepository = userCollectionRepository;
-            this.searchGameService = searchGameService;
+            this._userRepository = userRepository;
+            this._gameRepository = gameRepository;
+            this._userCollectionRepository = userCollectionRepository;
+            this._searchGameService = searchGameService;
         }
 
         public async Task<ResponseModel> AddGame(AddGameRequestModel requestBody, ClaimsPrincipal requestToken)
         {
             var user_id = requestToken.GetUserId();
 
-            var user = userRepository.Any(u => u.UserId == user_id);
+            var user = _userRepository.Any(u => u.UserId == user_id);
             if (!user) { return GenericResponses.NotFound("User not found"); }
 
-            if (!gameRepository.Any(g => g.GameId == requestBody.Game_id))
+            if (!_gameRepository.Any(g => g.GameId == requestBody.Game_id))
             {
                 try
                 {
-                    var result = await searchGameService.RetrieveGameInfoAsync(requestBody.Game_id);
+                    var result = await _searchGameService.RetrieveGameInfoAsync(requestBody.Game_id);
 
                     var gameInfo = result.Single();
 
@@ -58,7 +58,7 @@ namespace Application.UseCases.UserCollectionOperations.AddItems
                     };
 
 
-                    gameRepository.Add(game);
+                    _gameRepository.Add(game);
                 }
                 catch (InvalidOperationException)
                 {
@@ -92,7 +92,7 @@ namespace Application.UseCases.UserCollectionOperations.AddItems
                     PurchaseDate = requestBody.PurchaseDate == DateTime.MinValue ? DateTime.MinValue : requestBody.PurchaseDate
                 };
 
-                var res = userCollectionRepository.Add(userCollection);
+                var res = _userCollectionRepository.Add(userCollection);
                 return res.MapObjectsTo(new AddGameResponseModel()).Created();
             }
             catch (NullClaimException msg)
@@ -124,10 +124,10 @@ namespace Application.UseCases.UserCollectionOperations.AddItems
             {
                 var user_id = requestToken.GetUserId();
 
-                var foundItem = userCollectionRepository.SingleOrDefault(x => x.UserId == user_id && x.UserCollectionId == user_collection_id);
+                var foundItem = _userCollectionRepository.SingleOrDefault(x => x.UserId == user_id && x.UserCollectionId == user_collection_id);
                 if (foundItem == null) { return GenericResponses.NotFound(); }
 
-                if (userCollectionRepository.Delete(foundItem))
+                if (_userCollectionRepository.Delete(foundItem))
                 {
                     return GenericResponses.Ok("Game deleted");
                 }
@@ -152,15 +152,15 @@ namespace Application.UseCases.UserCollectionOperations.AddItems
             try
             {
                 if (!user.IsTheRequestedOneId(updateGameRequestModel.User_id)) return GenericResponses.Forbidden();
-                var foundUser = userRepository.SingleOrDefault(x => x.UserId == updateGameRequestModel.User_id);
+                var foundUser = _userRepository.SingleOrDefault(x => x.UserId == updateGameRequestModel.User_id);
                 if (foundUser == null) { return GenericResponses.NotFound("User not found"); }
 
-                var foundGame = userCollectionRepository.SingleOrDefault(x => x.UserCollectionId == updateGameRequestModel.UserCollection_id);
+                var foundGame = _userCollectionRepository.SingleOrDefault(x => x.UserCollectionId == updateGameRequestModel.UserCollection_id);
                 if (foundGame == null) { return GenericResponses.NotFound("Item Not Found"); }
 
-                if (!gameRepository.Any(g => g.GameId == updateGameRequestModel.Game_id) && updateGameRequestModel.Game_id != 0)
+                if (!_gameRepository.Any(g => g.GameId == updateGameRequestModel.Game_id) && updateGameRequestModel.Game_id != 0)
                 {
-                    var result = await searchGameService.RetrieveGameInfoAsync(updateGameRequestModel.Game_id);
+                    var result = await _searchGameService.RetrieveGameInfoAsync(updateGameRequestModel.Game_id);
 
                     var gameInfo = result.Single();
 
@@ -175,11 +175,11 @@ namespace Application.UseCases.UserCollectionOperations.AddItems
                         ReleaseYear = gameInfo.FirstReleaseDate
                     };
 
-                    gameRepository.Add(game);
+                    _gameRepository.Add(game);
 
                 }
 
-                var res = this.userCollectionRepository.Update(foundGame.MapAndFill<UserCollection, UpdateGameRequestModel>(updateGameRequestModel));
+                var res = this._userCollectionRepository.Update(foundGame.MapAndFill<UserCollection, UpdateGameRequestModel>(updateGameRequestModel));
 
                 return res.MapObjectsTo(new UpdateGameResponseModel()).Ok();
             }
@@ -219,7 +219,7 @@ namespace Application.UseCases.UserCollectionOperations.AddItems
             try
             {
                 var user_id = requestToken.GetUserId();
-                var res = await userRepository.GetAllCollectionsByUser(user_id, x => new UserCollection()
+                var res = await _userRepository.GetAllCollectionsByUser(user_id, x => new UserCollection()
                 {
                     UserCollectionId = x.UserCollectionId,
                     Game = x.Game,

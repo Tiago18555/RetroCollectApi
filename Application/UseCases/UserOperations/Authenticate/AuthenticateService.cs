@@ -13,14 +13,14 @@ namespace Application.UseCases.UserOperations.Authenticate
 {
     public class AuthenticateService : IAuthenticateService
     {
-        private IConfiguration configuration { get; set; }
-        private IUserRepository repository { get; set; }
-        private IDateTimeProvider timeProvider { get; set; }
+        private readonly IConfiguration _configuration;
+        private readonly IUserRepository _repository;
+        private readonly IDateTimeProvider _timeProvider;
         public AuthenticateService(IUserRepository _repository, IConfiguration configuration, IDateTimeProvider dateTimeProvider)
         {
-            this.repository = _repository;
-            this.configuration = configuration;
-            this.timeProvider = dateTimeProvider;
+            this._repository = _repository;
+            this._configuration = configuration;
+            this._timeProvider = dateTimeProvider;
         }
 
         public ResponseModel Login(AuthenticateServiceRequestModel credentials)
@@ -41,7 +41,7 @@ namespace Application.UseCases.UserOperations.Authenticate
             token = token.Replace("Bearer ", "");
 
             var tokenHandler = new JwtSecurityTokenHandler();
-            var secretKey = Encoding.ASCII.GetBytes(configuration["Jwt:SecretKey"]);
+            var secretKey = Encoding.ASCII.GetBytes(_configuration["Jwt:SecretKey"]);
             try
             {
                 tokenHandler.ValidateToken(token, new TokenValidationParameters
@@ -72,7 +72,7 @@ namespace Application.UseCases.UserOperations.Authenticate
             {
                 User user;
 
-                user = repository.SingleOrDefault(x => x.Username == authenticateServiceRequestModel.Username);
+                user = _repository.SingleOrDefault(x => x.Username == authenticateServiceRequestModel.Username);
 
                 if (user == null || !BCryptNet.Verify(authenticateServiceRequestModel.Password, user.Password))
                 {
@@ -81,7 +81,7 @@ namespace Application.UseCases.UserOperations.Authenticate
 
                 if (user.VerifiedAt == DateTime.MinValue) return new AuthenticateServiceResponseModel(true, "Please verify this user on your registered email.");
 
-                return new AuthenticateServiceResponseModel(GenerateToken(user), timeProvider.UtcNow.AddDays(7));
+                return new AuthenticateServiceResponseModel(GenerateToken(user), _timeProvider.UtcNow.AddDays(7));
 
 
             }
@@ -97,7 +97,7 @@ namespace Application.UseCases.UserOperations.Authenticate
         /// <exception cref="EncoderFallbackException"></exception>
         internal string GenerateToken(User user)
         {
-            var chaveSimetrica = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:SecretKey"]));
+            var chaveSimetrica = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:SecretKey"]));
             var credenciais = new SigningCredentials(chaveSimetrica, SecurityAlgorithms.HmacSha256Signature);
 
             var claims = new List<Claim>
@@ -106,9 +106,9 @@ namespace Application.UseCases.UserOperations.Authenticate
             };
 
             var jwt = new JwtSecurityToken(
-                issuer: configuration["Jwt:ValidIssuer"],
-                expires: timeProvider.UtcNow.AddDays(7),
-                audience: configuration["Jwt:ValidAudience"],
+                issuer: _configuration["Jwt:ValidIssuer"],
+                expires: _timeProvider.UtcNow.AddDays(7),
+                audience: _configuration["Jwt:ValidAudience"],
                 signingCredentials: credenciais,                
                 claims: claims                
             );

@@ -1,15 +1,16 @@
 ﻿using CrossCutting;
+using Infrastructure;
 using Application.UseCases.IgdbIntegrationOperations.Shared;
 
 namespace Application.UseCases.IgdbIntegrationOperations.SearchGame
 {
     public class SearchGameService : ISearchGameService
     {
-        private readonly HttpClient httpClient;
+        private readonly HttpClient _httpClient;
 
         public SearchGameService()
         {
-            httpClient = new HttpClient();
+            _httpClient = new HttpClient();
         }
 
         public async Task<ResponseModel> GetById(int id)
@@ -33,7 +34,7 @@ namespace Application.UseCases.IgdbIntegrationOperations.SearchGame
                 websites.url; 
                 where id = " + id.ToString() + ";";
 
-            var res = await httpClient.IgdbPostAsync<List<GetGameByIdResponseModel>>(query, "games");
+            var res = await _httpClient.IgdbPostAsync<List<GetGameByIdResponseModel>>(query, "games");
 
             return res.Ok();
         }
@@ -51,7 +52,7 @@ namespace Application.UseCases.IgdbIntegrationOperations.SearchGame
                 cover.image_id; 
                 where id = " + game_id.ToString() + ";";
 
-            var res = await httpClient.IgdbPostAsync<List<GameInfo>>(query, "games");
+            var res = await _httpClient.IgdbPostAsync<List<GameInfo>>(query, "games");
 
             return res;
         }
@@ -87,11 +88,11 @@ namespace Application.UseCases.IgdbIntegrationOperations.SearchGame
                 queryParams["limit"] = limit.ToString();
 
 
-            var query = queryParams.BuildSearchQuery(50);
+            var query = queryParams.BuildSearchQuery(limit);
 
             Console.WriteLine(query);
 
-            var res = await httpClient.IgdbPostAsync<List<SearchGameResponseModel>>(query, "games");
+            var res = await _httpClient.IgdbPostAsync<List<SearchGameResponseModel>>(query, "games");
 
             return res.Ok();
 

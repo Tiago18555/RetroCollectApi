@@ -1,22 +1,23 @@
 ﻿using CrossCutting;
 using Application.UseCases.IgdbIntegrationOperations.Shared;
 using Newtonsoft.Json;
+using Infrastructure;
 
 namespace Application.UseCases.IgdbIntegrationOperations.SearchComputer
 {
     public class SearchComputerService : ISearchComputerService
     {
-        private readonly HttpClient httpClient;
+        private readonly HttpClient _httpClient;
         public SearchComputerService()
         {
-            httpClient = new HttpClient();
+            _httpClient = new HttpClient();
         }
 
         public async Task<ResponseModel> GetById(int id)
         {
             string query = $"fields *, platform_logo.image_id, versions.name, versions.platform_logo.image_id, summary, url, websites.url, websites.category; where category = (2, 6); where id = {id.ToString()};";
 
-            var res = await httpClient.IgdbPostAsync<List<PlatformResponseModel>>(query, "platforms");
+            var res = await _httpClient.IgdbPostAsync<List<PlatformResponseModel>>(query, "platforms");
 
             return res.Ok();
             throw new NotImplementedException();
@@ -33,7 +34,7 @@ namespace Application.UseCases.IgdbIntegrationOperations.SearchComputer
 
             Console.WriteLine(query);
 
-            var res = await httpClient.IgdbPostAsync<List<SearchComputerResponseModel>>(query, "platforms");
+            var res = await _httpClient.IgdbPostAsync<List<SearchComputerResponseModel>>(query, "platforms");
 
             return res.Ok();
         }
@@ -48,7 +49,7 @@ namespace Application.UseCases.IgdbIntegrationOperations.SearchComputer
                 category;
                 where id = " + game_id.ToString() + ";";
 
-            var res = await httpClient.IgdbPostAsync<List<ComputerInfo>>(query, "platforms");
+            var res = await _httpClient.IgdbPostAsync<List<ComputerInfo>>(query, "platforms");
 
             return res;
         }

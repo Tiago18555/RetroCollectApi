@@ -1,4 +1,5 @@
 ﻿using CrossCutting;
+using Infrastructure;
 using Application.UseCases.IgdbIntegrationOperations.Shared;
 using Newtonsoft.Json;
 
@@ -6,17 +7,17 @@ namespace Application.UseCases.IgdbIntegrationOperations.SearchConsole
 {
     public class SearchConsoleService : ISearchConsoleService
     {
-        private readonly HttpClient httpClient;
+        private readonly HttpClient _httpClient;
         public SearchConsoleService()
         {
-            httpClient = new HttpClient();
+            _httpClient = new HttpClient();
         }
 
         public async Task<ResponseModel> GetById(int id)
         {
             string query = "fields *, platform_logo.image_id, versions.name, versions.platform_logo.image_id, summary, url, websites.url, websites.category; where category = (1, 5); where id = " + id.ToString() + "; ";
 
-            var res = await httpClient.IgdbPostAsync<List<PlatformResponseModel>>(query, "platforms");
+            var res = await _httpClient.IgdbPostAsync<List<PlatformResponseModel>>(query, "platforms");
 
             return res.Ok();
         }
@@ -31,7 +32,7 @@ namespace Application.UseCases.IgdbIntegrationOperations.SearchConsole
                 category;
                 where id = " + game_id.ToString() + ";";
 
-            var res = await httpClient.IgdbPostAsync<List<ConsoleInfo>>(query, "platforms");
+            var res = await _httpClient.IgdbPostAsync<List<ConsoleInfo>>(query, "platforms");
 
             return res;
         }
@@ -47,7 +48,7 @@ namespace Application.UseCases.IgdbIntegrationOperations.SearchConsole
 
             Console.WriteLine(query);
 
-            var res = await httpClient.IgdbPostAsync<List<SearchConsoleResponseModel>>(query, "platforms");
+            var res = await _httpClient.IgdbPostAsync<List<SearchConsoleResponseModel>>(query, "platforms");
 
             return res.Ok();
         }

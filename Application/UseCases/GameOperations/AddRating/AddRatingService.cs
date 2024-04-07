@@ -12,15 +12,15 @@ namespace Application.UseCases.GameOperations.AddRating
 {
     public class AddRatingService : IAddRatingService
     {
-        private IRatingRepository _repository;
-        private IGameRepository _gameRepository;
-        private IUserRepository _userRepository;
-        private IDateTimeProvider _dateTimeProvider;
-        private ISearchGameService _searchGameService;
+        private readonly IRatingRepository _ratingRepository;
+        private readonly IGameRepository _gameRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IDateTimeProvider _dateTimeProvider;
+        private readonly ISearchGameService _searchGameService;
 
         public AddRatingService(IRatingRepository repository, IGameRepository gameRepository, IUserRepository userRepository, IDateTimeProvider dateTimeProvider, ISearchGameService searchGameService)
         {
-            _repository = repository;
+            _ratingRepository = repository;
             _gameRepository = gameRepository;
             _userRepository = userRepository;
             _dateTimeProvider = dateTimeProvider;
@@ -38,7 +38,7 @@ namespace Application.UseCases.GameOperations.AddRating
                     return GenericResponses.NotFound($"User {user_id} not found");
 
 
-                if (_repository.Any(r => r.UserId == user_id && r.GameId == game_id))
+                if (_ratingRepository.Any(r => r.UserId == user_id && r.GameId == game_id))
                     return GenericResponses.BadRequest("User cannot have 2 ratings on the same game");
 
                 if (!_gameRepository.Any(g => g.GameId == game_id))
@@ -67,7 +67,7 @@ namespace Application.UseCases.GameOperations.AddRating
                 newRating.CreatedAt = _dateTimeProvider.UtcNow;
                 newRating.UserId = user_id;
 
-                return _repository.Add(newRating)
+                return _ratingRepository.Add(newRating)
                     .MapObjectsTo(new AddRatingResponseModel())
                     .Created();
             }

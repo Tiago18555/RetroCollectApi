@@ -7,13 +7,13 @@ namespace Application.UseCases.UserWishlistOperations
 {
     public class WishlistService : IWishlistService
     {
-        private IWishlistRepository _repository;
-        private IUserRepository _userRepository;
-        private IGameRepository _gameRepository;
+        private readonly IWishlistRepository _wishlistRepository;
+        private readonly IUserRepository _userRepository;
+        private readonly IGameRepository _gameRepository;
 
         public WishlistService(IWishlistRepository repository, IUserRepository userRepository, IGameRepository gameRepository)
         {
-            _repository = repository;
+            _wishlistRepository = repository;
             _userRepository = userRepository;
             _gameRepository = gameRepository;
         }
@@ -34,7 +34,7 @@ namespace Application.UseCases.UserWishlistOperations
 
             var wishlist = new Wishlist { UserId = user_id, GameId = item_id };
 
-            return _repository
+            return _wishlistRepository
                 .Add(wishlist)
                 .MapObjectTo(
                     new AddToUserWishlistResponseModel()
@@ -49,9 +49,9 @@ namespace Application.UseCases.UserWishlistOperations
             List<WishlistResponseModel> result;
 
             if (limit == 0)
-                result = await _repository.GetWishlistsByGame(gameId, x => x.MapObjectTo(new WishlistResponseModel()));
+                result = await _wishlistRepository.GetWishlistsByGame(gameId, x => x.MapObjectTo(new WishlistResponseModel()));
             else
-                result = await _repository.GetWishlistsByGame(gameId, x => x.MapObjectTo(new WishlistResponseModel()), page, limit);
+                result = await _wishlistRepository.GetWishlistsByGame(gameId, x => x.MapObjectTo(new WishlistResponseModel()), page, limit);
 
             return result.Ok();
         }
@@ -66,9 +66,9 @@ namespace Application.UseCases.UserWishlistOperations
             List<WishlistResponseModel> result;
 
             if(limit == 0)            
-                result = await _repository.GetWishlistsByUser(user_id, x => x.MapObjectTo(new WishlistResponseModel()));
+                result = await _wishlistRepository.GetWishlistsByUser(user_id, x => x.MapObjectTo(new WishlistResponseModel()));
             else
-                result = await _repository.GetWishlistsByUser(user_id, x => x.MapObjectTo(new WishlistResponseModel()), page, limit);
+                result = await _wishlistRepository.GetWishlistsByUser(user_id, x => x.MapObjectTo(new WishlistResponseModel()), page, limit);
 
             return result.Ok();
         }
@@ -85,7 +85,7 @@ namespace Application.UseCases.UserWishlistOperations
 
             if (!game) { return GenericResponses.NotFound("Game not found"); }
 
-            var result = _repository.Delete(new Wishlist { UserId = user_id, GameId = game_id });
+            var result = _wishlistRepository.Delete(new Wishlist { UserId = user_id, GameId = game_id });
 
             if (result) return "Successfully Deleted".Ok();
             else return GenericResponses.NotFound("Operation not successfully completed");
