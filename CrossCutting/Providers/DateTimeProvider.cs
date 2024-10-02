@@ -1,4 +1,6 @@
-﻿namespace CrossCutting.Providers
+﻿using System.Collections.Generic;
+
+namespace CrossCutting.Providers
 {
     public class DateTimeProvider: IDateTimeProvider
     {

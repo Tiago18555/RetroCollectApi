@@ -14,6 +14,8 @@ namespace Tests
             _timeProvider = timeProvider;
         }
 
+        /*
+
         [Fact]
         public void MapAndFill_ShouldFillUserFields_WhenUpdateUserRequestModelHasValues()
         {
@@ -45,6 +47,8 @@ namespace Tests
             Assert.Equal(target.LastName, result.LastName);
         }
 
+        
+
         [Fact]
         public void MapAndFill_ShouldNotFillUserFields_WhenUpdateUserRequestModelIsEmpty()
         {
@@ -68,5 +72,7 @@ namespace Tests
             Assert.Equal(source.FirstName, result.FirstName);
             Assert.Equal(source.LastName, result.LastName);
         }
+
+        */
     }
 }

@@ -27,7 +27,7 @@ namespace Infrastructure
 
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine($"Client-ID: {clientId}");
-            Console.WriteLine($"Token: {token.Substring(0,5)}...");
+            Console.WriteLine($"Token: {token[..5]}...");
             Console.ForegroundColor = ConsoleColor.White;
 
             await Console.Out.WriteLineAsync($"URL: {baseHost}{endpoint}");
