@@ -89,12 +89,8 @@ namespace Application.UseCases.UserOperations.VerifyAndRecoverUser
 
                 Path.Combine(
                     System.Environment.CurrentDirectory,
-                    "..",
-                    "Application", 
-                    "UseCases", 
-                    "UserOperations", 
-                    "VerifyAndRecoverUser", 
-                    "Resources", 
+                    _config["BasePath"],
+                    "Static",
                     "recover-template.html"
                 )
 
@@ -220,12 +216,8 @@ namespace Application.UseCases.UserOperations.VerifyAndRecoverUser
 
                 Path.Combine(
                     Environment.CurrentDirectory,
-                    "..",
-                    "Application", 
-                    "UseCases", 
-                    "UserOperations", 
-                    "VerifyAndRecoverUser", 
-                    "Resources", 
+                    _config["BasePath"],
+                    "Static",
                     "change-password.html"
                 )
 

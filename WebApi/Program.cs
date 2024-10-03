@@ -8,12 +8,12 @@ using Infrastructure.Data;
 using Domain.Repositories.Interfaces;
 using Infrastructure.Repositories;
 using CrossCutting.Providers;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 var configuration = builder.Configuration;
 var connectionString = configuration.GetConnectionString("Local");
-
 
 //JWT
 var symmetricalKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:SecretKey"]));
@@ -104,11 +104,25 @@ builder.Services.AddCors(c =>
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "Docker")
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+if (app.Environment.IsDevelopment())
+{
+    builder.Configuration["BasePath"] = Path.Combine(
+        Environment.CurrentDirectory,
+        ".."
+    );
+}
+
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(builder.Configuration["BasePath"]),
+    RequestPath = "/static"
+});
 
 app.UseHttpsRedirection();
 

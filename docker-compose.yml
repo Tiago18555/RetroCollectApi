@@ -1,18 +1,17 @@
-version: '3.4' # run-migrations.sh
+version: '3.4'
 
 services:
   postgres:
     image: postgres:latest
     restart: always
     ports:
-      - "5432:5432"
+      - "27000:5432"
     environment:
       POSTGRES_DB: RetroCollect
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: batatapalha
     volumes:
       - postgres-data:/var/lib/postgresql/data
-      #- ./RetroCollectApi/Data/postgres-init.sql:/docker-entrypoint-initdb.d/meu-script-inserts.sql
 
   mongo:
     image: mongo:latest
@@ -29,13 +28,10 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
-#      - ASPNETCORE_HTTP_PORTS=8080
+      - ASPNETCORE_ENVIRONMENT=Docker
       - ASPNETCORE_URLS=http://+:5000
-#      - ASPNETCORE_HTTPS_PORTS=8081
     ports:
-      - "8080:5000"
-#      - "8081"
+      - "8080:5000" # HTTP
     volumes:
       - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
       - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro

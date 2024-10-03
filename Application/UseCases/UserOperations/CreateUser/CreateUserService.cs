@@ -74,15 +74,9 @@ namespace Application.UseCases.UserOperations.CreateUser
             var verificationLink = $"{host}auth/verify/{user.UserId}";
 
             var template = File.ReadAllText(
-
                 Path.Combine(
-                    System.Environment.CurrentDirectory,
-                    "..",
-                    "Application",
-                    "UseCases",
-                    "UserOperations",
-                    "CreateUser",
-                    "Resources",
+                    _config["BasePath"],
+                    "Static",
                     "verify-template.html"
                 )
             );
