@@ -33,8 +33,6 @@ services:
     ports:
       - "8080:5000" # HTTP
     volumes:
-      - ${APPDATA}/Microsoft/UserSecrets:/home/app/.microsoft/usersecrets:ro
-      - ${APPDATA}/ASP.NET/Https:/home/app/.aspnet/https:ro
       - ./RetroCollect:/home/app
     depends_on:
       - postgres

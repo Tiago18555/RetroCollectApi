@@ -50,12 +50,11 @@ builder.Services.AddScoped<IComputerRepository, ComputerRepository>();
 builder.Services.AddScoped<IGameRepository, GameRepository>();
 
 builder.Services.AddScoped<IRecoverRepository, MongoRepository>();
-
 builder.Services.AddScoped<IRatingRepository, RatingRepository>();
-
 builder.Services.AddScoped<IWishlistRepository, WishlistRepository>();
 
 builder.Services.AddUseCases();
+builder.Services.AddKafkaServices();
 
 builder.Services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 

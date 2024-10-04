@@ -8,6 +8,8 @@ using MailKit.Security;
 using MimeKit;
 using MimeKit.Text;
 using MailKit.Net.Smtp;
+using Confluent.Kafka;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Application.UseCases.UserOperations.CreateUser
 {
@@ -15,14 +17,21 @@ namespace Application.UseCases.UserOperations.CreateUser
     {
         private readonly IUserRepository _repository;
         private readonly IConfiguration _config;
-        public CreateUserService(IUserRepository repository, IConfiguration config)
+        private readonly IKafkaProducerService _producer;
+        private readonly IKafkaConsumerService _consumer;
+        public CreateUserService(IUserRepository repository, IConfiguration config, IKafkaProducerService producer, IKafkaConsumerService consumer)
         {
             this._repository = repository;
             this._config = config;
+            this._producer = producer;
+            this._consumer = consumer;
         }
 
         public ResponseModel CreateUser(CreateUserRequestModel createUserRequestModel)
         {
+            // TODO: kafka producer call;
+            // TODO: kafka consumer call;
+
             User user = createUserRequestModel.MapObjectTo(new User());
 
             if (_repository.Any(x => x.Username == createUserRequestModel.Username || x.Email == createUserRequestModel.Email))

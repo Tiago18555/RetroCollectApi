@@ -38,4 +38,12 @@ public static class ApplicationExtension
 
         return services;
     }
+
+    public static IServiceCollection AddKafkaServices(this IServiceCollection services)
+    {
+        services.AddScoped<IKafkaConsumerService, KafkaConsumerService>();
+        services.AddScoped<IKafkaProducerService, KafkaProducerService>();
+
+        return services;
+    }
 }

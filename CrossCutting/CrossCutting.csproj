@@ -8,10 +8,14 @@
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.7" />
+  </ItemGroup>
 
+  <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.4" />
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
-
+  </ItemGroup>
+  
+  <ItemGroup>
     <PackageReference Include="MimeKit" Version="4.0.0" />
     <PackageReference Include="MailKit" Version="4.0.0" />
   </ItemGroup>
