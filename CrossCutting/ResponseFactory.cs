@@ -1,6 +1,6 @@
 ﻿namespace CrossCutting
 {
-    public static class GenericResponses
+    public static class ResponseFactory
     {
         public static ResponseModel Ok(this object data, string message = "Sucesso") => new() { Result = "Ok", Data = data, StatusCode = 200, Message = message };
         public static ResponseModel NoContent(string message = null) => new() { Result = "No Content", StatusCode = 204, Message = message };

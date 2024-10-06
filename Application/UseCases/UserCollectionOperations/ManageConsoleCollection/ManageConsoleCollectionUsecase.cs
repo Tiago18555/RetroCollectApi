@@ -12,17 +12,17 @@ using Console = Domain.Entities.Console;
 
 namespace Application.UseCases.UserCollectionOperations.ManageConsoleCollection
 {
-    public class ManageConsoleCollectionService : IManageConsoleCollectionService
+    public class ManageConsoleCollectionUsecase : IManageConsoleCollectionUsecase
     {
         private readonly IUserRepository _userRepository;
         private readonly IConsoleRepository _consoleRepository;
         private readonly IUserConsoleRepository _userConsoleRepository;
-        private readonly ISearchConsoleService _searchConsoleService;
-        public ManageConsoleCollectionService(
+        private readonly ISearchConsoleUsecase _searchConsoleService;
+        public ManageConsoleCollectionUsecase(
             IUserRepository userRepository,
             IConsoleRepository consoleRepository,
             IUserConsoleRepository userConsoleRepository,
-            ISearchConsoleService searchConsoleService
+            ISearchConsoleUsecase searchConsoleService
         )
         {
             this._userRepository = userRepository;
@@ -37,7 +37,7 @@ namespace Application.UseCases.UserCollectionOperations.ManageConsoleCollection
             var user_id = requestToken.GetUserId();
 
             var user = _userRepository.Any(u => u.UserId == user_id);
-            if (!user) { return GenericResponses.NotFound("User not found"); }
+            if (!user) { return ResponseFactory.NotFound("User not found"); }
 
             if (!_consoleRepository.Any(g => g.ConsoleId == requestBody.Item_id))
             {
@@ -103,15 +103,15 @@ namespace Application.UseCases.UserCollectionOperations.ManageConsoleCollection
             }
             catch (InvalidEnumTypeException msg)
             {
-                return GenericResponses.UnsupportedMediaType("Invalid type for Condition or OwnershipStatus: " + msg);
+                return ResponseFactory.UnsupportedMediaType("Invalid type for Condition or OwnershipStatus: " + msg);
             }
             catch (InvalidEnumValueException msg)
             {
-                return GenericResponses.BadRequest("Invalid value for Condition or OwnershipStatus: " + msg);
+                return ResponseFactory.BadRequest("Invalid value for Condition or OwnershipStatus: " + msg);
             }
             catch (NullClaimException msg)
             {
-                return GenericResponses.BadRequest(msg.ToString());
+                return ResponseFactory.BadRequest(msg.ToString());
             }
 
         }
@@ -122,15 +122,15 @@ namespace Application.UseCases.UserCollectionOperations.ManageConsoleCollection
                 var user_id = requestToken.GetUserId();
 
                 var foundItem = _userConsoleRepository.SingleOrDefault(r => r.UserId == user_id && r.UserConsoleId == user_console_id);
-                if (foundItem == null) { return GenericResponses.NotFound(); }
+                if (foundItem == null) { return ResponseFactory.NotFound(); }
 
                 if (_userConsoleRepository.Delete(foundItem))
                 {
-                    return GenericResponses.Ok("Console deleted");
+                    return ResponseFactory.Ok("Console deleted");
                 }
                 else
                 {
-                    return GenericResponses.Ok("Not deleted");
+                    return ResponseFactory.Ok("Not deleted");
                 }
             }
             catch (ArgumentNullException)
@@ -139,7 +139,7 @@ namespace Application.UseCases.UserCollectionOperations.ManageConsoleCollection
             }
             catch (NullClaimException msg)
             {
-                return GenericResponses.BadRequest(msg.ToString());
+                return ResponseFactory.BadRequest(msg.ToString());
             }
         }
 
@@ -151,10 +151,10 @@ namespace Application.UseCases.UserCollectionOperations.ManageConsoleCollection
                 var user_id = requestToken.GetUserId();
 
                 var foundUser = _userRepository.Any(x => x.UserId == requestBody.User_id);
-                if (!foundUser) { return GenericResponses.NotFound("User not found"); }
+                if (!foundUser) { return ResponseFactory.NotFound("User not found"); }
 
                 var foundConsole = _userConsoleRepository.Any(x => x.UserConsoleId == requestBody.UserConsoleId);
-                if (!foundConsole) { return GenericResponses.NotFound("Item Not Found"); }
+                if (!foundConsole) { return ResponseFactory.NotFound("Item Not Found"); }
 
                 if (!_consoleRepository.Any(g => g.ConsoleId == requestBody.Item_id) && requestBody.Item_id != 0)
                 {
@@ -200,7 +200,7 @@ namespace Application.UseCases.UserCollectionOperations.ManageConsoleCollection
             }
             catch (NullClaimException msg)
             {
-                return GenericResponses.BadRequest(msg.ToString());
+                return ResponseFactory.BadRequest(msg.ToString());
             }
             catch (Exception)
             {
@@ -234,7 +234,7 @@ namespace Application.UseCases.UserCollectionOperations.ManageConsoleCollection
             }
             catch (NullClaimException msg)
             {
-                return GenericResponses.BadRequest(msg.ToString());
+                return ResponseFactory.BadRequest(msg.ToString());
             }
         }
     }

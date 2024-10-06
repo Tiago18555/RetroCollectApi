@@ -2,7 +2,7 @@
 
 namespace Application.UseCases.UserOperations.CreateUser
 {
-    public interface ICreateUserService
+    public interface ICreateUserUsecase
     {
         ResponseModel CreateUser(CreateUserRequestModel createUserRequestModel);
     }

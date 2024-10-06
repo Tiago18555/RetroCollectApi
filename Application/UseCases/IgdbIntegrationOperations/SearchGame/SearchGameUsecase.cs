@@ -4,11 +4,11 @@ using Application.UseCases.IgdbIntegrationOperations.Shared;
 
 namespace Application.UseCases.IgdbIntegrationOperations.SearchGame
 {
-    public class SearchGameService : ISearchGameService
+    public class SearchGameUsecase : ISearchGameUsecase
     {
         private readonly HttpClient _httpClient;
 
-        public SearchGameService()
+        public SearchGameUsecase()
         {
             _httpClient = new HttpClient();
         }

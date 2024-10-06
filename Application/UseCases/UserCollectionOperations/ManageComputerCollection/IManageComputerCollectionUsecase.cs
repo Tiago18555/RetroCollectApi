@@ -4,7 +4,7 @@ using Application.UseCases.UserCollectionOperations.Shared;
 
 namespace Application.UseCases.UserCollectionOperations.ManageComputerCollection
 {
-    public interface IManageComputerCollectionService
+    public interface IManageComputerCollectionUsecase
     {
         public Task<ResponseModel> AddComputer(AddItemRequestModel item, ClaimsPrincipal user);
         public ResponseModel DeleteComputer(Guid id, ClaimsPrincipal user);

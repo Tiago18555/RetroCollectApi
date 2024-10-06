@@ -2,7 +2,7 @@
 
 namespace Application.UseCases.IgdbIntegrationOperations.SearchGame
 {
-    public interface ISearchGameService
+    public interface ISearchGameUsecase
     {
         Task<ResponseModel> SearchBy(string name, string genre, string keyword, string companie, string language, string theme, string releaseyear, int limit);
 

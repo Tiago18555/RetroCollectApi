@@ -5,13 +5,13 @@ using System.Security.Claims;
 
 namespace Application.UseCases.UserWishlistOperations
 {
-    public class WishlistService : IWishlistService
+    public class WishlistUsecase : IWishlistUsecase
     {
         private readonly IWishlistRepository _wishlistRepository;
         private readonly IUserRepository _userRepository;
         private readonly IGameRepository _gameRepository;
 
-        public WishlistService(IWishlistRepository repository, IUserRepository userRepository, IGameRepository gameRepository)
+        public WishlistUsecase(IWishlistRepository repository, IUserRepository userRepository, IGameRepository gameRepository)
         {
             _wishlistRepository = repository;
             _userRepository = userRepository;
@@ -26,11 +26,11 @@ namespace Application.UseCases.UserWishlistOperations
 
             var user = _userRepository.Any(u => u.UserId == user_id);
 
-            if (!user) { return GenericResponses.NotFound("User not found"); }
+            if (!user) { return ResponseFactory.NotFound("User not found"); }
 
             var game = _gameRepository.Any(g => g.GameId == item_id);
 
-            if (!game) { return GenericResponses.NotFound("Game not found"); }
+            if (!game) { return ResponseFactory.NotFound("Game not found"); }
 
             var wishlist = new Wishlist { UserId = user_id, GameId = item_id };
 
@@ -44,7 +44,7 @@ namespace Application.UseCases.UserWishlistOperations
         public async Task<ResponseModel> GetAllByGame(int gameId, int limit, int page)
         {
             if (_gameRepository.Any(u => u.GameId == gameId))
-                return GenericResponses.NotFound("Game not found");
+                return ResponseFactory.NotFound("Game not found");
 
             List<WishlistResponseModel> result;
 
@@ -61,7 +61,7 @@ namespace Application.UseCases.UserWishlistOperations
             var user_id = RequestToken.GetUserId();
 
             if (_userRepository.Any(u => u.UserId == user_id))
-                return GenericResponses.NotFound("User not found");
+                return ResponseFactory.NotFound("User not found");
 
             List<WishlistResponseModel> result;
 
@@ -79,16 +79,16 @@ namespace Application.UseCases.UserWishlistOperations
 
             var user = _userRepository.Any(u => u.UserId == user_id);
 
-            if (!user) { return GenericResponses.NotFound("User not found"); }
+            if (!user) { return ResponseFactory.NotFound("User not found"); }
 
             var game = _gameRepository.Any(g => g.GameId == game_id);
 
-            if (!game) { return GenericResponses.NotFound("Game not found"); }
+            if (!game) { return ResponseFactory.NotFound("Game not found"); }
 
             var result = _wishlistRepository.Delete(new Wishlist { UserId = user_id, GameId = game_id });
 
             if (result) return "Successfully Deleted".Ok();
-            else return GenericResponses.NotFound("Operation not successfully completed");
+            else return ResponseFactory.NotFound("Operation not successfully completed");
         }
     }
      

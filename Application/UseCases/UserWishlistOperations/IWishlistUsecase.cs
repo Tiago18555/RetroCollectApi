@@ -4,7 +4,7 @@ using System.Security.Claims;
 namespace Application.UseCases.UserWishlistOperations
 {
 
-    public interface IWishlistService
+    public interface IWishlistUsecase
     {
         ResponseModel Add(AddToUserWishlistRequestModel RequestBody, ClaimsPrincipal RequestToken);
         ResponseModel Remove(int game_id, ClaimsPrincipal RequestToken);

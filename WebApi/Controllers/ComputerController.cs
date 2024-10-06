@@ -9,9 +9,9 @@ namespace WebApi.Controllers
     [ApiController]
     public class ComputerController : ControllerBase
     {
-        private ISearchComputerService searchComputerService { get; set; }
+        private ISearchComputerUsecase searchComputerService { get; set; }
 
-        public ComputerController(ISearchComputerService _searchComputerService)
+        public ComputerController(ISearchComputerUsecase _searchComputerService)
         {
             this.searchComputerService = _searchComputerService;
         }

@@ -5,10 +5,10 @@ using Infrastructure;
 
 namespace Application.UseCases.IgdbIntegrationOperations.SearchComputer
 {
-    public class SearchComputerService : ISearchComputerService
+    public class SearchComputerUsecase : ISearchComputerUsecase
     {
         private readonly HttpClient _httpClient;
-        public SearchComputerService()
+        public SearchComputerUsecase()
         {
             _httpClient = new HttpClient();
         }
@@ -25,7 +25,7 @@ namespace Application.UseCases.IgdbIntegrationOperations.SearchComputer
 
         public async Task<ResponseModel> SearchBy(string name, int limit)
         {
-            if (string.IsNullOrEmpty(name)) { return GenericResponses.NotFound("Field \"search cannot be empty\""); }
+            if (string.IsNullOrEmpty(name)) { return ResponseFactory.NotFound("Field \"search cannot be empty\""); }
 
             string query = $"fields name, platform_logo.image_id, versions.platform_version_release_dates.y;\r\nlimit 50;\r\nwhere category = (2, 6);\r\nsearch \"{name.CleanKeyword()}\"; limit {limit};";
 

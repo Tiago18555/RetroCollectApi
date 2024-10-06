@@ -1,9 +1,9 @@
 ﻿using CrossCutting;
-using static Application.UseCases.UserOperations.VerifyAndRecoverUser.VerifyAndRecoverUserService;
+using static Application.UseCases.UserOperations.VerifyAndRecoverUser.VerifyAndRecoverUserUsecase;
 
 namespace Application.UseCases.UserOperations.VerifyAndRecoverUser
 {
-    public interface IVerifyAndRecoverUserService
+    public interface IVerifyAndRecoverUserUsecase
     {
         ResponseModel SendEmail(SendEmailRequestModel request);
         ResponseModel VerifyUser(Guid userid);

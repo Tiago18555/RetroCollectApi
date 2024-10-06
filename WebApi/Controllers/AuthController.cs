@@ -3,7 +3,7 @@ using Application.UseCases.UserOperations.VerifyAndRecoverUser;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-using static Application.UseCases.UserOperations.VerifyAndRecoverUser.VerifyAndRecoverUserService;
+using static Application.UseCases.UserOperations.VerifyAndRecoverUser.VerifyAndRecoverUserUsecase;
 
 namespace WebApi.Controllers
 {
@@ -11,10 +11,10 @@ namespace WebApi.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        IAuthenticateService Authenticate { get; set; }
-        IVerifyAndRecoverUserService Verify { get; set; }
+        IAuthenticateUsecase Authenticate { get; set; }
+        IVerifyAndRecoverUserUsecase Verify { get; set; }
 
-        public AuthController(IAuthenticateService authenticate, IVerifyAndRecoverUserService verify)
+        public AuthController(IAuthenticateUsecase authenticate, IVerifyAndRecoverUserUsecase verify)
         {
             this.Authenticate = authenticate;
             this.Verify = verify;

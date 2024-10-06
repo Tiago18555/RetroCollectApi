@@ -8,18 +8,17 @@ using MailKit.Security;
 using MimeKit;
 using MimeKit.Text;
 using MailKit.Net.Smtp;
-using Confluent.Kafka;
-using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Newtonsoft.Json;
 
 namespace Application.UseCases.UserOperations.CreateUser
 {
-    public class CreateUserService : ICreateUserService
+    public class CreateUserUsecase : ICreateUserUsecase
     {
         private readonly IUserRepository _repository;
         private readonly IConfiguration _config;
         private readonly IKafkaProducerService _producer;
         private readonly IKafkaConsumerService _consumer;
-        public CreateUserService(IUserRepository repository, IConfiguration config, IKafkaProducerService producer, IKafkaConsumerService consumer)
+        public CreateUserUsecase(IUserRepository repository, IConfiguration config, IKafkaProducerService producer, IKafkaConsumerService consumer)
         {
             this._repository = repository;
             this._config = config;
@@ -27,16 +26,24 @@ namespace Application.UseCases.UserOperations.CreateUser
             this._consumer = consumer;
         }
 
-        public ResponseModel CreateUser(CreateUserRequestModel createUserRequestModel)
+        /*
+        public async Task<ResponseModel> UserCreated(CreateUserRequestModel createUserRequestModel)
         {
             // TODO: kafka producer call;
-            // TODO: kafka consumer call;
+            await _producer.ProduceAsync($"NEWUSER: {createUserRequestModel.Username}", JsonConvert.SerializeObject(createUserRequestModel));
 
+            // TODO: kafka consumer call;
+            //await _consumer.Consume()
+        }
+        */
+
+        public ResponseModel CreateUser(CreateUserRequestModel createUserRequestModel)
+        {
             User user = createUserRequestModel.MapObjectTo(new User());
 
             if (_repository.Any(x => x.Username == createUserRequestModel.Username || x.Email == createUserRequestModel.Email))
             {
-                return GenericResponses.Conflict();
+                return ResponseFactory.Conflict();
             }
 
             user.Password = BCryptNet.HashPassword(createUserRequestModel.Password);
@@ -48,17 +55,18 @@ namespace Application.UseCases.UserOperations.CreateUser
                     .MapObjectTo(new CreateUserResponseModel())
                     .Created();
 
+                // Consumer
                 SendEmailToVerify(newUser.Data as CreateUserResponseModel);
 
                 return newUser;
             }
             catch (DBConcurrencyException)
             {
-                return GenericResponses.NotAcceptable("Formato de dados inválido");
+                return ResponseFactory.NotAcceptable("Formato de dados inválido");
             }
             catch (InvalidOperationException)
             {
-                return GenericResponses.NotAcceptable("Formato de dados inválido.");
+                return ResponseFactory.NotAcceptable("Formato de dados inválido.");
             }
             catch (Exception)
             {

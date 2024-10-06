@@ -3,7 +3,7 @@ using System.Security.Claims;
 
 namespace Application.UseCases.GameOperations.ManageRating
 {
-    public interface IManageRatingService
+    public interface IManageRatingUsecase
     {
         ResponseModel EditRating(EditRatingRequestModel requestBody, ClaimsPrincipal requestToken);
         ResponseModel RemoveRating(Guid ratingId, ClaimsPrincipal requestToken);

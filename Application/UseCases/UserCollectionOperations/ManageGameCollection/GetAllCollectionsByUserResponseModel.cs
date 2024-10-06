@@ -3,7 +3,7 @@ using Domain.Enums;
 
 namespace Application.UseCases.UserCollectionOperations.AddItems
 {
-    public partial class ManageGameCollectionService
+    public partial class ManageGameCollectionUsecase
     {
         public class GetAllCollectionsByUserResponseModel
         {

@@ -17,24 +17,24 @@ public static class ApplicationExtension
 {
     public static IServiceCollection AddUseCases(this IServiceCollection services)
     {
-        services.AddScoped<IAuthenticateService, AuthenticateService>();
-        services.AddScoped<ICreateUserService, CreateUserService>();
-        services.AddScoped<IManageUserService, ManageUserService>();
+        services.AddScoped<IAuthenticateUsecase, AuthenticateUsecase>();
+        services.AddScoped<ICreateUserUsecase, CreateUserUsecase>();
+        services.AddScoped<IManageUserUsecase, ManageUserUsecase>();
 
-        services.AddScoped<ISearchGameService, SearchGameService>();
-        services.AddScoped<ISearchComputerService, SearchComputerService>();
-        services.AddScoped<ISearchConsoleService, SearchConsoleService>();
+        services.AddScoped<ISearchGameUsecase, SearchGameUsecase>();
+        services.AddScoped<ISearchComputerUsecase, SearchComputerUsecase>();
+        services.AddScoped<ISearchConsoleUsecase, SearchConsoleUsecase>();
 
-        services.AddScoped<IVerifyAndRecoverUserService, VerifyAndRecoverUserService>();
+        services.AddScoped<IVerifyAndRecoverUserUsecase, VerifyAndRecoverUserUsecase>();
 
-        services.AddScoped<IManageGameCollectionService, ManageGameCollectionService>();
-        services.AddScoped<IManageComputerCollectionService, ManageComputerCollectionService>();
-        services.AddScoped<IManageConsoleCollectionService, ManageConsoleCollectionService>();
+        services.AddScoped<IManageGameCollectionUsecase, ManageGameCollectionUsecase>();
+        services.AddScoped<IManageComputerCollectionUsecase, ManageComputerCollectionService>();
+        services.AddScoped<IManageConsoleCollectionUsecase, ManageConsoleCollectionUsecase>();
 
-        services.AddScoped<IAddRatingService, AddRatingService>();
-        services.AddScoped<IManageRatingService, ManageRatingService>();
+        services.AddScoped<IAddRatingUsecase, AddRatingUsecase>();
+        services.AddScoped<IManageRatingUsecase, ManageRatingUsecase>();
 
-        services.AddScoped<IWishlistService, WishlistService>();
+        services.AddScoped<IWishlistUsecase, WishlistUsecase>();
 
         return services;
     }

@@ -12,17 +12,17 @@ using Game = Domain.Entities.Game;
 
 namespace Application.UseCases.UserCollectionOperations.AddItems
 {
-    public partial class ManageGameCollectionService : IManageGameCollectionService
+    public partial class ManageGameCollectionUsecase : IManageGameCollectionUsecase
     {
         private readonly IUserRepository _userRepository;
         private readonly IGameRepository _gameRepository;
         private readonly IUserCollectionRepository _userCollectionRepository;
-        private readonly ISearchGameService _searchGameService;
-        public ManageGameCollectionService(
+        private readonly ISearchGameUsecase _searchGameService;
+        public ManageGameCollectionUsecase(
             IUserRepository userRepository,
             IGameRepository gameRepository,
             IUserCollectionRepository userCollectionRepository,
-            ISearchGameService searchGameService
+            ISearchGameUsecase searchGameService
         )
         {
             this._userRepository = userRepository;
@@ -36,7 +36,7 @@ namespace Application.UseCases.UserCollectionOperations.AddItems
             var user_id = requestToken.GetUserId();
 
             var user = _userRepository.Any(u => u.UserId == user_id);
-            if (!user) { return GenericResponses.NotFound("User not found"); }
+            if (!user) { return ResponseFactory.NotFound("User not found"); }
 
             if (!_gameRepository.Any(g => g.GameId == requestBody.Game_id))
             {
@@ -97,7 +97,7 @@ namespace Application.UseCases.UserCollectionOperations.AddItems
             }
             catch (NullClaimException msg)
             {
-                return GenericResponses.BadRequest(msg.ToString());
+                return ResponseFactory.BadRequest(msg.ToString());
             }
             catch (DBConcurrencyException)
             {
@@ -109,11 +109,11 @@ namespace Application.UseCases.UserCollectionOperations.AddItems
             }
             catch (InvalidEnumTypeException msg)
             {
-                return GenericResponses.UnsupportedMediaType("Invalid type for Condition or OwnershipStatus: " + msg);
+                return ResponseFactory.UnsupportedMediaType("Invalid type for Condition or OwnershipStatus: " + msg);
             }
             catch (InvalidEnumValueException msg)
             {
-                return GenericResponses.BadRequest("Invalid value for Condition or OwnershipStatus: " + msg);
+                return ResponseFactory.BadRequest("Invalid value for Condition or OwnershipStatus: " + msg);
             }
             
         }
@@ -125,15 +125,15 @@ namespace Application.UseCases.UserCollectionOperations.AddItems
                 var user_id = requestToken.GetUserId();
 
                 var foundItem = _userCollectionRepository.SingleOrDefault(x => x.UserId == user_id && x.UserCollectionId == user_collection_id);
-                if (foundItem == null) { return GenericResponses.NotFound(); }
+                if (foundItem == null) { return ResponseFactory.NotFound(); }
 
                 if (_userCollectionRepository.Delete(foundItem))
                 {
-                    return GenericResponses.Ok("Game deleted");
+                    return ResponseFactory.Ok("Game deleted");
                 }
                 else
                 {
-                    return GenericResponses.Ok("Not deleted");
+                    return ResponseFactory.Ok("Not deleted");
                 }
             }
             catch (ArgumentNullException)
@@ -142,7 +142,7 @@ namespace Application.UseCases.UserCollectionOperations.AddItems
             }
             catch (NullClaimException msg)
             {
-                return GenericResponses.BadRequest(msg.ToString());
+                return ResponseFactory.BadRequest(msg.ToString());
             }
         }
 
@@ -151,12 +151,12 @@ namespace Application.UseCases.UserCollectionOperations.AddItems
 
             try
             {
-                if (!user.IsTheRequestedOneId(updateGameRequestModel.User_id)) return GenericResponses.Forbidden();
+                if (!user.IsTheRequestedOneId(updateGameRequestModel.User_id)) return ResponseFactory.Forbidden();
                 var foundUser = _userRepository.SingleOrDefault(x => x.UserId == updateGameRequestModel.User_id);
-                if (foundUser == null) { return GenericResponses.NotFound("User not found"); }
+                if (foundUser == null) { return ResponseFactory.NotFound("User not found"); }
 
                 var foundGame = _userCollectionRepository.SingleOrDefault(x => x.UserCollectionId == updateGameRequestModel.UserCollection_id);
-                if (foundGame == null) { return GenericResponses.NotFound("Item Not Found"); }
+                if (foundGame == null) { return ResponseFactory.NotFound("Item Not Found"); }
 
                 if (!_gameRepository.Any(g => g.GameId == updateGameRequestModel.Game_id) && updateGameRequestModel.Game_id != 0)
                 {
@@ -205,7 +205,7 @@ namespace Application.UseCases.UserCollectionOperations.AddItems
             }
             catch (NullClaimException msg)
             {
-                return GenericResponses.BadRequest(msg.ToString());
+                return ResponseFactory.BadRequest(msg.ToString());
             }
             catch (Exception)
             {
@@ -240,7 +240,7 @@ namespace Application.UseCases.UserCollectionOperations.AddItems
             }
             catch (NullClaimException msg)
             {
-                return GenericResponses.BadRequest(msg.ToString());
+                return ResponseFactory.BadRequest(msg.ToString());
             }
         }
 

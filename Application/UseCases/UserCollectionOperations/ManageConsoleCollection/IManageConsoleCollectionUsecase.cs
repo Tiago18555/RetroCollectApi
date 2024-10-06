@@ -4,7 +4,7 @@ using System.Security.Claims;
 
 namespace Application.UseCases.UserCollectionOperations.ManageConsoleCollection
 {
-    public interface IManageConsoleCollectionService
+    public interface IManageConsoleCollectionUsecase
     {
         /// <summary>
         /// 

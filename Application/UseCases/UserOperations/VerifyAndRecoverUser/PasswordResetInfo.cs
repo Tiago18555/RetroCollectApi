@@ -1,6 +1,6 @@
 ﻿namespace Application.UseCases.UserOperations.VerifyAndRecoverUser
 {
-    public partial class VerifyAndRecoverUserService
+    public partial class VerifyAndRecoverUserUsecase
     {
         public class PasswordResetInfo
         {

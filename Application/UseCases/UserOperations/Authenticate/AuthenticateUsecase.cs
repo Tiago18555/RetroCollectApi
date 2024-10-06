@@ -11,12 +11,12 @@ using BCryptNet = BCrypt.Net.BCrypt;
 
 namespace Application.UseCases.UserOperations.Authenticate
 {
-    public class AuthenticateService : IAuthenticateService
+    public class AuthenticateUsecase : IAuthenticateUsecase
     {
         private readonly IConfiguration _configuration;
         private readonly IUserRepository _repository;
         private readonly IDateTimeProvider _timeProvider;
-        public AuthenticateService(IUserRepository _repository, IConfiguration configuration, IDateTimeProvider dateTimeProvider)
+        public AuthenticateUsecase(IUserRepository _repository, IConfiguration configuration, IDateTimeProvider dateTimeProvider)
         {
             this._repository = _repository;
             this._configuration = configuration;
@@ -28,15 +28,15 @@ namespace Application.UseCases.UserOperations.Authenticate
             AuthenticateServiceResponseModel jwtResponse = Authenticate(credentials);
 
             if (!string.IsNullOrEmpty(jwtResponse.ErrorMsg))
-                return GenericResponses.Forbidden(jwtResponse.ErrorMsg);
+                return ResponseFactory.Forbidden(jwtResponse.ErrorMsg);
 
             return string.IsNullOrEmpty(jwtResponse.Token) ?
-                GenericResponses.Unauthorized("Email ou senha incorretos.") : jwtResponse.Ok();            
+                ResponseFactory.Unauthorized("Email ou senha incorretos.") : jwtResponse.Ok();            
         }
 
         public ResponseModel ValidateJwtToken(string token)
         {
-            if (string.IsNullOrEmpty(token)) return GenericResponses.Unauthorized();
+            if (string.IsNullOrEmpty(token)) return ResponseFactory.Unauthorized();
 
             token = token.Replace("Bearer ", "");
 
@@ -61,7 +61,7 @@ namespace Application.UseCases.UserOperations.Authenticate
             }
             catch
             {
-                return GenericResponses.Unauthorized();
+                return ResponseFactory.Unauthorized();
             }
         }
 

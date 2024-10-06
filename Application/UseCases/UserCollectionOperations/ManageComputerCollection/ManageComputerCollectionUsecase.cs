@@ -11,17 +11,17 @@ using System.Security.Claims;
 
 namespace Application.UseCases.UserCollectionOperations.ManageComputerCollection
 {
-    public class ManageComputerCollectionService : IManageComputerCollectionService
+    public class ManageComputerCollectionService : IManageComputerCollectionUsecase
     {
         private readonly IUserRepository _userRepository;
         private readonly IComputerRepository _computerRepository;
         private readonly IUserComputerRepository _userComputerRepository;
-        private readonly ISearchComputerService _searchComputerService;
+        private readonly ISearchComputerUsecase _searchComputerService;
         public ManageComputerCollectionService(
             IUserRepository userRepository,
             IComputerRepository computerRepository,
             IUserComputerRepository userComputerRepository,
-            ISearchComputerService searchComputerService
+            ISearchComputerUsecase searchComputerService
         )
         {
             this._userRepository = userRepository;
@@ -35,7 +35,7 @@ namespace Application.UseCases.UserCollectionOperations.ManageComputerCollection
             var user_id = requestToken.GetUserId();
 
             var user = _userRepository.Any(u => u.UserId == user_id);
-            if (!user) { return GenericResponses.NotFound("User not found"); }
+            if (!user) { return ResponseFactory.NotFound("User not found"); }
 
             if (!_computerRepository.Any(g => g.ComputerId == requestBody.Item_id))
             {
@@ -59,7 +59,7 @@ namespace Application.UseCases.UserCollectionOperations.ManageComputerCollection
                 }
                 catch (NullClaimException msg)
                 {
-                    return GenericResponses.BadRequest(msg.ToString());
+                    return ResponseFactory.BadRequest(msg.ToString());
                 }
                 catch (InvalidOperationException)
                 {
@@ -105,11 +105,11 @@ namespace Application.UseCases.UserCollectionOperations.ManageComputerCollection
             }
             catch (InvalidEnumTypeException msg)
             {
-                return GenericResponses.UnsupportedMediaType("Invalid type for Condition or OwnershipStatus: " + msg);
+                return ResponseFactory.UnsupportedMediaType("Invalid type for Condition or OwnershipStatus: " + msg);
             }
             catch (InvalidEnumValueException msg)
             {
-                return GenericResponses.BadRequest("Invalid value for Condition or OwnershipStatus: " + msg);
+                return ResponseFactory.BadRequest("Invalid value for Condition or OwnershipStatus: " + msg);
             }
         }
 
@@ -120,15 +120,15 @@ namespace Application.UseCases.UserCollectionOperations.ManageComputerCollection
                 var user_id = requestToken.GetUserId();
 
                 var foundItem = _userComputerRepository.SingleOrDefault(r => r.UserId == user_id && r.UserComputerId == user_computer_id);
-                if (foundItem == null) { return GenericResponses.NotFound(); }
+                if (foundItem == null) { return ResponseFactory.NotFound(); }
 
                 if (_userComputerRepository.Delete(foundItem))
                 {
-                    return GenericResponses.Ok("Computer deleted");
+                    return ResponseFactory.Ok("Computer deleted");
                 }
                 else
                 {
-                    return GenericResponses.Ok("Not deleted");
+                    return ResponseFactory.Ok("Not deleted");
                 }
             }
             catch (ArgumentNullException)
@@ -137,7 +137,7 @@ namespace Application.UseCases.UserCollectionOperations.ManageComputerCollection
             }
             catch (NullClaimException msg)
             {
-                return GenericResponses.BadRequest(msg.ToString());
+                return ResponseFactory.BadRequest(msg.ToString());
             }
         }
 
@@ -149,10 +149,10 @@ namespace Application.UseCases.UserCollectionOperations.ManageComputerCollection
                 var user_id = requestToken.GetUserId();
 
                 var foundUser = _userRepository.Any(x => x.UserId == user_id);
-                if (!foundUser) { return GenericResponses.NotFound("User not found"); }
+                if (!foundUser) { return ResponseFactory.NotFound("User not found"); }
 
                 var foundComputer = _userComputerRepository.Any(x => x.UserComputerId == requestBody.UserComputerId);
-                if (!foundComputer) { return GenericResponses.NotFound("Item Not Found"); }
+                if (!foundComputer) { return ResponseFactory.NotFound("Item Not Found"); }
 
                 if (!_computerRepository.Any(g => g.ComputerId == requestBody.Item_id) && requestBody.Item_id != 0)
                 {
@@ -199,11 +199,11 @@ namespace Application.UseCases.UserCollectionOperations.ManageComputerCollection
             catch (InvalidClassTypeException msg)
             {
                 //throw;
-                return GenericResponses.ServiceUnavailable(msg.ToString());
+                return ResponseFactory.ServiceUnavailable(msg.ToString());
             }
             catch (NullClaimException msg)
             {
-                return GenericResponses.BadRequest(msg.ToString());
+                return ResponseFactory.BadRequest(msg.ToString());
             }
             catch (Exception)
             {
@@ -238,7 +238,7 @@ namespace Application.UseCases.UserCollectionOperations.ManageComputerCollection
             }
             catch (NullClaimException msg)
             {
-                return GenericResponses.BadRequest(msg.ToString());
+                return ResponseFactory.BadRequest(msg.ToString());
             }
         }
     }

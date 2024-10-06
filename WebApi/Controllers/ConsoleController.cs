@@ -9,9 +9,9 @@ namespace WebApi.Controllers
     [ApiController]
     public class ConsoleController : ControllerBase
     {
-        private ISearchConsoleService searchConsoleService { get; set; }
+        private ISearchConsoleUsecase searchConsoleService { get; set; }
 
-        public ConsoleController(ISearchConsoleService _searchConsoleService)
+        public ConsoleController(ISearchConsoleUsecase _searchConsoleService)
         {
             this.searchConsoleService = _searchConsoleService;
         }

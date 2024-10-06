@@ -10,8 +10,8 @@ namespace WebApi.Controllers
     [ApiController]
     public class UserConsoleController : ControllerBase
     {
-        private IManageConsoleCollectionService manageConsoleCollectionService { get; set; }
-        public UserConsoleController(IManageConsoleCollectionService manageConsoleCollectionService)
+        private IManageConsoleCollectionUsecase manageConsoleCollectionService { get; set; }
+        public UserConsoleController(IManageConsoleCollectionUsecase manageConsoleCollectionService)
         {
             this.manageConsoleCollectionService = manageConsoleCollectionService;
         }

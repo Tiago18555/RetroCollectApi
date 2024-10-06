@@ -10,15 +10,15 @@ using Game = Domain.Entities.Game;
 
 namespace Application.UseCases.GameOperations.AddRating
 {
-    public class AddRatingService : IAddRatingService
+    public class AddRatingUsecase : IAddRatingUsecase
     {
         private readonly IRatingRepository _ratingRepository;
         private readonly IGameRepository _gameRepository;
         private readonly IUserRepository _userRepository;
         private readonly IDateTimeProvider _dateTimeProvider;
-        private readonly ISearchGameService _searchGameService;
+        private readonly ISearchGameUsecase _searchGameService;
 
-        public AddRatingService(IRatingRepository repository, IGameRepository gameRepository, IUserRepository userRepository, IDateTimeProvider dateTimeProvider, ISearchGameService searchGameService)
+        public AddRatingUsecase(IRatingRepository repository, IGameRepository gameRepository, IUserRepository userRepository, IDateTimeProvider dateTimeProvider, ISearchGameUsecase searchGameService)
         {
             _ratingRepository = repository;
             _gameRepository = gameRepository;
@@ -35,11 +35,11 @@ namespace Application.UseCases.GameOperations.AddRating
                 var game_id = requestBody.GameId;
 
                 if (!_userRepository.Any(u => u.UserId == user_id))
-                    return GenericResponses.NotFound($"User {user_id} not found");
+                    return ResponseFactory.NotFound($"User {user_id} not found");
 
 
                 if (_ratingRepository.Any(r => r.UserId == user_id && r.GameId == game_id))
-                    return GenericResponses.BadRequest("User cannot have 2 ratings on the same game");
+                    return ResponseFactory.BadRequest("User cannot have 2 ratings on the same game");
 
                 if (!_gameRepository.Any(g => g.GameId == game_id))
                 {                    
@@ -73,7 +73,7 @@ namespace Application.UseCases.GameOperations.AddRating
             }
             catch (NullClaimException msg)
             {
-                return GenericResponses.BadRequest(msg.ToString());
+                return ResponseFactory.BadRequest(msg.ToString());
             }
             catch (InvalidOperationException)
             {

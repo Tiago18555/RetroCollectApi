@@ -2,7 +2,7 @@
 
 namespace Application.UseCases.UserOperations.Authenticate
 {
-    public interface IAuthenticateService
+    public interface IAuthenticateUsecase
     {
         ResponseModel Login(AuthenticateServiceRequestModel credentials);
         ResponseModel ValidateJwtToken(string token);

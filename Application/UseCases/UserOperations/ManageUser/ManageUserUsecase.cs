@@ -8,11 +8,11 @@ using System.Security.Claims;
 
 namespace Application.UseCases.UserOperations.ManageUser
 {
-    public class ManageUserService : IManageUserService
+    public class ManageUserUsecase : IManageUserUsecase
     {
         private readonly IUserRepository _repository;
         private readonly IDateTimeProvider _dateTimeProvider;
-        public ManageUserService(IUserRepository repository, IDateTimeProvider dateTimeProvider)
+        public ManageUserUsecase(IUserRepository repository, IDateTimeProvider dateTimeProvider)
         {
             this._repository = repository;
             this._dateTimeProvider = dateTimeProvider;
@@ -22,10 +22,10 @@ namespace Application.UseCases.UserOperations.ManageUser
         {
             try
             {
-                if (!user.IsTheRequestedOneId(userRequestModel.UserId)) return GenericResponses.Forbidden();
+                if (!user.IsTheRequestedOneId(userRequestModel.UserId)) return ResponseFactory.Forbidden();
                 var foundUser = _repository.SingleOrDefault(x => x.UserId == userRequestModel.UserId);
 
-                if (foundUser == null) { return GenericResponses.NotFound("User not found"); }
+                if (foundUser == null) { return ResponseFactory.NotFound("User not found"); }
 
                 var res = this._repository.Update(foundUser.MapAndFill(userRequestModel, _dateTimeProvider));
 
@@ -55,7 +55,7 @@ namespace Application.UseCases.UserOperations.ManageUser
             }
             catch (NullClaimException msg)
             {
-                return GenericResponses.BadRequest(msg.Message.ToString());
+                return ResponseFactory.BadRequest(msg.Message.ToString());
             }
             catch (Exception)
             {

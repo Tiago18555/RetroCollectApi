@@ -10,9 +10,9 @@ namespace WebApi.Controllers
     [ApiController]
     public class RatingController : ControllerBase
     {
-        private IAddRatingService addRating { get; set; }
-        private IManageRatingService manageRating { get; set; }
-        public RatingController(IAddRatingService addRating, IManageRatingService manageRating)
+        private IAddRatingUsecase addRating { get; set; }
+        private IManageRatingUsecase manageRating { get; set; }
+        public RatingController(IAddRatingUsecase addRating, IManageRatingUsecase manageRating)
         {
             this.addRating = addRating;
             this.manageRating = manageRating;

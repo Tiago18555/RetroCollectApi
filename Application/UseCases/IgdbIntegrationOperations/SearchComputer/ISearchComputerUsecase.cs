@@ -2,7 +2,7 @@
 
 namespace Application.UseCases.IgdbIntegrationOperations.SearchComputer
 {
-    public interface ISearchComputerService
+    public interface ISearchComputerUsecase
     {
         Task<ResponseModel> SearchBy(string name, int limit);
         Task<ResponseModel> GetById(int id);

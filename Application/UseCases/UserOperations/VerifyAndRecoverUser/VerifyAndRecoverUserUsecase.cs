@@ -14,14 +14,14 @@ using Domain.Exceptions;
 
 namespace Application.UseCases.UserOperations.VerifyAndRecoverUser
 {
-    public partial class VerifyAndRecoverUserService : IVerifyAndRecoverUserService
+    public partial class VerifyAndRecoverUserUsecase : IVerifyAndRecoverUserUsecase
     {
         private readonly IConfiguration _config;
         private readonly IUserRepository _userRepository;
         private readonly IRecoverRepository _recoverRepository;
         private readonly IDateTimeProvider _timeProvider;
 
-        public VerifyAndRecoverUserService(IConfiguration config, IUserRepository repository, IRecoverRepository recoverRepository, IDateTimeProvider timeProvider)
+        public VerifyAndRecoverUserUsecase(IConfiguration config, IUserRepository repository, IRecoverRepository recoverRepository, IDateTimeProvider timeProvider)
         {
             _config = config;
             _userRepository = repository;
@@ -58,7 +58,7 @@ namespace Application.UseCases.UserOperations.VerifyAndRecoverUser
                 _userRepository.SingleOrDefault(u => u.Email == request.Email) : 
                 _userRepository.SingleOrDefault(u => u.Username == request.UserName);
 
-            if (foundUser == null) return GenericResponses.NotFound("User not found");
+            if (foundUser == null) return ResponseFactory.NotFound("User not found");
 
             string host = _config.GetSection("Host").Value;
 
@@ -72,12 +72,12 @@ namespace Application.UseCases.UserOperations.VerifyAndRecoverUser
             };
 
             if (!IsValidTimestampHash(resetInfo.Hash))            
-                return GenericResponses.NotFound("Hash expired or invalid");
+                return ResponseFactory.NotFound("Hash expired or invalid");
 
             (bool canAttempt, int timeToWait) = CanAttemptPasswordRecovery(resetInfo.UserId);
 
             if (canAttempt == false)          
-                return GenericResponses.BadRequest($"This operation cannot be run now. Wait {timeToWait} seconds");            
+                return ResponseFactory.BadRequest($"This operation cannot be run now. Wait {timeToWait} seconds");            
                     
 
             _recoverRepository.InsertDocument("RecoverCollection", resetInfo.ToBsonDocument());
@@ -120,7 +120,7 @@ namespace Application.UseCases.UserOperations.VerifyAndRecoverUser
 
                 return "Email sent".Ok();
             }
-            catch (Exception msg) { return GenericResponses.ServiceUnavailable(msg.ToString()); }
+            catch (Exception msg) { return ResponseFactory.ServiceUnavailable(msg.ToString()); }
         }
 
         #region inner methods
@@ -208,7 +208,7 @@ namespace Application.UseCases.UserOperations.VerifyAndRecoverUser
         public ResponseModel ChangePasswordTemplate(Guid userId, string timestampHash)
         {
             var foundUser = _userRepository.SingleOrDefault(u => u.UserId == userId);
-            if (foundUser == null) return GenericResponses.NotFound("User not found");
+            if (foundUser == null) return ResponseFactory.NotFound("User not found");
 
             string host = _config.GetSection("Host").Value;
 
@@ -240,7 +240,7 @@ namespace Application.UseCases.UserOperations.VerifyAndRecoverUser
             var foundUser = _userRepository.SingleOrDefault(u => u.UserId == userId);
 
             if (foundUser == null)            
-                return GenericResponses.NotFound("User Not Found");            
+                return ResponseFactory.NotFound("User Not Found");            
 
             if (!IsValidTimestampHash(timestampHash))            
                 return "Password reset request has expired or is invalid".Ok();

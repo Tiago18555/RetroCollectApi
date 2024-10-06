@@ -5,10 +5,10 @@ using Newtonsoft.Json;
 
 namespace Application.UseCases.IgdbIntegrationOperations.SearchConsole
 {
-    public class SearchConsoleService : ISearchConsoleService
+    public class SearchConsoleUsecase : ISearchConsoleUsecase
     {
         private readonly HttpClient _httpClient;
-        public SearchConsoleService()
+        public SearchConsoleUsecase()
         {
             _httpClient = new HttpClient();
         }
@@ -39,7 +39,7 @@ namespace Application.UseCases.IgdbIntegrationOperations.SearchConsole
 
         public async Task<ResponseModel> SearchBy(string name, int limit = 0)
         {
-            if (string.IsNullOrEmpty(name)) { return GenericResponses.NotFound("Field \"search cannot be empty\""); }
+            if (string.IsNullOrEmpty(name)) { return ResponseFactory.NotFound("Field \"search cannot be empty\""); }
 
             string query = $"fields name, platform_logo.image_id, versions.platform_version_release_dates.y; limit 50; where category = (1, 5); search \"{name.CleanKeyword()}\"; limit {limit};";
 

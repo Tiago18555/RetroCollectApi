@@ -9,9 +9,9 @@ namespace WebApi.Controllers
     [ApiController]
     public class WishlistController : ControllerBase
     {
-        private IWishlistService wishlistService { get; set; }
+        private IWishlistUsecase wishlistService { get; set; }
 
-        public WishlistController(IWishlistService wishlistService)
+        public WishlistController(IWishlistUsecase wishlistService)
         {
             this.wishlistService = wishlistService;
         }

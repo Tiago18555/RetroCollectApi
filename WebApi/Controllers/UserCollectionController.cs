@@ -9,8 +9,8 @@ namespace WebApi.Controllers
     [ApiController]
     public class UserCollectionController : ControllerBase
     {
-        private IManageGameCollectionService manageGameCollectionService { get; set; }
-        public UserCollectionController(IManageGameCollectionService manageGameCollectionService)
+        private IManageGameCollectionUsecase manageGameCollectionService { get; set; }
+        public UserCollectionController(IManageGameCollectionUsecase manageGameCollectionService)
         {
             this.manageGameCollectionService = manageGameCollectionService;
         }

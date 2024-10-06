@@ -3,7 +3,7 @@ using System.Security.Claims;
 
 namespace Application.UseCases.UserOperations.ManageUser
 {
-    public interface IManageUserService
+    public interface IManageUserUsecase
     {
         ResponseModel UpdateUser(UpdateUserRequestModel user, ClaimsPrincipal claim);
         Task<ResponseModel> GetAllUsers();
