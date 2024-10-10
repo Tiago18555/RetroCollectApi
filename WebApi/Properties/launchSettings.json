@@ -1,6 +1,17 @@
 {
   "profiles": {
-    "WebApi": {
+    
+    "Local": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "launchUrl": "swagger/index.html",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "https://localhost:55621;http://localhost:55622"
+    },
+
+    "Docker": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "swagger/index.html",

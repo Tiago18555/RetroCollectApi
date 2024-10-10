@@ -4,6 +4,6 @@ namespace Application.UseCases.UserOperations.CreateUser
 {
     public interface ICreateUserUsecase
     {
-        ResponseModel CreateUser(CreateUserRequestModel createUserRequestModel);
+        Task<ResponseModel> CreateUser(CreateUserRequestModel createUserRequestModel);
     }
 }

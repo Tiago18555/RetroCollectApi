@@ -54,7 +54,7 @@ builder.Services.AddScoped<IRatingRepository, RatingRepository>();
 builder.Services.AddScoped<IWishlistRepository, WishlistRepository>();
 
 builder.Services.AddUseCases();
-builder.Services.AddKafkaServices();
+builder.Services.AddBrokerServices();
 
 builder.Services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
 

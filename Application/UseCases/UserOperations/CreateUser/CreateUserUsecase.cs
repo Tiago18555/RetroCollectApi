@@ -1,14 +1,13 @@
 ﻿using System.Data;
 using BCryptNet = BCrypt.Net.BCrypt;
 using CrossCutting;
-using Domain.Entities;
 using Domain.Repositories.Interfaces;
 using Microsoft.Extensions.Configuration;
+using System.Text.Json;
 using MailKit.Security;
 using MimeKit;
 using MimeKit.Text;
 using MailKit.Net.Smtp;
-using Newtonsoft.Json;
 
 namespace Application.UseCases.UserOperations.CreateUser
 {
@@ -16,9 +15,9 @@ namespace Application.UseCases.UserOperations.CreateUser
     {
         private readonly IUserRepository _repository;
         private readonly IConfiguration _config;
-        private readonly IKafkaProducerService _producer;
-        private readonly IKafkaConsumerService _consumer;
-        public CreateUserUsecase(IUserRepository repository, IConfiguration config, IKafkaProducerService producer, IKafkaConsumerService consumer)
+        private readonly IProducerService _producer;
+        private readonly IConsumerService _consumer;
+        public CreateUserUsecase(IUserRepository repository, IConfiguration config, IProducerService producer, IConsumerService consumer)
         {
             this._repository = repository;
             this._config = config;
@@ -26,39 +25,20 @@ namespace Application.UseCases.UserOperations.CreateUser
             this._consumer = consumer;
         }
 
-        /*
-        public async Task<ResponseModel> UserCreated(CreateUserRequestModel createUserRequestModel)
+        public async Task<ResponseModel> CreateUser(CreateUserRequestModel createUserRequestModel)
         {
-            // TODO: kafka producer call;
-            await _producer.ProduceAsync($"NEWUSER: {createUserRequestModel.Username}", JsonConvert.SerializeObject(createUserRequestModel));
-
-            // TODO: kafka consumer call;
-            //await _consumer.Consume()
-        }
-        */
-
-        public ResponseModel CreateUser(CreateUserRequestModel createUserRequestModel)
-        {
-            User user = createUserRequestModel.MapObjectTo(new User());
-
             if (_repository.Any(x => x.Username == createUserRequestModel.Username || x.Email == createUserRequestModel.Email))
             {
                 return ResponseFactory.Conflict();
             }
 
-            user.Password = BCryptNet.HashPassword(createUserRequestModel.Password);
-            user.CreatedAt = DateTime.Now;
-
             try
             {
-                var newUser = this._repository.Add(user)
-                    .MapObjectTo(new CreateUserResponseModel())
-                    .Created();
+                var (status, message) = await _producer.SendMessage(createUserRequestModel, "create-user");
 
-                // Consumer
-                SendEmailToVerify(newUser.Data as CreateUserResponseModel);
+                var res = JsonSerializer.Deserialize(message, typeof(CreateUserRequestModel));
 
-                return newUser;
+                return res.Created(message = status);
             }
             catch (DBConcurrencyException)
             {
@@ -73,14 +53,14 @@ namespace Application.UseCases.UserOperations.CreateUser
                 throw;
             }
         }
-
+        
         /// <summary>
         /// 
         /// </summary>
         /// <exception cref="ArgumentException"></exception>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
-        public string SendEmailToVerify(CreateUserResponseModel user)
+        public string SendEmailToVerify(CreateUserResponse user)
         {
             if (string.IsNullOrEmpty(user.Email))
             {

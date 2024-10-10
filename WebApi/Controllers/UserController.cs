@@ -25,14 +25,14 @@ namespace WebApi.Controllers
             Summary = "Register a new user",
             Description = "Registers a new user in the system."
         )]
-        [SwaggerResponse(201, "User created successfully", typeof(CreateUserResponseModel))]
+        [SwaggerResponse(201, "User created successfully", typeof(CreateUserResponse))]
         [SwaggerResponse(400, "Invalid request")]
         [SwaggerResponse(406, "Invalid format of request")]
         [SwaggerResponse(409, "Username or Email is already registered")]
         [SwaggerResponse(500, "Internal server error")]
-        public IActionResult CreateUser([FromBody] CreateUserRequestModel user)
+        public async Task<IActionResult> CreateUser([FromBody] CreateUserRequestModel user)
         {
-            var result = CreateUserService.CreateUser(user);
+            var result = await CreateUserService.CreateUser(user);
 
             Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
             Response.StatusCode = result.StatusCode;
@@ -44,7 +44,7 @@ namespace WebApi.Controllers
             Summary = "Update user",
             Description = "Update data from any user registered on system"
         )]
-        [SwaggerResponse(200, "User updated successfully", typeof(CreateUserResponseModel))]
+        [SwaggerResponse(200, "User updated successfully", typeof(CreateUserResponse))]
         [SwaggerResponse(400, "Invalid request")]
         [SwaggerResponse(406, "Invalid format of request")]
         [SwaggerResponse(409, "Username or Email is already registered")]

@@ -1,18 +1,51 @@
+using System.Text.Json;
 using Confluent.Kafka;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
-public class KafkaProducerService: IKafkaProducerService
+namespace Infrastructure.Kafka;
+public class KafkaProducerService: IProducerService
 {
-    private readonly IProducer<string, string> _producer;
+    private readonly IConfiguration _configuration;
+    private readonly ProducerConfig _producerConfig;
+    private readonly ILogger<KafkaProducerService> _logger;
 
-    public KafkaProducerService(string bootstrapServers)
+    public KafkaProducerService(IConfiguration conf, ILogger<KafkaProducerService> logger)
     {
-        var config = new ProducerConfig { BootstrapServers = bootstrapServers };
-        _producer = new ProducerBuilder<string, string>(config).Build();
+        _configuration = conf;
+        _logger = logger;
+
+        var bootstrap = _configuration.GetSection("KafkaConfig").GetSection("BootstrapServer").Value;
+
+        _producerConfig = new ProducerConfig()
+        {
+            BootstrapServers = bootstrap
+        };
     }
 
-    public async Task ProduceAsync(string topic, string message)
+    public async Task<(string Status, string Message)> SendMessage<T>(T data, string topic)
     {
-        var result = await _producer.ProduceAsync(topic, new Message<string, string> { Value = message });
-        Console.WriteLine($"Mensagem entregue no tópico {result.Topic} com a chave {result.Key}");
+        /*
+        var topic = _configuration
+            .GetSection("KafkaConfig")
+            .GetSection("TopicName").Value;
+        */
+
+        try
+        {
+            using (var producer = new ProducerBuilder<Null, string>(_producerConfig).Build())
+            {
+                var message = JsonSerializer.Serialize(data);
+                var result = await producer.ProduceAsync(topic: topic, new() { Value = message });
+                _logger.LogInformation(result.Status.ToString() + " - " + message);
+
+                return ( result.Status.ToString(), message );
+            }
+        }
+        catch
+        {
+            _logger.LogError("Erro ao enviar mensagem");
+            return ("Error", "Erro ao enviar mensagem");
+        }
     }
 }

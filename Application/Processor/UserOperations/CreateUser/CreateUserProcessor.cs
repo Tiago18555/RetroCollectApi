@@ -1,66 +1,66 @@
-/*using System.Data;
-using BCryptNet = BCrypt.Net.BCrypt;
-using Application.Processor.UserOperations.CreateUser;
 using CrossCutting;
+using Domain.Entities;
 using Domain.Repositories.Interfaces;
-using Microsoft.Extensions.Configuration;
-using MailKit.Security;
-using MimeKit;
-using MimeKit.Text;
-using MailKit.Net.Smtp;
 
-public class CreateUserProcessor
+using MimeKit;
+using System.Data;
+using MimeKit.Text;
+using System.Text.Json;
+using MailKit.Security;
+using MailKit.Net.Smtp;
+using BCryptNet = BCrypt.Net.BCrypt;
+using Microsoft.Extensions.Configuration;
+using Application.UseCases.UserOperations.CreateUser;
+
+public class CreateUserProcessor : IRequestProcessor
 {
     private readonly IUserRepository _repository;
     private readonly IConfiguration _config;
-    public CreateUserProcessor(IUserRepository repository, IConfiguration config, IKafkaProducerService producer, IKafkaConsumerService consumer)
+    public CreateUserProcessor (
+        IUserRepository repository, 
+        IConfiguration config
+    )
     {
         this._repository = repository;
         this._config = config;
     }
 
-    public object BCryptNet { get; private set; }
+    public async Task ProcessAsync(string message)
+    {
+        await Task.Run(() => 
+        {
+            CreateUser(JsonSerializer.Deserialize<CreateUserRequestModel>(message));
+        });
+    }
 
+    /// <exception cref="DBConcurrencyException"></exception>
+    /// <exception cref="InvalidOperationException"></exception>
+    /// <exception cref="ArgumentNullException"></exception>
+    /// <exception cref="ArgumentException"></exception>
+    /// <exception cref="System.Reflection.TargetException"></exception>
+    /// <exception cref="System.Reflection.TargetInvocationException"></exception>
+    /// <exception cref="MethodAccessException"></exception>
+    /// <exception cref="NotSupportedException"></exception>
+    /// <exception cref="BCrypt.Net.SaltParseException"></exception>
+    /// <exception cref="DbUpdateConcurrencyException"></exception>
+    /// <exception cref="DBUpdateException"></exception>
     public void CreateUser(CreateUserRequestModel createUserRequestModel)
     {
         User user = createUserRequestModel.MapObjectTo(new User());
 
-        if (_repository.Any(x => x.Username == createUserRequestModel.Username || x.Email == createUserRequestModel.Email))
-        {
-            return ResponseFactory.Conflict();
-        }
-
         user.Password = BCryptNet.HashPassword(createUserRequestModel.Password);
         user.CreatedAt = DateTime.Now;
 
-        try
-        {
-            var newUser = this._repository.Add(user)
+        var newUser = this._repository.Add(user);
 
-            // Consumer
-            SendEmailToVerify(newUser.Data as CreateUserResponseModel);
-        }
-        catch (DBConcurrencyException)
-        {
-            return ResponseFactory.NotAcceptable("Formato de dados inválido");
-        }
-        catch (InvalidOperationException)
-        {
-            return ResponseFactory.NotAcceptable("Formato de dados inválido.");
-        }
-        catch (Exception)
-        {
-            throw;
-        }
+        SendEmailToVerify(newUser);
     }
 
-    /// <summary>
-    /// 
-    /// </summary>
+
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="InvalidOperationException"></exception>
-    public string SendEmailToVerify(CreateUserResponseModel user)
+    internal string SendEmailToVerify(User user)
     {
         if (string.IsNullOrEmpty(user.Email))
         {
@@ -89,7 +89,7 @@ public class CreateUserProcessor
         var email = new MimeMessage();
         email.From.Add(MailboxAddress.Parse(_config.GetSection("Email:Username").Value));
         email.To.Add(MailboxAddress.Parse(user.Email));
-        email.Subject = "RetroCollect Password Recover";
+        email.Subject = "RetroCollect user verification";
         email.Body = new TextPart(TextFormat.Html) { Text = body };
 
         using var smtp = new SmtpClient();
@@ -98,9 +98,6 @@ public class CreateUserProcessor
         smtp.Send(email);
         smtp.Disconnect(true);
 
-        return "Email sent";
-        
+        return "Email sent";        
     }
 }
-
-*/

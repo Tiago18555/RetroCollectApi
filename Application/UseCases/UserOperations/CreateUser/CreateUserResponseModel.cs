@@ -1,6 +1,6 @@
 ﻿namespace Application.UseCases.UserOperations.CreateUser
 {
-    public class CreateUserResponseModel
+    public class CreateUserResponse
     {
         public Guid UserId { get; set; }
         public string Username { get; set; }
