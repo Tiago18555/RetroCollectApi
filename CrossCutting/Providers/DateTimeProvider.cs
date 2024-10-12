@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace CrossCutting.Providers
+namespace Domain.Providers
 {
     public class DateTimeProvider: IDateTimeProvider
     {

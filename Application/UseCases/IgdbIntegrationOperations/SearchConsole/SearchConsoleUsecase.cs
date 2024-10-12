@@ -1,5 +1,5 @@
-﻿using CrossCutting;
-using Infrastructure;
+﻿using Domain;
+using Application;
 using Application.UseCases.IgdbIntegrationOperations.Shared;
 using Newtonsoft.Json;
 

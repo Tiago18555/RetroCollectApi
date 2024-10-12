@@ -1,4 +1,5 @@
+namespace Domain.Broker;
 public interface IRequestProcessor
 {
-    Task ProcessAsync(string message);
+    Task<MessageModel> ProcessAsync(string message);
 }

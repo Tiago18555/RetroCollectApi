@@ -1,4 +1,4 @@
-﻿namespace CrossCutting.Providers
+﻿namespace Domain.Providers
 {
     public interface IDateTimeProvider
     {

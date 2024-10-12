@@ -1,11 +1,11 @@
 ﻿using Domain.Entities;
-using Infrastructure.Data;
+using Application.Data;
 using Domain.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver.Linq;
 using System.Linq.Expressions;
 
-namespace Infrastructure.Repositories
+namespace Application.Repositories
 {
     public class WishlistRepository : IWishlistRepository
     {

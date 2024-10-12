@@ -1,7 +1,7 @@
-﻿using CrossCutting;
+﻿using Domain;
 using Application.UseCases.IgdbIntegrationOperations.Shared;
 using Newtonsoft.Json;
-using Infrastructure;
+using Application;
 
 namespace Application.UseCases.IgdbIntegrationOperations.SearchComputer
 {

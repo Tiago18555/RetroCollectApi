@@ -1,9 +1,9 @@
 ﻿using Domain.Entities;
-using Infrastructure.Data;
+using Application.Data;
 using Domain.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Repositories
+namespace Application.Repositories
 {
     public class GameRepository : IGameRepository
     {

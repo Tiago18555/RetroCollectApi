@@ -4,7 +4,7 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using Microsoft.Extensions.Configuration;
 
-namespace Infrastructure.Data
+namespace Application.Data
 {
 
 

@@ -1,4 +1,4 @@
-﻿using CrossCutting.Providers;
+﻿using Domain.Providers;
 using Application.UseCases.UserOperations.ManageUser;
 using Domain.Entities;
 using Xunit;

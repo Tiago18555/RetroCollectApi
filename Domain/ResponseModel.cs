@@ -1,4 +1,4 @@
-﻿namespace CrossCutting
+﻿namespace Domain
 {
     public class ResponseModel
     {
@@ -6,5 +6,6 @@
         public int StatusCode { get; set; }
         public string Message { get; set; } = null;
         public object Data { get; set; }
+        public Type type{ get; set; } // INNER DATATYPE
     }
 }

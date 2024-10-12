@@ -1,9 +1,9 @@
 ﻿using Domain.Entities;
 using Domain.Repositories.Interfaces;
-using Infrastructure.Data;
+using Application.Data;
 using Microsoft.EntityFrameworkCore;
 
-namespace Infrastructure.Repositories
+namespace Application.Repositories
 {
     public class ComputerRepository : IComputerRepository
     {

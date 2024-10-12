@@ -1,6 +1,6 @@
 ﻿using Application.UseCases.UserWishlistOperations;
-using CrossCutting;
-using CrossCutting.Providers;
+using Domain;
+using Domain.Providers;
 using Domain.Exceptions;
 using Domain.Repositories.Interfaces;
 using Microsoft.AspNetCore.Mvc.RazorPages;

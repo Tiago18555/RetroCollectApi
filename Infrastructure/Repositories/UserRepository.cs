@@ -1,14 +1,14 @@
 ﻿using Domain.Entities;
-using Infrastructure.Data;
+using Application.Data;
 using Domain.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
-using CrossCutting;
+using Domain;
 using System.Runtime.InteropServices;
 using System.Linq.Expressions;
 using Domain.Enums;
 
-namespace Infrastructure.Repositories
+namespace Application.Repositories
 {
     public class UserRepository : IUserRepository
     {

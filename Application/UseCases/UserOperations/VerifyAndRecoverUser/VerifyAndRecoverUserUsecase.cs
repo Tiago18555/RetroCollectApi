@@ -7,8 +7,8 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using Microsoft.Extensions.Configuration;
 using Domain.Repositories.Interfaces;
-using CrossCutting.Providers;
-using CrossCutting;
+using Domain.Providers;
+using Domain;
 using Domain.Entities;
 using Domain.Exceptions;
 

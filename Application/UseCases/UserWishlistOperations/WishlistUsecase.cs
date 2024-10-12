@@ -1,4 +1,4 @@
-﻿using CrossCutting;
+﻿using Domain;
 using Domain.Entities;
 using Domain.Repositories.Interfaces;
 using System.Security.Claims;

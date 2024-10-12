@@ -4,10 +4,10 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
 using System.Text;
-using Infrastructure.Data;
+using Application.Data;
 using Domain.Repositories.Interfaces;
-using Infrastructure.Repositories;
-using CrossCutting.Providers;
+using Application.Repositories;
+using Domain.Providers;
 using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -54,6 +54,7 @@ builder.Services.AddScoped<IRatingRepository, RatingRepository>();
 builder.Services.AddScoped<IWishlistRepository, WishlistRepository>();
 
 builder.Services.AddUseCases();
+builder.Services.AddProcessors();
 builder.Services.AddBrokerServices();
 
 builder.Services.AddSingleton<IDateTimeProvider, DateTimeProvider>();

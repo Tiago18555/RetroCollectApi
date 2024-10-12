@@ -1,5 +1,5 @@
 ﻿using System.Security.Claims;
-using CrossCutting;
+using Domain;
 using Application.UseCases.UserCollectionOperations.Shared;
 
 namespace Application.UseCases.UserCollectionOperations.ManageComputerCollection

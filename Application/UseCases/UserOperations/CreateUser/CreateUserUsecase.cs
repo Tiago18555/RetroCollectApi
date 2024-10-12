@@ -1,6 +1,6 @@
 ﻿using System.Data;
 using BCryptNet = BCrypt.Net.BCrypt;
-using CrossCutting;
+using Domain;
 using Domain.Repositories.Interfaces;
 using Microsoft.Extensions.Configuration;
 using System.Text.Json;
@@ -8,6 +8,7 @@ using MailKit.Security;
 using MimeKit;
 using MimeKit.Text;
 using MailKit.Net.Smtp;
+using Domain.Broker;
 
 namespace Application.UseCases.UserOperations.CreateUser
 {
@@ -17,7 +18,12 @@ namespace Application.UseCases.UserOperations.CreateUser
         private readonly IConfiguration _config;
         private readonly IProducerService _producer;
         private readonly IConsumerService _consumer;
-        public CreateUserUsecase(IUserRepository repository, IConfiguration config, IProducerService producer, IConsumerService consumer)
+        public CreateUserUsecase (
+            IUserRepository repository, 
+            IConfiguration config, 
+            IProducerService producer, 
+            IConsumerService consumer
+        )
         {
             this._repository = repository;
             this._config = config;
@@ -25,19 +31,29 @@ namespace Application.UseCases.UserOperations.CreateUser
             this._consumer = consumer;
         }
 
-        public async Task<ResponseModel> CreateUser(CreateUserRequestModel createUserRequestModel)
+        public async Task<ResponseModel> CreateUser(CreateUserRequestModel request)
         {
-            if (_repository.Any(x => x.Username == createUserRequestModel.Username || x.Email == createUserRequestModel.Email))
+            if (_repository.Any(x => x.Username == request.Username || x.Email == request.Email))
             {
                 return ResponseFactory.Conflict();
             }
 
             try
             {
-                var (status, message) = await _producer.SendMessage(createUserRequestModel, "create-user");
+                //CREATE MESSAGE
+                var messageObject = new MessageModel{ Message = request, SourceType = "create-user" };
 
-                var res = JsonSerializer.Deserialize(message, typeof(CreateUserRequestModel));
+                var (status, message) = await _producer.SendMessage(
+                    JsonSerializer.Serialize(messageObject), 
+                    "retrocollect"
+                );
 
+                var data = JsonSerializer.Deserialize(
+                    message, 
+                    typeof( MessageModel )
+                ) as MessageModel;
+
+                var res = data.Message.MapObjectTo(new CreateUserResponseModel());
                 return res.Created(message = status);
             }
             catch (DBConcurrencyException)
@@ -60,7 +76,7 @@ namespace Application.UseCases.UserOperations.CreateUser
         /// <exception cref="ArgumentException"></exception>
         /// <exception cref="ArgumentNullException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
-        public string SendEmailToVerify(CreateUserResponse user)
+        public string SendEmailToVerify(CreateUserResponseModel user)
         {
             if (string.IsNullOrEmpty(user.Email))
             {

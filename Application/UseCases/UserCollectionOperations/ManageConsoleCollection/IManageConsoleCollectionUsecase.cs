@@ -1,4 +1,4 @@
-﻿using CrossCutting;
+﻿using Domain;
 using Application.UseCases.UserCollectionOperations.Shared;
 using System.Security.Claims;
 

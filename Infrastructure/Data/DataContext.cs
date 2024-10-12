@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Console = Domain.Entities.Console;
 
-namespace Infrastructure.Data
+namespace Application.Data
 {
     public partial class DataContext : DbContext
     {

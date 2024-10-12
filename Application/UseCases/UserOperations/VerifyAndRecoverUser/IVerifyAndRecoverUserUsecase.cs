@@ -1,4 +1,4 @@
-﻿using CrossCutting;
+﻿using Domain;
 using static Application.UseCases.UserOperations.VerifyAndRecoverUser.VerifyAndRecoverUserUsecase;
 
 namespace Application.UseCases.UserOperations.VerifyAndRecoverUser

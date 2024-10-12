@@ -1,9 +1,9 @@
-﻿using Infrastructure.Data;
+﻿using Application.Data;
 using Domain.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Console = Domain.Entities.Console;
 
-namespace Infrastructure.Repositories
+namespace Application.Repositories
 {
     public class ConsoleRepository : IConsoleRepository
     {

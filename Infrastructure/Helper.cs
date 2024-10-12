@@ -1,7 +1,7 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
-namespace Infrastructure
+namespace Application
 {
     public static class Helper
     {

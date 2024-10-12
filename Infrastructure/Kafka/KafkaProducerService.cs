@@ -1,9 +1,10 @@
 using System.Text.Json;
 using Confluent.Kafka;
+using Domain.Broker;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace Infrastructure.Kafka;
+namespace Application.Processor;
 public class KafkaProducerService: IProducerService
 {
     private readonly IConfiguration _configuration;
@@ -23,7 +24,7 @@ public class KafkaProducerService: IProducerService
         };
     }
 
-    public async Task<(string Status, string Message)> SendMessage<T>(T data, string topic)
+    public async Task<(string Status, string Message)> SendMessage(string message, string topic)
     {
         /*
         var topic = _configuration
@@ -33,14 +34,12 @@ public class KafkaProducerService: IProducerService
 
         try
         {
-            using (var producer = new ProducerBuilder<Null, string>(_producerConfig).Build())
-            {
-                var message = JsonSerializer.Serialize(data);
-                var result = await producer.ProduceAsync(topic: topic, new() { Value = message });
-                _logger.LogInformation(result.Status.ToString() + " - " + message);
+            using var producer = new ProducerBuilder<Null, string>(_producerConfig).Build();
 
-                return ( result.Status.ToString(), message );
-            }
+            var result = await producer.ProduceAsync(topic: topic, new() { Value = message });
+            _logger.LogInformation(result.Status.ToString() + " - " + message);
+
+            return (result.Status.ToString(), message);
         }
         catch
         {

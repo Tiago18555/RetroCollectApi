@@ -1,4 +1,4 @@
-﻿namespace CrossCutting
+﻿namespace Domain
 {
     public static class ResponseFactory
     {

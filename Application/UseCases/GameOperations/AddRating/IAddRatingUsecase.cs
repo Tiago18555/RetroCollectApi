@@ -1,4 +1,4 @@
-﻿using CrossCutting;
+﻿using Domain;
 using System.Security.Claims;
 
 namespace Application.UseCases.GameOperations.AddRating

@@ -1,4 +1,4 @@
-using Infrastructure.Data;
+using Application.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;

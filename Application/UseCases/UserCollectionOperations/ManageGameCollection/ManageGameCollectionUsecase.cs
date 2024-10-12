@@ -1,4 +1,4 @@
-﻿using CrossCutting;
+﻿using Domain;
 using Application.UseCases.IgdbIntegrationOperations.SearchGame;
 using Application.UseCases.UserCollectionOperations.Shared;
 using Domain.Entities;

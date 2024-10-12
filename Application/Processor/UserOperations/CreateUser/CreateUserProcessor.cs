@@ -1,4 +1,5 @@
-using CrossCutting;
+using Domain;
+using Domain.Broker;
 using Domain.Entities;
 using Domain.Repositories.Interfaces;
 
@@ -10,8 +11,10 @@ using MailKit.Security;
 using MailKit.Net.Smtp;
 using BCryptNet = BCrypt.Net.BCrypt;
 using Microsoft.Extensions.Configuration;
+using Application.Processor.UserOperations.CreateUser;
 using Application.UseCases.UserOperations.CreateUser;
 
+//using Newtonsoft.Json;
 public class CreateUserProcessor : IRequestProcessor
 {
     private readonly IUserRepository _repository;
@@ -25,12 +28,22 @@ public class CreateUserProcessor : IRequestProcessor
         this._config = config;
     }
 
-    public async Task ProcessAsync(string message)
+    public async Task<MessageModel> ProcessAsync(string message)
     {
-        await Task.Run(() => 
-        {
-            CreateUser(JsonSerializer.Deserialize<CreateUserRequestModel>(message));
-        });
+        System.Console.ForegroundColor = ConsoleColor.DarkMagenta;
+        System.Console.WriteLine("STARTING PROCESS...");
+        System.Console.WriteLine(message);
+        System.Console.ForegroundColor = ConsoleColor.White;
+
+        var field = message.ExtractMessage();
+
+        System.Console.WriteLine(field);
+
+        var request = JsonSerializer.Deserialize<CreateUserRequest>(field);
+
+        var res = await CreateUser(request);
+
+        return new MessageModel{ Message = res, SourceType = "create-user-response" };
     }
 
     /// <exception cref="DBConcurrencyException"></exception>
@@ -44,7 +57,7 @@ public class CreateUserProcessor : IRequestProcessor
     /// <exception cref="BCrypt.Net.SaltParseException"></exception>
     /// <exception cref="DbUpdateConcurrencyException"></exception>
     /// <exception cref="DBUpdateException"></exception>
-    public void CreateUser(CreateUserRequestModel createUserRequestModel)
+    public async Task<CreateUserResponseModel> CreateUser(CreateUserRequest createUserRequestModel)
     {
         User user = createUserRequestModel.MapObjectTo(new User());
 
@@ -54,13 +67,15 @@ public class CreateUserProcessor : IRequestProcessor
         var newUser = this._repository.Add(user);
 
         SendEmailToVerify(newUser);
+
+        return newUser.MapObjectTo(new CreateUserResponseModel());
     }
 
 
     /// <exception cref="ArgumentException"></exception>
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="InvalidOperationException"></exception>
-    internal string SendEmailToVerify(User user)
+    internal void SendEmailToVerify(User user)
     {
         if (string.IsNullOrEmpty(user.Email))
         {
@@ -98,6 +113,9 @@ public class CreateUserProcessor : IRequestProcessor
         smtp.Send(email);
         smtp.Disconnect(true);
 
-        return "Email sent";        
+        System.Console.ForegroundColor = ConsoleColor.Blue;
+        System.Console.WriteLine("Email sent");        
+        System.Console.ForegroundColor = ConsoleColor.White;
     }
+
 }

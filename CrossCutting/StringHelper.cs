@@ -1,7 +1,8 @@
-﻿using Domain.Enums;
+﻿using System.Text.RegularExpressions;
+using Domain.Enums;
 using Domain.Exceptions;
 
-namespace CrossCutting
+namespace Domain
 {
     public static partial class StringHelper
     {
@@ -101,5 +102,29 @@ namespace CrossCutting
                 throw new InvalidEnumTypeException($"{nameof(t)}: Invalid Type");
             }
         }
+
+        /// <summary>
+        /// Extracts the field 'Message' from a given Json string format'
+        /// </summary>
+        /// <param name="source">The string of a json on MessageModel format</param>
+        /// <returns>The inner object of 'Message' field</returns>
+        public static string ExtractMessage(this string source)
+        {
+            string pattern = "\"Message\":\\s*(\\{.*?\\})";
+            Match match = Regex.Match(source, pattern);
+            return match.Success ? match.Groups[1].Value : "{}";
+        }
+
+        /// <summary>
+        /// Extracts the field 'SourceType' from a given Json string format'
+        /// </summary>
+        /// <param name="source">The string of a json on MessageModel format</param>
+        /// <returns>The string value of 'SourceType'</returns>
+        public static string ExtractSourceType(this string source)
+        {
+            string pattern = "\"SourceType\":\\s*\"([^\"]*)\"";
+            Match match = Regex.Match(source, pattern);
+            return match.Success ? match.Groups[1].Value : string.Empty;
+        }     
     }
 }

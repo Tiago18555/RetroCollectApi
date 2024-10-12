@@ -12,7 +12,10 @@ using Application.UseCases.UserOperations.ManageUser;
 using Application.UseCases.UserOperations.VerifyAndRecoverUser;
 using Application.UseCases.UserWishlistOperations;
 using Microsoft.Extensions.DependencyInjection;
-using Infrastructure.Kafka;
+using Application.Processor;
+using Domain.Broker;
+using Application;
+using Application.Kafka;
 
 public static class ApplicationExtension
 {
@@ -40,10 +43,21 @@ public static class ApplicationExtension
         return services;
     }
 
+    public static IServiceCollection AddProcessors(this IServiceCollection services)
+    {
+        services.AddScoped<IRequestProcessorFactory, RequestProcessorFactory>();
+        services.AddScoped<IRequestProcessor, CreateUserProcessor>();
+        services.AddScoped<CreateUserProcessor>();
+
+        return services;    
+    }
+
     public static IServiceCollection AddBrokerServices(this IServiceCollection services)
     {
         services.AddScoped<IConsumerService, KafkaConsumerService>();
         services.AddScoped<IProducerService, KafkaProducerService>();
+        //
+        services.AddHostedService<KafkaConsumerHostedService>();
 
         return services;
     }

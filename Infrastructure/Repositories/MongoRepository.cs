@@ -1,9 +1,9 @@
-﻿using Infrastructure.Data;
+﻿using Application.Data;
 using Domain.Repositories.Interfaces;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
-namespace Infrastructure.Repositories
+namespace Application.Repositories
 {
     public class MongoRepository: IRecoverRepository
     {

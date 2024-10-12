@@ -1,11 +1,11 @@
-namespace Infrastructure.Kafka
+namespace Application.Kafka
 {
     public class Parameters
     {
         public Parameters()
         {
             BootstrapServer = "kafka:29092";
-            TopicName = "create-user";
+            TopicName = "retrocollect";
             GroupId = "Group 1";
         }
 
