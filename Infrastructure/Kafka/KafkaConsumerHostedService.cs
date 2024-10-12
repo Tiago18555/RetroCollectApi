@@ -2,6 +2,8 @@ using Domain.Broker;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 
+namespace Infrastructure.Kafka;
+
 public class KafkaConsumerHostedService : IHostedService
 {
     private readonly IServiceProvider _serviceProvider;

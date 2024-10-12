@@ -1,70 +1,69 @@
-﻿using Application.Data;
-using Domain.Repositories.Interfaces;
+﻿using Domain.Repositories;
+using Infrastructure.Data;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
-namespace Application.Repositories
+namespace Infrastructure.Repositories;
+
+public class MongoRepository: IRecoverRepository
 {
-    public class MongoRepository: IRecoverRepository
+    private readonly MongoDBContext _context;
+
+    public MongoRepository(MongoDBContext context)
     {
-        private readonly MongoDBContext _context;
+        _context = context;
+    }
 
-        public MongoRepository(MongoDBContext context)
+    public int CountFailedAttemptsSinceLastSuccess(Guid userId)
+    {
+        var collection = _context.GetCollection<BsonDocument>("RecoverCollection");
+
+        var successFilter = Builders<BsonDocument>.Filter.Eq("UserId", userId) & Builders<BsonDocument>.Filter.Eq("Success", true);
+        var lastSuccess = collection.Find(successFilter).Sort(Builders<BsonDocument>.Sort.Descending("Timestamp")).FirstOrDefault();
+
+        var failedFilter = Builders<BsonDocument>.Filter.Eq("UserId", userId) & Builders<BsonDocument>.Filter.Eq("Success", false);
+        if (lastSuccess != null)
         {
-            _context = context;
+            var lastSuccessTime = lastSuccess["Timestamp"].ToUniversalTime();
+            failedFilter &= Builders<BsonDocument>.Filter.Gt("Timestamp", lastSuccessTime);
         }
 
-        public int CountFailedAttemptsSinceLastSuccess(Guid userId)
-        {
-            var collection = _context.GetCollection<BsonDocument>("RecoverCollection");
+        return (int)collection.CountDocuments(failedFilter);
+    }
 
-            var successFilter = Builders<BsonDocument>.Filter.Eq("UserId", userId) & Builders<BsonDocument>.Filter.Eq("Success", true);
-            var lastSuccess = collection.Find(successFilter).Sort(Builders<BsonDocument>.Sort.Descending("Timestamp")).FirstOrDefault();
+    public BsonDocument InsertDocument(string collectionName, BsonDocument document)
+    {
+        var collection = _context.GetCollection<BsonDocument>(collectionName);
+        collection.InsertOne(document);
+        return document;
+    }
 
-            var failedFilter = Builders<BsonDocument>.Filter.Eq("UserId", userId) & Builders<BsonDocument>.Filter.Eq("Success", false);
-            if (lastSuccess != null)
-            {
-                var lastSuccessTime = lastSuccess["Timestamp"].ToUniversalTime();
-                failedFilter &= Builders<BsonDocument>.Filter.Gt("Timestamp", lastSuccessTime);
-            }
+    public BsonDocument UpdateDocument<TValue>(string collectionName, string idFieldName, TValue idValue, string fieldNameToUpdate, BsonValue newValue)
+    {
+        var filter = Builders<BsonDocument>.Filter.Eq(idFieldName, BsonValue.Create(idValue));
+        var update = Builders<BsonDocument>.Update.Set(fieldNameToUpdate, newValue);
+        var collection = _context.GetCollection<BsonDocument>(collectionName);
+        return collection.FindOneAndUpdate(filter, update);            
+    }
 
-            return (int)collection.CountDocuments(failedFilter);
-        }
+    public bool Any(string collectionName, FilterDefinition<BsonDocument> filter)
+    {
+        var collection = _context.GetCollection<BsonDocument>(collectionName);
+        var result = collection.Find(filter).Any();
+        return result;
+    }
 
-        public BsonDocument InsertDocument(string collectionName, BsonDocument document)
-        {
-            var collection = _context.GetCollection<BsonDocument>(collectionName);
-            collection.InsertOne(document);
-            return document;
-        }
+    public BsonDocument FindDocument<T>(string collectionName, string fieldName, T value)
+    {
+        var filter = Builders<BsonDocument>.Filter.Eq(fieldName, value);
+        var collection = _context.GetCollection<BsonDocument>(collectionName);
+        return collection.Find(filter).FirstOrDefault();
+    }
 
-        public BsonDocument UpdateDocument<TValue>(string collectionName, string idFieldName, TValue idValue, string fieldNameToUpdate, BsonValue newValue)
-        {
-            var filter = Builders<BsonDocument>.Filter.Eq(idFieldName, BsonValue.Create(idValue));
-            var update = Builders<BsonDocument>.Update.Set(fieldNameToUpdate, newValue);
-            var collection = _context.GetCollection<BsonDocument>(collectionName);
-            return collection.FindOneAndUpdate(filter, update);            
-        }
-
-        public bool Any(string collectionName, FilterDefinition<BsonDocument> filter)
-        {
-            var collection = _context.GetCollection<BsonDocument>(collectionName);
-            var result = collection.Find(filter).Any();
-            return result;
-        }
-
-        public BsonDocument FindDocument<T>(string collectionName, string fieldName, T value)
-        {
-            var filter = Builders<BsonDocument>.Filter.Eq(fieldName, value);
-            var collection = _context.GetCollection<BsonDocument>(collectionName);
-            return collection.Find(filter).FirstOrDefault();
-        }
-
-        public void DeleteDocument(string collectionName, string fieldName, string value)
-        {
-            var filter = Builders<BsonDocument>.Filter.Eq(fieldName, value);
-            var collection = _context.GetCollection<BsonDocument>(collectionName);
-            collection.DeleteOne(filter);
-        }
+    public void DeleteDocument(string collectionName, string fieldName, string value)
+    {
+        var filter = Builders<BsonDocument>.Filter.Eq(fieldName, value);
+        var collection = _context.GetCollection<BsonDocument>(collectionName);
+        collection.DeleteOne(filter);
     }
 }

@@ -1,5 +1,6 @@
 using Domain.Broker;
 using Microsoft.Extensions.DependencyInjection;
+using Application.Processor.UserOperations.CreateUser;
 
 namespace Application.Processor;
 

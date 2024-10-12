@@ -1,8 +1,7 @@
-﻿namespace Domain.Providers
+﻿namespace CrossCutting.Providers;
+
+public interface IDateTimeProvider
 {
-    public interface IDateTimeProvider
-    {
-        DateTime UtcNow { get; }
-        long GetCurrentTimestampSeconds();
-    }
+    DateTime UtcNow { get; }
+    long GetCurrentTimestampSeconds();
 }

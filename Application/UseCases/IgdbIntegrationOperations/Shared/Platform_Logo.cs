@@ -1,9 +1,6 @@
-﻿namespace Application.UseCases.IgdbIntegrationOperations.Shared
+﻿namespace Application.UseCases.IgdbIntegrationOperations.Shared;
+
+public struct Platform_Logo
 {
-    public struct Platform_Logo
-    {
-        public string Image_Id { get; set; }
-    }
-
-
+    public string Image_Id { get; set; }
 }

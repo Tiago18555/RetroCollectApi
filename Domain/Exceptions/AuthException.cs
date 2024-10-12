@@ -1,11 +1,8 @@
-﻿namespace Domain.Exceptions
+﻿namespace Domain.Exceptions;
+public class AuthException : Exception
 {
-    public class AuthException : Exception
+    public AuthException(string message) : base(message)
     {
-        public AuthException(string message) : base(message)
-        {
 
-        }
     }
-
 }

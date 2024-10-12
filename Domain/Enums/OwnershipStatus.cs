@@ -1,10 +1,9 @@
-﻿namespace Domain.Enums
+﻿namespace Domain.Enums;
+
+public enum OwnershipStatus
 {
-    public enum OwnershipStatus
-    {
-        Owned,
-        Traded,
-        Borrowed,
-        Sold
-    }
+    Owned,
+    Traded,
+    Borrowed,
+    Sold
 }

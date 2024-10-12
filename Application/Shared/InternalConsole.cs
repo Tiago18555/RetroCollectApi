@@ -1,12 +1,11 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Application.Shared
+namespace Application.Shared;
+
+public struct InternalConsole
 {
-    public struct InternalConsole
-    {
-        [JsonPropertyName("id")]
-        public int ConsoleId { get; set; }
-        [JsonPropertyName("consoleName")]
-        public string Name { get; set; }
-    }
+    [JsonPropertyName("id")]
+    public int ConsoleId { get; set; }
+    [JsonPropertyName("consoleName")]
+    public string Name { get; set; }
 }

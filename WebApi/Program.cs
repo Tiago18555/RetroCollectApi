@@ -4,11 +4,12 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
 using System.Text;
-using Application.Data;
-using Domain.Repositories.Interfaces;
-using Application.Repositories;
-using Domain.Providers;
 using Microsoft.Extensions.FileProviders;
+using Domain.Repositories;
+using Infrastructure.Repositories;
+using Application.DependencyInjection;
+using CrossCutting.Providers;
+using Infrastructure.Data;
 
 var builder = WebApplication.CreateBuilder(args);
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);

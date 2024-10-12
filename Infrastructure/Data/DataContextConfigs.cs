@@ -1,18 +1,16 @@
 ﻿using Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Application.Data
+namespace Infrastructure.Data;
+public partial class DataContext : DbContext
 {
-    public partial class DataContext : DbContext
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        protected override void OnModelCreating(ModelBuilder modelBuilder)
-        {
-            modelBuilder.Entity<User>()
-                .HasIndex(x => x.Username)
-                .IsUnique();
-            modelBuilder.Entity<User>()
-                .HasIndex(x => x.Email)
-                .IsUnique();
-        }
+        modelBuilder.Entity<User>()
+            .HasIndex(x => x.Username)
+            .IsUnique();
+        modelBuilder.Entity<User>()
+            .HasIndex(x => x.Email)
+            .IsUnique();
     }
 }

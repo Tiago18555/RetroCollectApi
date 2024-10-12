@@ -1,9 +1,8 @@
 ﻿using Domain;
 
-namespace Application.UseCases.UserOperations.CreateUser
+namespace Application.UseCases.UserOperations.CreateUser;
+
+public interface ICreateUserUsecase
 {
-    public interface ICreateUserUsecase
-    {
-        Task<ResponseModel> CreateUser(CreateUserRequestModel createUserRequestModel);
-    }
+    Task<ResponseModel> CreateUser(CreateUserRequestModel createUserRequestModel);
 }

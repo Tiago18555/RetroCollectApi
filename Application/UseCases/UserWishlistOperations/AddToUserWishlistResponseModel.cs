@@ -1,8 +1,7 @@
-﻿namespace Application.UseCases.UserWishlistOperations
+﻿namespace Application.UseCases.UserWishlistOperations;
+
+public class AddToUserWishlistResponseModel
 {
-    public class AddToUserWishlistResponseModel
-    {
-        public int GameId { get; set; }
-        public Guid UserId { get; set; }
-    }
+    public int GameId { get; set; }
+    public Guid UserId { get; set; }
 }

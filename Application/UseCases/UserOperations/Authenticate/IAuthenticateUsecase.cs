@@ -1,10 +1,9 @@
 ﻿using Domain;
 
-namespace Application.UseCases.UserOperations.Authenticate
+namespace Application.UseCases.UserOperations.Authenticate;
+
+public interface IAuthenticateUsecase
 {
-    public interface IAuthenticateUsecase
-    {
-        ResponseModel Login(AuthenticateServiceRequestModel credentials);
-        ResponseModel ValidateJwtToken(string token);
-    }
+    ResponseModel Login(AuthenticateServiceRequestModel credentials);
+    ResponseModel ValidateJwtToken(string token);
 }

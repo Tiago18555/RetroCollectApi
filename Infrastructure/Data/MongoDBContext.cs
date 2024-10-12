@@ -4,32 +4,29 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using Microsoft.Extensions.Configuration;
 
-namespace Application.Data
+namespace Infrastructure.Data;
+
+public partial class MongoDBContext : DbContext
 {
+    private readonly IMongoDatabase _database;
 
-
-    public partial class MongoDBContext : DbContext
+    public MongoDBContext(IConfiguration configuration)
     {
-        private readonly IMongoDatabase _database;
-
-        public MongoDBContext(IConfiguration configuration)
-        {
-            var client = new MongoClient();
-            _database = client.GetDatabase(configuration.GetSection("MongoDB")["DatabaseName"]);
-        }
-
-        public IMongoCollection<T> GetCollection<T>(string collectionName)
-        {
-            return _database.GetCollection<T>(collectionName);
-        }
+        var client = new MongoClient();
+        _database = client.GetDatabase(configuration.GetSection("MongoDB")["DatabaseName"]);
     }
 
-    public class RecoverCollection
+    public IMongoCollection<T> GetCollection<T>(string collectionName)
     {
-        [BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public Guid Username { get; set; }
+        return _database.GetCollection<T>(collectionName);
     }
+}
+
+public class RecoverCollection
+{
+    [BsonId]
+    [BsonRepresentation(BsonType.ObjectId)]
+    public string Id { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public Guid Username { get; set; }
 }

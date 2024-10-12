@@ -1,12 +1,11 @@
 ﻿using Domain;
 using System.Security.Claims;
 
-namespace Application.UseCases.UserOperations.ManageUser
+namespace Application.UseCases.UserOperations.ManageUser;
+
+public interface IManageUserUsecase
 {
-    public interface IManageUserUsecase
-    {
-        ResponseModel UpdateUser(UpdateUserRequestModel user, ClaimsPrincipal claim);
-        Task<ResponseModel> GetAllUsers();
-    }
+    ResponseModel UpdateUser(UpdateUserRequestModel user, ClaimsPrincipal claim);
+    Task<ResponseModel> GetAllUsers();
 }
 

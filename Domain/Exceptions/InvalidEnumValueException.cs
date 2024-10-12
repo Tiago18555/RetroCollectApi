@@ -1,12 +1,8 @@
-﻿namespace Domain.Exceptions
+﻿namespace Domain.Exceptions;
+public class InvalidEnumValueException : Exception
 {
-
-    public class InvalidEnumValueException : Exception
+    public InvalidEnumValueException(string message) : base(message)
     {
-        public InvalidEnumValueException(string message) : base(message)
-        {
 
-        }
     }
-
 }

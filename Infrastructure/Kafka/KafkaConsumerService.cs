@@ -9,7 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.EntityFrameworkCore;
 
-namespace Application.Kafka;
+namespace Infrastructure.Kafka;
 public class KafkaConsumerService: IConsumerService
 {
     private readonly IRequestProcessorFactory _processorFactory;

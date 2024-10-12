@@ -1,11 +1,8 @@
-﻿namespace Domain.Exceptions
+﻿namespace Domain.Exceptions;
+public class NullClaimException : Exception
 {
-    public class NullClaimException : Exception
+    public NullClaimException(string message) : base(message)
     {
-        public NullClaimException(string message) : base(message)
-        {
 
-        }
     }
-
 }

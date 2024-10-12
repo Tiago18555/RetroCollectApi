@@ -1,135 +1,131 @@
 ﻿using Domain.Entities;
-using Application.Data;
-using Domain.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
-using Domain;
-using System.Runtime.InteropServices;
 using System.Linq.Expressions;
-using Domain.Enums;
+using Domain.Repositories;
+using Infrastructure.Data;
 
-namespace Application.Repositories
+namespace Infrastructure.Repositories;
+
+public class UserRepository : IUserRepository
 {
-    public class UserRepository : IUserRepository
+    private readonly DataContext _context;
+
+    public UserRepository(DataContext context)
     {
-        private readonly DataContext _context;
+        _context = context;
+    }
 
-        public UserRepository(DataContext context)
-        {
-            _context = context;
-        }
+    public User Add(User user)
+    {
+        _context.Users.Add(user);
+        _context.SaveChanges();
+        _context.Entry(user).State = EntityState.Detached;
 
-        public User Add(User user)
-        {
-            _context.Users.Add(user);
-            _context.SaveChanges();
-            _context.Entry(user).State = EntityState.Detached;
+        return user;
+    }
 
-            return user;
-        }
+    public async Task<List<T>> GetAll<T>(Expression<Func<User, T>> predicate)
+    {
+        return await _context.Users
+            .AsNoTracking()
+            .Select(predicate)
+            .ToListAsync();
+    }
 
-        public async Task<List<T>> GetAll<T>(Expression<Func<User, T>> predicate)
-        {
-            return await _context.Users
-                .AsNoTracking()
-                .Select(predicate)
-                .ToListAsync();
-        }
+    public bool Any(Func<User, bool> predicate)
+    {
+        return _context.Users.AsNoTracking().Any(predicate);
+    }
 
-        public bool Any(Func<User, bool> predicate)
-        {
-            return _context.Users.AsNoTracking().Any(predicate);
-        }
+    public User SingleOrDefault(Func<User, bool> predicate)
+    {
+        return _context
+            .Users
+            .Where(predicate)
+            .AsQueryable()
+            .AsNoTracking()
+            .SingleOrDefault();
+    }
 
-        public User SingleOrDefault(Func<User, bool> predicate)
-        {
-            return _context
-                .Users
-                .Where(predicate)
-                .AsQueryable()
-                .AsNoTracking()
-                .SingleOrDefault();
-        }
+    public User Update(User user)
+    {
+        _context.Users.Update(user);
+        _context.Entry(user).State = EntityState.Modified;
+        _context.SaveChanges();
 
-        public User Update(User user)
-        {
-            _context.Users.Update(user);
-            _context.Entry(user).State = EntityState.Modified;
-            _context.SaveChanges();
+        return user;
+    }
 
-            return user;
-        }
+    public async Task<List<T>> GetAllComputersByUser<T>(Guid userId, Expression<Func<UserComputer, T>> predicate)
+    {
+        return await _context.UserComputers
+            .Include(x => x.Computer)
+            .AsNoTracking()
+            .Where(x => x.UserId == userId)
+            .Select(predicate)
+            .ToListAsync();
+    }
 
-        public async Task<List<T>> GetAllComputersByUser<T>(Guid userId, Expression<Func<UserComputer, T>> predicate)
-        {
-            return await _context.UserComputers
-                .Include(x => x.Computer)
-                .AsNoTracking()
-                .Where(x => x.UserId == userId)
-                .Select(predicate)
-                .ToListAsync();
-        }
+    public async Task<List<T>> GetAllComputersByUser<T>(Guid userId, Expression<Func<UserComputer, T>> predicate, int pageNumber, int pageSize)
+    {
+        var offset = (pageNumber - 1) * pageSize;
 
-        public async Task<List<T>> GetAllComputersByUser<T>(Guid userId, Expression<Func<UserComputer, T>> predicate, int pageNumber, int pageSize)
-        {
-            var offset = (pageNumber - 1) * pageSize;
+        return await _context.UserComputers
+                    .Include(x => x.Computer)
+                    .AsNoTracking()
+                    .Where(x => x.UserId == userId)
+                    .Skip(offset)
+                    .Take(pageSize)
+                    .Select(predicate)
+                    .ToListAsync();
+    }
 
-            return await _context.UserComputers
-                        .Include(x => x.Computer)
-                        .AsNoTracking()
-                        .Where(x => x.UserId == userId)
-                        .Skip(offset)
-                        .Take(pageSize)
-                        .Select(predicate)
-                        .ToListAsync();
-        }
+    public async Task<List<T>> GetAllConsolesByUser<T>(Guid userId, Expression<Func<UserConsole, T>> predicate)
+    {
+        return await Task.FromResult(_context.UserConsoles
+            .Include(x => x.Console)
+            .AsNoTracking()
+            .Where(x => x.UserId == userId)
+            .Select(predicate)
+            .ToList());
+    }
 
-        public async Task<List<T>> GetAllConsolesByUser<T>(Guid userId, Expression<Func<UserConsole, T>> predicate)
-        {
-            return await Task.FromResult(_context.UserConsoles
-                .Include(x => x.Console)
-                .AsNoTracking()
-                .Where(x => x.UserId == userId)
-                .Select(predicate)
-                .ToList());
-        }
+    public async Task<List<T>> GetAllConsolesByUser<T>(Guid userId, Expression<Func<UserConsole, T>> predicate, int pageNumber, int pageSize)
+    {
+        var offset = (pageNumber - 1) * pageSize;
 
-        public async Task<List<T>> GetAllConsolesByUser<T>(Guid userId, Expression<Func<UserConsole, T>> predicate, int pageNumber, int pageSize)
-        {
-            var offset = (pageNumber - 1) * pageSize;
+        return await Task.FromResult(_context.UserConsoles
+            .Include(x => x.Console)
+            .AsNoTracking()
+            .Where(x => x.UserId == userId)
+            .Skip(offset)
+            .Take(pageSize)
+            .Select(predicate)
+            .ToList());
+    }
 
-            return await Task.FromResult(_context.UserConsoles
-                .Include(x => x.Console)
-                .AsNoTracking()
-                .Where(x => x.UserId == userId)
-                .Skip(offset)
-                .Take(pageSize)
-                .Select(predicate)
-                .ToList());
-        }
+    public async Task<List<T>> GetAllCollectionsByUser<T>(Guid userId, Expression<Func<UserCollection, T>> predicate)
+    {
+        return await Task.FromResult(_context.UserCollections
+             .Include(x => x.Game)
+             .AsNoTracking()
+             .Where(x => x.UserId == userId)
+             .Select(predicate)
+             .ToList());
+    }
 
-        public async Task<List<T>> GetAllCollectionsByUser<T>(Guid userId, Expression<Func<UserCollection, T>> predicate)
-        {
-            return await Task.FromResult(_context.UserCollections
-                 .Include(x => x.Game)
-                 .AsNoTracking()
-                 .Where(x => x.UserId == userId)
-                 .Select(predicate)
-                 .ToList());
-        }
+    public async Task<List<T>> GetAllCollectionsByUser<T>(Guid userId, Expression<Func<UserCollection, T>> predicate, int pageNumber, int pageSize)
+    {
+        var offset = (pageNumber - 1) * pageSize;
 
-        public async Task<List<T>> GetAllCollectionsByUser<T>(Guid userId, Expression<Func<UserCollection, T>> predicate, int pageNumber, int pageSize)
-        {
-            var offset = (pageNumber - 1) * pageSize;
-
-            return await Task.FromResult(_context.UserCollections
-                 .Include(x => x.Game)
-                 .AsNoTracking()
-                 .Where(x => x.UserId == userId)
-                 .Skip(offset)
-                 .Take(pageSize)
-                 .Select(predicate)
-                 .ToList());
-        }
+        return await Task.FromResult(_context.UserCollections
+             .Include(x => x.Game)
+             .AsNoTracking()
+             .Where(x => x.UserId == userId)
+             .Skip(offset)
+             .Take(pageSize)
+             .Select(predicate)
+             .ToList());
     }
 }

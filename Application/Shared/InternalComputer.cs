@@ -1,12 +1,11 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace Application.Shared
+namespace Application.Shared;
+
+public struct InternalComputer
 {
-    public struct InternalComputer
-    {
-        [JsonPropertyName("id")]
-        public int ComputerId { get; set; }
-        [JsonPropertyName("computerName")]
-        public string Name { get; set; }
-    }
+    [JsonPropertyName("id")]
+    public int ComputerId { get; set; }
+    [JsonPropertyName("computerName")]
+    public string Name { get; set; }
 }

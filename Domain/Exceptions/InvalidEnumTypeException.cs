@@ -1,12 +1,9 @@
-﻿namespace Domain.Exceptions
+﻿namespace Domain.Exceptions;
+public class InvalidEnumTypeException : Exception
 {
-
-    public class InvalidEnumTypeException : Exception
+    public InvalidEnumTypeException(string message) :base(message)
     {
-        public InvalidEnumTypeException(string message) :base(message)
-        {
 
-        }
     }
-    
 }
+

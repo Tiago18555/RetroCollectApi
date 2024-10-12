@@ -3,7 +3,6 @@ using Application.UseCases.GameOperations.ManageRating;
 using Application.UseCases.IgdbIntegrationOperations.SearchComputer;
 using Application.UseCases.IgdbIntegrationOperations.SearchConsole;
 using Application.UseCases.IgdbIntegrationOperations.SearchGame;
-using Application.UseCases.UserCollectionOperations.AddItems;
 using Application.UseCases.UserCollectionOperations.ManageComputerCollection;
 using Application.UseCases.UserCollectionOperations.ManageConsoleCollection;
 using Application.UseCases.UserOperations.Authenticate;
@@ -13,9 +12,12 @@ using Application.UseCases.UserOperations.VerifyAndRecoverUser;
 using Application.UseCases.UserWishlistOperations;
 using Microsoft.Extensions.DependencyInjection;
 using Application.Processor;
+using Infrastructure.Kafka;
 using Domain.Broker;
-using Application;
-using Application.Kafka;
+using Application.Processor.UserOperations.CreateUser;
+using Application.UseCases.UserCollectionOperations.ManageGameCollection;
+
+namespace Application.DependencyInjection;
 
 public static class ApplicationExtension
 {

@@ -1,7 +1,5 @@
-using Domain;
 using Domain.Broker;
 using Domain.Entities;
-using Domain.Repositories.Interfaces;
 
 using MimeKit;
 using System.Data;
@@ -11,10 +9,11 @@ using MailKit.Security;
 using MailKit.Net.Smtp;
 using BCryptNet = BCrypt.Net.BCrypt;
 using Microsoft.Extensions.Configuration;
-using Application.Processor.UserOperations.CreateUser;
 using Application.UseCases.UserOperations.CreateUser;
+using Domain.Repositories;
+using CrossCutting;
 
-//using Newtonsoft.Json;
+namespace Application.Processor.UserOperations.CreateUser;
 public class CreateUserProcessor : IRequestProcessor
 {
     private readonly IUserRepository _repository;

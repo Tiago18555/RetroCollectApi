@@ -4,7 +4,8 @@ using Domain.Broker;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace Application.Processor;
+namespace Infrastructure.Kafka;
+
 public class KafkaProducerService: IProducerService
 {
     private readonly IConfiguration _configuration;

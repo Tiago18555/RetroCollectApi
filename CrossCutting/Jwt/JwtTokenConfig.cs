@@ -1,7 +1,6 @@
-﻿namespace Application.CrossCutting.Jwt
+﻿namespace CrossCutting.Jwt;
+
+public class JwtTokenConfig
 {
-    public class JwtTokenConfig
-    {
-        public string jwtSecretKey { get; set; }
-    }
+    public string jwtSecretKey { get; set; }
 }

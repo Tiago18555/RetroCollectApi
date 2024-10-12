@@ -1,12 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Application.UseCases.UserOperations.VerifyAndRecoverUser
+namespace Application.UseCases.UserOperations.VerifyAndRecoverUser;
+
+public class SendEmailRequestModel
 {
-    public class SendEmailRequestModel
-    {
-        [EmailAddress]
-        public string Email { get; set; }
-        public string UserName { get; set; }
-    }
+    [EmailAddress]
+    public string Email { get; set; }
+    public string UserName { get; set; }
 }
 

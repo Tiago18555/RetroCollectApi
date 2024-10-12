@@ -1,21 +1,21 @@
-﻿using Domain;
-using Application;
-using Application.UseCases.IgdbIntegrationOperations.Shared;
+﻿using CrossCutting;
+using Domain;
+using Infrastructure;
 
-namespace Application.UseCases.IgdbIntegrationOperations.SearchGame
+namespace Application.UseCases.IgdbIntegrationOperations.SearchGame;
+
+public class SearchGameUsecase : ISearchGameUsecase
 {
-    public class SearchGameUsecase : ISearchGameUsecase
+    private readonly HttpClient _httpClient;
+
+    public SearchGameUsecase()
     {
-        private readonly HttpClient _httpClient;
+        _httpClient = new HttpClient();
+    }
 
-        public SearchGameUsecase()
-        {
-            _httpClient = new HttpClient();
-        }
-
-        public async Task<ResponseModel> GetById(int id)
-        {
-            String query = @"
+    public async Task<ResponseModel> GetById(int id)
+    {
+        String query = @"
                 fields artworks.image_id, 
                 category, 
                 collection.name, collection.games.name,
@@ -34,14 +34,14 @@ namespace Application.UseCases.IgdbIntegrationOperations.SearchGame
                 websites.url; 
                 where id = " + id.ToString() + ";";
 
-            var res = await _httpClient.IgdbPostAsync<List<GetGameByIdResponseModel>>(query, "games");
+        var res = await _httpClient.IgdbPostAsync<List<GetGameByIdResponseModel>>(query, "games");
 
-            return res.Ok();
-        }
+        return res.Ok();
+    }
 
-        public async Task<List<GameInfo>> RetrieveGameInfoAsync(int game_id)
-        {
-            String query = @"
+    public async Task<List<GameInfo>> RetrieveGameInfoAsync(int game_id)
+    {
+        String query = @"
                 fields
                 first_release_date, 
                 genres.name,  
@@ -52,50 +52,49 @@ namespace Application.UseCases.IgdbIntegrationOperations.SearchGame
                 cover.image_id; 
                 where id = " + game_id.ToString() + ";";
 
-            var res = await _httpClient.IgdbPostAsync<List<GameInfo>>(query, "games");
+        var res = await _httpClient.IgdbPostAsync<List<GameInfo>>(query, "games");
 
-            return res;
-        }
+        return res;
+    }
 
-        public async Task<ResponseModel> SearchBy(string search, string genre, string keyword, string companie, string language, string theme, string releaseyear, int limit)
-        {
+    public async Task<ResponseModel> SearchBy(string search, string genre, string keyword, string companie, string language, string theme, string releaseyear, int limit)
+    {
 
-            var queryParams = new Dictionary<string, string>();
-
-
-            if (!string.IsNullOrEmpty(search))
-                queryParams["search"] = search;
-
-            if (!string.IsNullOrEmpty(genre))
-                queryParams["genre"] = genre;
-
-            if (!string.IsNullOrEmpty(keyword))
-                queryParams["keyword"] = keyword;
-
-            if (!string.IsNullOrEmpty(companie))
-                queryParams["companie"] = companie;
-
-            if (!string.IsNullOrEmpty(language))
-                queryParams["language"] = language;
-
-            if (!string.IsNullOrEmpty(theme))
-                queryParams["theme"] = theme;
-
-            if (!string.IsNullOrEmpty(releaseyear))
-                queryParams["releaseyear"] = releaseyear;
-
-            if (limit > 0 && limit < 500)
-                queryParams["limit"] = limit.ToString();
+        var queryParams = new Dictionary<string, string>();
 
 
-            var query = queryParams.BuildSearchQuery(limit);
+        if (!string.IsNullOrEmpty(search))
+            queryParams["search"] = search;
 
-            Console.WriteLine(query);
+        if (!string.IsNullOrEmpty(genre))
+            queryParams["genre"] = genre;
 
-            var res = await _httpClient.IgdbPostAsync<List<SearchGameResponseModel>>(query, "games");
+        if (!string.IsNullOrEmpty(keyword))
+            queryParams["keyword"] = keyword;
 
-            return res.Ok();
+        if (!string.IsNullOrEmpty(companie))
+            queryParams["companie"] = companie;
 
-        }
+        if (!string.IsNullOrEmpty(language))
+            queryParams["language"] = language;
+
+        if (!string.IsNullOrEmpty(theme))
+            queryParams["theme"] = theme;
+
+        if (!string.IsNullOrEmpty(releaseyear))
+            queryParams["releaseyear"] = releaseyear;
+
+        if (limit > 0 && limit < 500)
+            queryParams["limit"] = limit.ToString();
+
+
+        var query = queryParams.BuildSearchQuery(limit);
+
+        Console.WriteLine(query);
+
+        var res = await _httpClient.IgdbPostAsync<List<SearchGameResponseModel>>(query, "games");
+
+        return res.Ok();
+
     }
 }
