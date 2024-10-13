@@ -18,18 +18,15 @@ public class CreateUserUsecase : ICreateUserUsecase
     private readonly IUserRepository _repository;
     private readonly IConfiguration _config;
     private readonly IProducerService _producer;
-    private readonly IConsumerService _consumer;
     public CreateUserUsecase (
         IUserRepository repository, 
         IConfiguration config, 
-        IProducerService producer, 
-        IConsumerService consumer
+        IProducerService producer
     )
     {
         this._repository = repository;
         this._config = config;
         this._producer = producer;
-        this._consumer = consumer;
     }
 
     public async Task<ResponseModel> CreateUser(CreateUserRequestModel request)
@@ -41,13 +38,9 @@ public class CreateUserUsecase : ICreateUserUsecase
 
         try
         {
-            //CREATE MESSAGE
             var messageObject = new MessageModel{ Message = request, SourceType = "create-user" };
 
-            var (status, message) = await _producer.SendMessage(
-                JsonSerializer.Serialize(messageObject), 
-                "retrocollect"
-            );
+            var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject));
 
             var data = JsonSerializer.Deserialize(
                 message, 

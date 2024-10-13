@@ -55,9 +55,7 @@ public class KafkaConsumerService: IConsumerService
     public async Task ConsumeAsync(CancellationToken cts)
     {
         _logger.LogInformation("Waiting messages");
-
         _consumer.Subscribe(_parameters.TopicName);
-
 
         while (!cts.IsCancellationRequested)
         {
@@ -65,9 +63,9 @@ public class KafkaConsumerService: IConsumerService
             {
                 var result = _consumer.Consume(cts);
                 var messageType = GetMessageType(result.Message.Value);
-                var processor = _processorFactory.Create(messageType);
+                var processor = _processorFactory.Create(messageType); //GET PROCESSOR TYPE
 
-                var processResult = await processor.ProcessAsync(result.Message.Value);
+                var processResult = await processor.ProcessAsync(result.Message.Value); //CALL
 
                 var data = JsonSerializer.Serialize(result.Message.Value);
                 _logger.LogInformation($"GroupId: {_parameters.GroupId} Mensagem: {processResult}");

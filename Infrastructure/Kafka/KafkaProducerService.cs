@@ -25,13 +25,13 @@ public class KafkaProducerService: IProducerService
         };
     }
 
-    public async Task<(string Status, string Message)> SendMessage(string message, string topic)
+    public async Task<(string Status, string Message)> SendMessage(string message)
     {
-        /*
+        
         var topic = _configuration
             .GetSection("KafkaConfig")
             .GetSection("TopicName").Value;
-        */
+        
 
         try
         {

@@ -14,6 +14,7 @@ using Infrastructure.Data;
 var builder = WebApplication.CreateBuilder(args);
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 var configuration = builder.Configuration;
+var version = configuration.GetSection("Version").Value.ToString();
 var connectionString = configuration.GetConnectionString("Local");
 
 //JWT
@@ -33,7 +34,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
 
 // Add services to the container.
 builder.Services.AddControllers().AddJsonOptions(x =>
-                x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
+    x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
 
 
@@ -55,7 +56,6 @@ builder.Services.AddScoped<IRatingRepository, RatingRepository>();
 builder.Services.AddScoped<IWishlistRepository, WishlistRepository>();
 
 builder.Services.AddUseCases();
-builder.Services.AddProcessors();
 builder.Services.AddBrokerServices();
 
 builder.Services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
@@ -82,11 +82,22 @@ builder.Services.AddDbContext<DataContext>(o =>
     o.EnableSensitiveDataLogging();
 });
 
-
 builder.Services.AddSwaggerGen(c =>
 {
     c.EnableAnnotations();
-    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "RetroCollect Api", Version = "v1" });
+    c.SwaggerDoc(
+        $"RetroCollect_v{version}", 
+        new Microsoft.OpenApi.Models.OpenApiInfo { 
+            Title = $"Tiago.RetroCollect", 
+            Version = $"v{version}", 
+            Description = String.Format(@"RetroCollect is a web application 
+                that allows users to manage their collection 
+                of vintage computers, gaming consoles, and video games. 
+                It provides a user-friendly interface for users to track and organize their equipment, 
+                add games to their collection, 
+                and rate their gaming experience."
+            )}
+    );
 });
 
 builder.Services.AddAuthorization(options =>
@@ -108,7 +119,10 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "Docker")
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(x => 
+    {
+        x.SwaggerEndpoint($"/swagger/RetroCollect_v{version}/swagger.json", $"RetroCollect v{version}");
+    });
 }
 
 if (app.Environment.IsDevelopment())
