@@ -7,14 +7,14 @@ namespace Tests;
 
 public class MapAndFillTests
 {
-    IDateTimeProvider _timeProvider;
+    private readonly IDateTimeProvider _timeProvider;
 
-    public MapAndFillTests(IDateTimeProvider timeProvider)
+    public MapAndFillTests()
     {
-        _timeProvider = timeProvider;
+        _timeProvider = new DateTimeProvider();
     }
 
-    /*
+    
 
     [Fact]
     public void MapAndFill_ShouldFillUserFields_WhenUpdateUserRequestModelHasValues()
@@ -73,5 +73,5 @@ public class MapAndFillTests
         Assert.Equal(source.LastName, result.LastName);
     }
 
-    */
+    
 }
