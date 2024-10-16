@@ -10,8 +10,8 @@ namespace WebApi.Controllers;
 [ApiController]
 public class AuthController : ControllerBase
 {
-    IAuthenticateUsecase Authenticate { get; set; }
-    IVerifyAndRecoverUserUsecase Verify { get; set; }
+    private IAuthenticateUsecase Authenticate { get; set; }
+    private IVerifyAndRecoverUserUsecase Verify { get; set; }
 
     public AuthController(IAuthenticateUsecase authenticate, IVerifyAndRecoverUserUsecase verify)
     {
@@ -50,9 +50,9 @@ public class AuthController : ControllerBase
     [SwaggerResponse(400, "Invalid format of request")]
     [SwaggerResponse(404, "User not found")]
     [SwaggerResponse(500, "Internal server error")]
-    public IActionResult SendEmail([FromBody] SendEmailRequestModel emailDto)
+    public async Task<IActionResult> SendEmail([FromBody] SendEmailRequestModel emailDto)
     {
-        var result = Verify.SendEmail(emailDto);
+        var result = await Verify.SendEmail(emailDto);
 
         Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
         Response.StatusCode = result.StatusCode;
@@ -82,9 +82,9 @@ public class AuthController : ControllerBase
     )]
     [SwaggerResponse(404, "User not found")]
     [SwaggerResponse(500, "Internal server error")]
-    public IActionResult ChangePassword([FromRoute] Guid user_id, [FromBody] UpdatePasswordRequestModel pwd, [FromRoute] string timestamp_hash)
+    public async Task<IActionResult> ChangePassword([FromRoute] Guid user_id, [FromBody] UpdatePasswordRequestModel pwd, [FromRoute] string timestamp_hash)
     {
-        var result = Verify.ChangePassword(user_id, pwd, timestamp_hash);
+        var result = await Verify.ChangePassword(user_id, pwd, timestamp_hash);
 
         Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
         Response.StatusCode = result.StatusCode;

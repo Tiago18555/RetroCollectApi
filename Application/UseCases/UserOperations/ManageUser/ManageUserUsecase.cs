@@ -1,64 +1,68 @@
 ﻿using CrossCutting;
 using CrossCutting.Providers;
 using Domain;
+using Domain.Broker;
 using Domain.Exceptions;
 using Domain.Repositories;
-using Microsoft.EntityFrameworkCore;
-using System.Data;
+using MongoDB.Driver.Core.Authentication;
+using Org.BouncyCastle.Bcpg;
+using System.ComponentModel.DataAnnotations;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace Application.UseCases.UserOperations.ManageUser;
 
 public class ManageUserUsecase : IManageUserUsecase
 {
     private readonly IUserRepository _repository;
-    private readonly IDateTimeProvider _dateTimeProvider;
-    public ManageUserUsecase(IUserRepository repository, IDateTimeProvider dateTimeProvider)
+    private readonly IProducerService _producer;
+    public ManageUserUsecase(
+        IUserRepository repository,
+        IProducerService producer
+    )
     {
-        this._repository = repository;
-        this._dateTimeProvider = dateTimeProvider;
+        _repository = repository;
+        _producer = producer;
     }
 
-    public ResponseModel UpdateUser(UpdateUserRequestModel userRequestModel, ClaimsPrincipal user)
+    public async Task<ResponseModel> UpdateUser(UpdateUserRequestModel request, ClaimsPrincipal requestClaim)
     {
+        var userId = requestClaim.GetUserId();
+        if (!_repository.Any(x => x.UserId == userId))
+            return ResponseFactory.NotFound("User not found");
+
         try
-        {
-            if (!user.IsTheRequestedOneId(userRequestModel.UserId)) return ResponseFactory.Forbidden();
-            var foundUser = _repository.SingleOrDefault(x => x.UserId == userRequestModel.UserId);
+        {   
+            var messageObject = new MessageModel
+            { 
+                Message = new
+                {
+                    UserId = userId,
+                    request.Username,
+                    request.Email,
+                    request.FirstName,
+                    request.LastName                    
+                }, SourceType = "update-user" 
+            };
 
-            if (foundUser == null) { return ResponseFactory.NotFound("User not found"); }
+            var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject));
 
-            var res = this._repository.Update(foundUser.MapAndFill(userRequestModel, _dateTimeProvider));
+            var data = JsonSerializer.Deserialize(
+                message, 
+                typeof( MessageModel )
+            ) as MessageModel;
 
-            return res
-                .MapObjectTo( new UpdateUserResponseModel() )
-                .Ok();
+            return "Success".Ok();
         }
         catch (ArgumentNullException)
         {
-            throw;
-            //return GenericResponses.NotAcceptable("Formato de dados inválido");
-        }
-        catch (DBConcurrencyException)
-        {
-            throw;
-            //return GenericResponses.NotAcceptable("Formato de dados inválido");
-        }
-        catch (DbUpdateException)
-        {
-            throw;
-            //return GenericResponses.NotAcceptable("Formato de dados inválido");
-        }
-        catch (InvalidOperationException)
-        {
-            throw;
-            //return GenericResponses.NotAcceptable("Formato de dados inválido.");
+            return ResponseFactory.NotAcceptable("Formato de dados inválido");
         }
         catch (NullClaimException msg)
         {
             return ResponseFactory.BadRequest(msg.Message.ToString());
         }
-        catch (Exception)
+        catch (Exception)       
         {
             throw;
         }

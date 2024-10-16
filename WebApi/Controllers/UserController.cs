@@ -10,8 +10,8 @@ namespace WebApi.Controllers;
 [ApiController]
 public class UserController : ControllerBase
 {
-    ICreateUserUsecase CreateUserService { get; set; }
-    IManageUserUsecase ManageUserService { get; set; }
+    private ICreateUserUsecase CreateUserService { get; set; }
+    private IManageUserUsecase ManageUserService { get; set; }
 
 
     public UserController(ICreateUserUsecase createUser, IManageUserUsecase manageUser)
@@ -49,9 +49,9 @@ public class UserController : ControllerBase
     [SwaggerResponse(406, "Invalid format of request")]
     [SwaggerResponse(409, "Username or Email is already registered")]
     [SwaggerResponse(500, "Internal server error")]
-    public IActionResult UpdateUser([FromBody] UpdateUserRequestModel user)
+    public async Task<IActionResult> UpdateUser([FromBody] UpdateUserRequestModel user)
     {
-        var result = ManageUserService.UpdateUser(user, HttpContext.User);
+        var result = await ManageUserService.UpdateUser(user, HttpContext.User);
 
         Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
         Response.StatusCode = result.StatusCode;
@@ -67,6 +67,5 @@ public class UserController : ControllerBase
         Response.StatusCode = result.StatusCode;
         return new ObjectResult(result);
     }
-
 }
 

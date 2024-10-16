@@ -1,10 +1,4 @@
-﻿using MimeKit;
-using MailKit.Net.Smtp;
-using MimeKit.Text;
-using MailKit.Security;
-using BCryptNet = BCrypt.Net.BCrypt;
-using MongoDB.Bson;
-using MongoDB.Driver;
+﻿using BCryptNet = BCrypt.Net.BCrypt;
 using Microsoft.Extensions.Configuration;
 using Domain;
 using Domain.Entities;
@@ -12,6 +6,10 @@ using Domain.Exceptions;
 using Domain.Repositories;
 using CrossCutting.Providers;
 using CrossCutting;
+using Domain.Broker;
+using System.Text.Json;
+using System.Data;
+using Application.Processors.UserOperations.VerifyAndRecoverUser;
 
 namespace Application.UseCases.UserOperations.VerifyAndRecoverUser;
 
@@ -21,13 +19,21 @@ public partial class VerifyAndRecoverUserUsecase : IVerifyAndRecoverUserUsecase
     private readonly IUserRepository _userRepository;
     private readonly IRecoverRepository _recoverRepository;
     private readonly IDateTimeProvider _timeProvider;
+    private readonly IProducerService _producer;
 
-    public VerifyAndRecoverUserUsecase(IConfiguration config, IUserRepository repository, IRecoverRepository recoverRepository, IDateTimeProvider timeProvider)
+    public VerifyAndRecoverUserUsecase (
+        IConfiguration config, 
+        IUserRepository repository, 
+        IRecoverRepository recoverRepository, 
+        IDateTimeProvider timeProvider,
+        IProducerService producer
+    )
     {
         _config = config;
         _userRepository = repository;
         _recoverRepository = recoverRepository;
         _timeProvider = timeProvider;
+        _producer = producer;
     }
 
     public ResponseModel VerifyUser(Guid userId)
@@ -42,7 +48,7 @@ public partial class VerifyAndRecoverUserUsecase : IVerifyAndRecoverUserUsecase
             .Ok();        
     }
 
-    public ResponseModel SendEmail(SendEmailRequestModel request)
+    public async Task<ResponseModel> SendEmail(SendEmailRequestModel request)
     {
         if (string.IsNullOrEmpty(request.Email) && string.IsNullOrEmpty(request.UserName))
         {
@@ -59,69 +65,54 @@ public partial class VerifyAndRecoverUserUsecase : IVerifyAndRecoverUserUsecase
             _userRepository.SingleOrDefault(u => u.Email == request.Email) : 
             _userRepository.SingleOrDefault(u => u.Username == request.UserName);
 
-        if (foundUser == null) return ResponseFactory.NotFound("User not found");
-
-        string host = _config.GetSection("Host").Value;
-
+        if (foundUser == null)
+            return ResponseFactory.NotFound("User not found");
+        
         string timestampHash = GenerateTimestampHash();
-        var resetInfo = new PasswordResetInfo
-        {
-            UserId = foundUser.UserId,
-            Hash = timestampHash,
-            Timestamp = _timeProvider.UtcNow,
-            Success = false
-        };
 
-        if (!IsValidTimestampHash(resetInfo.Hash))            
-            return ResponseFactory.NotFound("Hash expired or invalid");
+        if (!IsValidTimestampHash(timestampHash))            
+            return ResponseFactory.NotFound("Hash expired or invalid");        
 
-        (bool canAttempt, int timeToWait) = CanAttemptPasswordRecovery(resetInfo.UserId);
+        (bool canAttempt, int timeToWait) = CanAttemptPasswordRecovery(foundUser.UserId);
 
         if (canAttempt == false)          
-            return ResponseFactory.BadRequest($"This operation cannot be run now. Wait {timeToWait} seconds");            
-                
-
-        _recoverRepository.InsertDocument("RecoverCollection", resetInfo.ToBsonDocument());
-
-        var resetLink = $"{host}auth/recover/{foundUser.UserId}/{timestampHash}";
-
-
-        var template = File.ReadAllText(
-
-            Path.Combine(
-                System.Environment.CurrentDirectory,
-                _config["BasePath"],
-                "Static",
-                "recover-template.html"
-            )
-
-        );
-
-        var body = template
-            .Replace("#resetLink", resetLink)
-            .Replace("#userName", foundUser.Username);
-
-        System.Console.ForegroundColor = ConsoleColor.Green;
-        System.Console.WriteLine(body);
-        System.Console.ForegroundColor = ConsoleColor.White;
+            return ResponseFactory.BadRequest($"This operation cannot be run now. Wait {timeToWait} seconds");
 
         try
         {
-            var email = new MimeMessage();
-            email.From.Add(MailboxAddress.Parse(_config.GetSection("Email:Username").Value));
-            email.To.Add(MailboxAddress.Parse(foundUser.Email));
-            email.Subject = "RetroCollect Password Recover";
-            email.Body = new TextPart(TextFormat.Html) { Text = body };
+            var messageObject = new MessageModel 
+            { 
+                Message = new SendEmailInfo 
+                { 
+                    TimeStampHash = timestampHash, 
+                    UserId = foundUser.UserId, 
+                    Email = foundUser.Email, 
+                    Username = foundUser.Username 
+                }, 
+                SourceType = "verify-recover-user" 
+            };
 
-            using var smtp = new SmtpClient();
-            smtp.Connect(_config.GetSection("Email:Host").Value, 587, SecureSocketOptions.StartTls);
-            smtp.Authenticate(_config.GetSection("Email:Username").Value, _config.GetSection("Email:Password").Value);
-            smtp.Send(email);
-            smtp.Disconnect(true);
+            var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject));
 
-            return "Email sent".Ok();
+            var data = JsonSerializer.Deserialize (
+                message, 
+                typeof(MessageModel)
+            ) as MessageModel;
+            
+            return "Success".Created(message = status);
         }
-        catch (Exception msg) { return ResponseFactory.ServiceUnavailable(msg.ToString()); }
+        catch (DBConcurrencyException)
+        {
+            return ResponseFactory.NotAcceptable("Formato de dados inválido");
+        }
+        catch (InvalidOperationException)
+        {
+            return ResponseFactory.NotAcceptable("Formato de dados inválido.");
+        }
+        catch (Exception)
+        {
+            throw;
+        }
     }
 
     #region inner methods
@@ -134,12 +125,6 @@ public partial class VerifyAndRecoverUserUsecase : IVerifyAndRecoverUserUsecase
         string combinedString = $"{timestamp}-{uniqueIdentifier}";
 
         return combinedString;
-    }
-
-    public bool PasswordRecoveryHashExists(string userId, string hash)
-    {
-        var filter = Builders<BsonDocument>.Filter.Eq("UserId", userId) & Builders<BsonDocument>.Filter.Eq("Hash", hash);
-        return _recoverRepository.Any("RecoverCollection", filter);
     }
 
 
@@ -236,7 +221,7 @@ public partial class VerifyAndRecoverUserUsecase : IVerifyAndRecoverUserUsecase
         return res.Ok();
     }
 
-    public ResponseModel ChangePassword(Guid userId, UpdatePasswordRequestModel pwd, string timestampHash)
+    public async Task<ResponseModel> ChangePassword(Guid userId, UpdatePasswordRequestModel pwd, string timestampHash)
     {
         var foundUser = _userRepository.SingleOrDefault(u => u.UserId == userId);
 
@@ -245,20 +230,31 @@ public partial class VerifyAndRecoverUserUsecase : IVerifyAndRecoverUserUsecase
 
         if (!IsValidTimestampHash(timestampHash))            
             return "Password reset request has expired or is invalid".Ok();
-        
-        var hashedNewPassword = BCryptNet.HashPassword(pwd.Password);
 
         if (BCryptNet.Verify(pwd.Password, foundUser.Password))            
-            return "New password cannot be equal to the old one".Ok();           
-
-        foundUser.Password = hashedNewPassword;
-        foundUser.UpdatedAt = _timeProvider.UtcNow;
+            return "New password cannot be equal to the old one".Ok();
 
         try
         {
-            _userRepository.Update(foundUser);
-            _recoverRepository.UpdateDocument("RecoverCollection", "UserId", foundUser.UserId, "Success", true);
-            return "Password updated successfully".Ok();
+            var messageObject = new MessageModel
+            { 
+                Message = new ChangePasswordInfo 
+                { 
+                    timestampHash = timestampHash, 
+                    userId = foundUser.UserId, 
+                    password = pwd.Password
+                }, 
+                SourceType = "change-password" 
+            };
+
+            var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject));
+
+            var data = JsonSerializer.Deserialize(
+                message, 
+                typeof( MessageModel )
+            ) as MessageModel;
+
+            return "Success".Ok();
         }
         catch (Exception)
         {
