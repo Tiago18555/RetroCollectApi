@@ -1,0 +1,39 @@
+<Project>
+    <PropertyGroup>
+        <NewtonsoftJson>13.0.3</NewtonsoftJson>
+
+        <MongoDBBson>2.19.2</MongoDBBson>
+        <MongoDBDriver>2.19.2</MongoDBDriver>
+        <MongoDBEntityFramework>1.0.2</MongoDBEntityFramework>
+
+        <BCrypt>4.0.3</BCrypt>
+        <MimeKit>4.8.0</MimeKit>
+        <MailKit>4.8.0</MailKit>
+        <Kafka>2.5.3</Kafka>
+
+        <ContainersToolsTargets>1.19.6</ContainersToolsTargets>
+        <PostgreSQLColumnEncryption>6.0.2.2</PostgreSQLColumnEncryption>
+
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <EntityFrameworkCore>6.0.7</EntityFrameworkCore>
+        <EntityFrameworkCoreTools>6.0.7</EntityFrameworkCoreTools>
+        <AuthenticationJwtBearer>6.0.7</AuthenticationJwtBearer>
+        <Hosting>6.0.1</Hosting>
+        <JwtBearer>6.0.7</JwtBearer>
+        <MicrosoftIdentityModelTokens>8.1.2</MicrosoftIdentityModelTokens>
+        <SystemIdentityModelTokensJwt>8.1.2</SystemIdentityModelTokensJwt>  
+
+        <Swashbuckle>6.3.0</Swashbuckle>
+        <SwashbuckleAnnotations>6.3.0</SwashbuckleAnnotations>
+    </PropertyGroup>
+
+    <PropertyGroup>
+        <TestSdk>17.3.2</TestSdk>
+        <CoverletCollector>3.1.2</CoverletCollector>
+        <Xunit>2.4.2</Xunit>
+        <Xunitcore>2.4.2</Xunitcore>
+        <Xunitrunner>2.4.5</Xunitrunner>
+    </PropertyGroup>
+</Project>

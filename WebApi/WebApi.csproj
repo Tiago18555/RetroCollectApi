@@ -6,31 +6,31 @@
   </PropertyGroup>
 
   <ItemGroup>    
-    <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
+    <PackageReference Include="BCrypt.Net-Next" Version="$(BCrypt)" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.6" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="$(ContainersToolsTargets)" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MimeKit" Version="4.0.0" />
-    <PackageReference Include="MailKit" Version="4.0.0" />
+    <PackageReference Include="MimeKit" Version="$(MimeKit)" />
+    <PackageReference Include="MailKit" Version="$(MailKit)" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.4" />
-	  <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.30.1" />    
-    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="6.30.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="$(JwtBearer)" />
+	  <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="$(SystemIdentityModelTokensJwt)" />    
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="$(MicrosoftIdentityModelTokens)" />
   </ItemGroup>
 
   <ItemGroup>
-	  <PackageReference Include="Swashbuckle.AspNetCore" Version="6.3.0" />
-	  <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.3.0" />
+	  <PackageReference Include="Swashbuckle.AspNetCore" Version="$(Swashbuckle)" />
+	  <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="$(SwashbuckleAnnotations)" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Confluent.Kafka" Version="2.5.3" />
+    <PackageReference Include="Confluent.Kafka" Version="$(Kafka)" />
   </ItemGroup>
   
 	<ItemGroup>
