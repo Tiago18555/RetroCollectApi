@@ -25,9 +25,9 @@ public class WishlistController : ControllerBase
     [SwaggerResponse(400, "Resource not found")]
     [SwaggerResponse(406, "Invalid format of request")]
     [SwaggerResponse(500, "Internal server error")]
-    public IActionResult AddWishlist([FromBody] AddToUserWishlistRequestModel request)
+    public async Task<IActionResult> AddWishlist([FromBody] AddToUserWishlistRequestModel request)
     {
-        var result = wishlistService.Add(request, HttpContext.User);
+        var result = await wishlistService.Add(request, HttpContext.User);
 
         Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
         Response.StatusCode = result.StatusCode;
@@ -43,9 +43,9 @@ public class WishlistController : ControllerBase
     [SwaggerResponse(400, "Resource not found")]
     [SwaggerResponse(406, "Invalid format of request")]
     [SwaggerResponse(500, "Internal server error")]
-    public IActionResult DeleteWishlist([FromRoute] int game_id)
+    public async Task<IActionResult> DeleteWishlist([FromRoute] int game_id)
     {
-        var result = wishlistService.Remove(game_id, HttpContext.User);
+        var result = await wishlistService.Remove(game_id, HttpContext.User);
 
         Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
         Response.StatusCode = result.StatusCode;

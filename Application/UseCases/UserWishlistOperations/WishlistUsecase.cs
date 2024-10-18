@@ -1,8 +1,9 @@
 ﻿using CrossCutting;
 using Domain;
-using Domain.Entities;
+using Domain.Broker;
 using Domain.Repositories;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace Application.UseCases.UserWishlistOperations;
 
@@ -11,19 +12,21 @@ public class WishlistUsecase : IWishlistUsecase
     private readonly IWishlistRepository _wishlistRepository;
     private readonly IUserRepository _userRepository;
     private readonly IGameRepository _gameRepository;
+    private readonly IProducerService _producer;
 
-    public WishlistUsecase(IWishlistRepository repository, IUserRepository userRepository, IGameRepository gameRepository)
+    public WishlistUsecase(IWishlistRepository wishlistRepository, IUserRepository userRepository, IGameRepository gameRepository, IProducerService producer)
     {
-        _wishlistRepository = repository;
+        _wishlistRepository = wishlistRepository;
         _userRepository = userRepository;
         _gameRepository = gameRepository;
+        _producer = producer;
     }
 
-    public ResponseModel Add(AddToUserWishlistRequestModel RequestBody, ClaimsPrincipal RequestToken)
+    public async Task<ResponseModel> Add(AddToUserWishlistRequestModel requestBody, ClaimsPrincipal requestToken)
     {
 
-        var user_id = RequestToken.GetUserId();
-        var item_id = RequestBody.Id;
+        var user_id = requestToken.GetUserId();
+        var item_id = requestBody.Id;
 
         var user = _userRepository.Any(u => u.UserId == user_id);
 
@@ -33,13 +36,27 @@ public class WishlistUsecase : IWishlistUsecase
 
         if (!game) { return ResponseFactory.NotFound("Game not found"); }
 
-        var wishlist = new Wishlist { UserId = user_id, GameId = item_id };
+        try
+        {
+            var messageObject = new MessageModel{ Message = new {
+                UserId = user_id,
+                GameId = item_id
+            }, SourceType = "add-wishlist" };
 
-        return _wishlistRepository
-            .Add(wishlist)
-            .MapObjectTo(
-                new AddToUserWishlistResponseModel()
-             ).Ok();
+            var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject));
+
+            var data = JsonSerializer.Deserialize (
+                message, 
+                typeof(MessageModel)
+            ) as MessageModel;
+            
+            return "Success".Created(message = status);
+        }
+        catch (Exception)
+        {
+            return ResponseFactory.NotFound();
+        }
+
     }
 
     public async Task<ResponseModel> GetAllByGame(int gameId, int limit, int page)
@@ -74,7 +91,7 @@ public class WishlistUsecase : IWishlistUsecase
         return result.Ok();
     }
 
-    public ResponseModel Remove(int game_id, ClaimsPrincipal RequestToken)
+    public async Task<ResponseModel> Remove(int game_id, ClaimsPrincipal RequestToken)
     {
         var user_id = RequestToken.GetUserId();
 
@@ -86,10 +103,26 @@ public class WishlistUsecase : IWishlistUsecase
 
         if (!game) { return ResponseFactory.NotFound("Game not found"); }
 
-        var result = _wishlistRepository.Delete(new Wishlist { UserId = user_id, GameId = game_id });
+        try
+        {
+            var messageObject = new MessageModel{ Message = new {
+                UserId = user_id,
+                GameId = game_id
+            }, SourceType = "remove-wishlist" };
 
-        if (result) return "Successfully Deleted".Ok();
-        else return ResponseFactory.NotFound("Operation not successfully completed");
+            var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject));
+
+            var data = JsonSerializer.Deserialize (
+                message, 
+                typeof(MessageModel)
+            ) as MessageModel;
+            
+            return "Removed successfully".Ok(message = status);
+        }
+        catch (Exception)
+        {
+            return ResponseFactory.NotFound();
+        }
     }
 }
  

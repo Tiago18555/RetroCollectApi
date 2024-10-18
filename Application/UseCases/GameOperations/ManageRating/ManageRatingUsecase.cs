@@ -1,11 +1,12 @@
 ﻿using CrossCutting;
-using CrossCutting.Providers;
 using Domain;
+using Domain.Broker;
 using Domain.Exceptions;
 using Domain.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace Application.UseCases.GameOperations.ManageRating;
 
@@ -14,17 +15,22 @@ public class ManageRatingUsecase : IManageRatingUsecase
     private readonly IRatingRepository _ratingRepository;
     private readonly IGameRepository _gameRepository;
     private readonly IUserRepository _userRepository;
-    private readonly IDateTimeProvider _dateTimeProvider;
+    private readonly IProducerService _producer;
 
-    public ManageRatingUsecase(IRatingRepository repository, IGameRepository gameRepository, IUserRepository userRepository, IDateTimeProvider dateTimeProvider)
+    public ManageRatingUsecase (
+        IRatingRepository ratingRepository, 
+        IGameRepository gameRepository, 
+        IUserRepository userRepository, 
+        IProducerService producer
+    )
     {
-        _ratingRepository = repository;
+        _ratingRepository = ratingRepository;
         _gameRepository = gameRepository;
         _userRepository = userRepository;
-        _dateTimeProvider = dateTimeProvider;
+        _producer = producer;
     }
 
-    public ResponseModel EditRating(EditRatingRequestModel requestBody, ClaimsPrincipal requestToken)
+    public async Task<ResponseModel> EditRating(EditRatingRequestModel requestBody, ClaimsPrincipal requestToken)
     {
         try
         {
@@ -39,15 +45,16 @@ public class ManageRatingUsecase : IManageRatingUsecase
             if (foundRating.UserId != user_id)
                 return ResponseFactory.Forbidden($"This rating {rating_id} is invalid");
 
+            var messageObject = new MessageModel{ Message = requestBody, SourceType = "edit-rating" };
 
-            foundRating.RatingValue = requestBody.RatingValue == 0 ? foundRating.RatingValue : requestBody.RatingValue;
-            foundRating.Review = String.IsNullOrEmpty(requestBody.Review) ? foundRating.Review : requestBody.Review;
-            foundRating.UpdatedAt = _dateTimeProvider.UtcNow;
+            var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject));
 
-            return
-                _ratingRepository.Update(foundRating)
-                .MapObjectsTo(new EditRatingResponseModel())
-                .Ok();
+            var data = JsonSerializer.Deserialize (
+                message, 
+                typeof(MessageModel)
+            ) as MessageModel;
+            
+            return "Updated successfully".Ok(message = status);
         }
         catch (DBConcurrencyException)
         {
@@ -99,7 +106,7 @@ public class ManageRatingUsecase : IManageRatingUsecase
         return result.Ok();
     }
 
-    public ResponseModel RemoveRating(Guid ratingId, ClaimsPrincipal requestToken)
+    public async Task<ResponseModel> RemoveRating(Guid ratingId, ClaimsPrincipal requestToken)
     {
         try
         {
@@ -113,12 +120,16 @@ public class ManageRatingUsecase : IManageRatingUsecase
             if (foundRating.UserId != user_id)
                 return ResponseFactory.Forbidden("This rating is invalid");
 
-            var success = _ratingRepository.Delete(foundRating);
+            var messageObject = new MessageModel{ Message = foundRating, SourceType = "edit-rating" };
 
-            if (success)                
-                return "Rating Deleted".Ok();
+            var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject));
 
-            return ResponseFactory.ServiceUnavailable($"Unknown error at {System.Environment.CurrentDirectory} on RemoveRating");
+            var data = JsonSerializer.Deserialize (
+                message, 
+                typeof(MessageModel)
+            ) as MessageModel;
+            
+            return "Deleted successfully".Ok(message = status);
         }
         catch (ArgumentNullException e)
         {
@@ -133,8 +144,4 @@ public class ManageRatingUsecase : IManageRatingUsecase
             throw;
         }
     }
-}
-public class RatingResponseModel
-{
-
 }

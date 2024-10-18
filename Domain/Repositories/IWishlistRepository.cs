@@ -13,7 +13,6 @@ public interface IWishlistRepository
     /// <exception cref="ArgumentNullException"></exception>
     /// <returns><see langword="true" /> if the entity has deleted successfully</returns>
     bool Delete(Wishlist wishlist);
-
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="OperationCanceledException"></exception>
     Task<List<T>> GetWishlistsByUser<T>(Guid userId, Expression<Func<Wishlist, T>> predicate);

@@ -1,31 +1,29 @@
 ﻿using Domain;
-using Application.UseCases.IgdbIntegrationOperations.SearchGame;
-using Domain.Entities;
 using Domain.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
-using Game = Domain.Entities.Game;
 using Domain.Repositories;
-using CrossCutting.Providers;
 using CrossCutting;
+using Domain.Broker;
+using System.Text.Json;
 
 namespace Application.UseCases.GameOperations.AddRating;
 
 public class AddRatingUsecase : IAddRatingUsecase
 {
     private readonly IRatingRepository _ratingRepository;
-    private readonly IGameRepository _gameRepository;
     private readonly IUserRepository _userRepository;
-    private readonly IDateTimeProvider _dateTimeProvider;
-    private readonly ISearchGameUsecase _searchGameService;
+    private readonly IProducerService _producer;
 
-    public AddRatingUsecase(IRatingRepository repository, IGameRepository gameRepository, IUserRepository userRepository, IDateTimeProvider dateTimeProvider, ISearchGameUsecase searchGameService)
+    public AddRatingUsecase (
+        IRatingRepository ratingRepository, 
+        IUserRepository userRepository, 
+        IProducerService producer
+    )
     {
-        _ratingRepository = repository;
-        _gameRepository = gameRepository;
+        _ratingRepository = ratingRepository;
         _userRepository = userRepository;
-        _dateTimeProvider = dateTimeProvider;
-        _searchGameService = searchGameService;
+        _producer = producer;
     }
 
     public async Task<ResponseModel> AddRating(AddRatingRequestModel requestBody, ClaimsPrincipal requestToken)
@@ -42,35 +40,23 @@ public class AddRatingUsecase : IAddRatingUsecase
             if (_ratingRepository.Any(r => r.UserId == user_id && r.GameId == game_id))
                 return ResponseFactory.BadRequest("User cannot have 2 ratings on the same game");
 
-            if (!_gameRepository.Any(g => g.GameId == game_id))
-            {                    
-                var result = await _searchGameService.RetrieveGameInfoAsync(game_id);
+            var messageObject = new MessageModel{ Message = new 
+            {
+                UserId = user_id,
+                GameId = game_id,
+                requestBody.RatingValue,
+                requestBody.Review
+            }, 
+            SourceType = "add-rating" };
 
-                var gameInfo = result.Single();
+            var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject));
 
-                Game game = new()
-                {
-                    GameId = gameInfo.GameId,
-                    Genres = gameInfo.Genres,
-                    Description = gameInfo.Description ?? "",
-                    Summary = gameInfo.Summary ?? "",
-                    ImageUrl = gameInfo.Cover ?? "",
-                    Title = gameInfo.Title ?? "",
-                    ReleaseYear = gameInfo.FirstReleaseDate
-                };
-
-
-                _gameRepository.Add(game);                    
-            }
-
-            var newRating = requestBody.MapObjectTo(new Rating());
-
-            newRating.CreatedAt = _dateTimeProvider.UtcNow;
-            newRating.UserId = user_id;
-
-            return _ratingRepository.Add(newRating)
-                .MapObjectsTo(new AddRatingResponseModel())
-                .Created();
+            var data = JsonSerializer.Deserialize (
+                message, 
+                typeof(MessageModel)
+            ) as MessageModel;
+            
+            return "Success".Created(message = status);
         }
         catch (NullClaimException msg)
         {

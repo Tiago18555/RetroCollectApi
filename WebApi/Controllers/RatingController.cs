@@ -46,9 +46,9 @@ public class RatingController : ControllerBase
     [SwaggerResponse(400, "Resource not found")]
     [SwaggerResponse(406, "Invalid format of request")]
     [SwaggerResponse(500, "Internal server error")]
-    public IActionResult EditRating([FromBody] EditRatingRequestModel request)
+    public async Task<IActionResult> EditRating([FromBody] EditRatingRequestModel request)
     {
-        var result = manageRating.EditRating(request, HttpContext.User);
+        var result = await manageRating.EditRating(request, HttpContext.User);
 
         Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
         Response.StatusCode = result.StatusCode;
@@ -64,9 +64,9 @@ public class RatingController : ControllerBase
     [SwaggerResponse(400, "Resource not found")]
     [SwaggerResponse(406, "Invalid format of request")]
     [SwaggerResponse(500, "Internal server error")]
-    public IActionResult DeleteRating([FromRoute] Guid rating_id)
+    public async Task<IActionResult> DeleteRating([FromRoute] Guid rating_id)
     {
-        var result = manageRating.RemoveRating(rating_id, HttpContext.User);
+        var result = await manageRating.RemoveRating(rating_id, HttpContext.User);
 
         Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
         Response.StatusCode = result.StatusCode;
