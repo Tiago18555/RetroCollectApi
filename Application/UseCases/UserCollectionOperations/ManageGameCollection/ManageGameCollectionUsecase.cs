@@ -1,8 +1,5 @@
 ﻿using Domain;
-using Application.UseCases.IgdbIntegrationOperations.SearchGame;
-using Application.UseCases.UserCollectionOperations.Shared;
 using Domain.Entities;
-using Domain.Enums;
 using Domain.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
@@ -10,26 +7,26 @@ using System.Security.Claims;
 using Game = Domain.Entities.Game;
 using Domain.Repositories;
 using CrossCutting;
+using Domain.Broker;
+using System.Text.Json;
 
 namespace Application.UseCases.UserCollectionOperations.ManageGameCollection;
 
 public partial class ManageGameCollectionUsecase : IManageGameCollectionUsecase
 {
     private readonly IUserRepository _userRepository;
-    private readonly IGameRepository _gameRepository;
     private readonly IUserCollectionRepository _userCollectionRepository;
-    private readonly ISearchGameUsecase _searchGameService;
+    private readonly IProducerService _producer;
+
     public ManageGameCollectionUsecase(
-        IUserRepository userRepository,
-        IGameRepository gameRepository,
-        IUserCollectionRepository userCollectionRepository,
-        ISearchGameUsecase searchGameService
+        IUserRepository userRepository, 
+        IUserCollectionRepository userCollectionRepository, 
+        IProducerService producer
     )
     {
-        this._userRepository = userRepository;
-        this._gameRepository = gameRepository;
-        this._userCollectionRepository = userCollectionRepository;
-        this._searchGameService = searchGameService;
+        _userRepository = userRepository;
+        _userCollectionRepository = userCollectionRepository;
+        _producer = producer;
     }
 
     public async Task<ResponseModel> AddGame(AddGameRequestModel requestBody, ClaimsPrincipal requestToken)
@@ -39,62 +36,18 @@ public partial class ManageGameCollectionUsecase : IManageGameCollectionUsecase
         var user = _userRepository.Any(u => u.UserId == user_id);
         if (!user) { return ResponseFactory.NotFound("User not found"); }
 
-        if (!_gameRepository.Any(g => g.GameId == requestBody.Game_id))
-        {
-            try
-            {
-                var result = await _searchGameService.RetrieveGameInfoAsync(requestBody.Game_id);
-
-                var gameInfo = result.Single();
-
-                Game game = new()
-                {
-                    GameId = gameInfo.GameId,
-                    Genres = gameInfo.Genres,
-                    Description = gameInfo.Description,
-                    Summary = gameInfo.Summary,
-                    ImageUrl = gameInfo.Cover,
-                    Title = gameInfo.Title,
-                    ReleaseYear = gameInfo.FirstReleaseDate
-                };
-
-
-                _gameRepository.Add(game);
-            }
-            catch (InvalidOperationException)
-            {
-                throw;
-            }
-            catch (ArgumentNullException)
-            {
-                throw;
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                throw;
-            }
-            catch (DbUpdateException)
-            {
-                throw;
-            }
-        }
-
         try
         {
-            UserCollection userCollection = new()
-            {
-                ConsoleId = requestBody.PlatformIsComputer == false ? requestBody.Platform_id : 0,
-                ComputerId = requestBody.PlatformIsComputer == true ? requestBody.Platform_id : 0,
-                GameId = requestBody.Game_id,
-                UserId = requestBody.User_id,
-                Condition = Enum.Parse<Condition>(requestBody.Condition.ToCapitalize(typeof(Condition))),
-                OwnershipStatus = Enum.Parse<OwnershipStatus>(requestBody.OwnershipStatus.ToCapitalize(typeof(OwnershipStatus))),
-                Notes = requestBody.Notes == null ? null : requestBody.Notes,
-                PurchaseDate = requestBody.PurchaseDate == DateTime.MinValue ? DateTime.MinValue : requestBody.PurchaseDate
-            };
+            var messageObject = new MessageModel{ Message = requestBody, SourceType = "add-game" };
 
-            var res = _userCollectionRepository.Add(userCollection);
-            return res.MapObjectsTo(new AddGameResponseModel()).Created();
+            var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject));
+
+            var data = JsonSerializer.Deserialize (
+                message, 
+                typeof(MessageModel)
+            ) as MessageModel;
+            
+            return "Success".Created(message = status);
         }
         catch (NullClaimException msg)
         {
@@ -119,7 +72,7 @@ public partial class ManageGameCollectionUsecase : IManageGameCollectionUsecase
         
     }
 
-    public ResponseModel DeleteGame(Guid user_collection_id, ClaimsPrincipal requestToken)
+    public async Task<ResponseModel> DeleteGame(Guid user_collection_id, ClaimsPrincipal requestToken)
     {
         try
         {
@@ -128,14 +81,16 @@ public partial class ManageGameCollectionUsecase : IManageGameCollectionUsecase
             var foundItem = _userCollectionRepository.SingleOrDefault(x => x.UserId == user_id && x.UserCollectionId == user_collection_id);
             if (foundItem == null) { return ResponseFactory.NotFound(); }
 
-            if (_userCollectionRepository.Delete(foundItem))
-            {
-                return ResponseFactory.Ok("Game deleted");
-            }
-            else
-            {
-                return ResponseFactory.Ok("Not deleted");
-            }
+            var messageObject = new MessageModel{ Message = foundItem, SourceType = "delete-game" };
+
+            var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject));
+
+            var data = JsonSerializer.Deserialize (
+                message, 
+                typeof(MessageModel)
+            ) as MessageModel;
+            
+            return "Deleted".Ok(message = status);
         }
         catch (ArgumentNullException)
         {
@@ -157,32 +112,18 @@ public partial class ManageGameCollectionUsecase : IManageGameCollectionUsecase
             if (foundUser == null) { return ResponseFactory.NotFound("User not found"); }
 
             var foundGame = _userCollectionRepository.SingleOrDefault(x => x.UserCollectionId == updateGameRequestModel.UserCollection_id);
-            if (foundGame == null) { return ResponseFactory.NotFound("Item Not Found"); }
+            if (foundGame == null) { return ResponseFactory.NotFound("Game Not Found"); }
 
-            if (!_gameRepository.Any(g => g.GameId == updateGameRequestModel.Game_id) && updateGameRequestModel.Game_id != 0)
-            {
-                var result = await _searchGameService.RetrieveGameInfoAsync(updateGameRequestModel.Game_id);
+            var messageObject = new MessageModel{ Message = foundGame, SourceType = "update-game" };
 
-                var gameInfo = result.Single();
+            var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject));
 
-                Game game = new()
-                {
-                    GameId = gameInfo.GameId,
-                    Genres = gameInfo.Genres,
-                    Description = gameInfo.Description,
-                    Summary = gameInfo.Summary,
-                    ImageUrl = gameInfo.Cover,
-                    Title = gameInfo.Title,
-                    ReleaseYear = gameInfo.FirstReleaseDate
-                };
-
-                _gameRepository.Add(game);
-
-            }
-
-            var res = this._userCollectionRepository.Update(foundGame.MapAndFill<UserCollection, UpdateGameRequestModel>(updateGameRequestModel));
-
-            return res.MapObjectsTo(new UpdateGameResponseModel()).Ok();
+            var data = JsonSerializer.Deserialize (
+                message, 
+                typeof(MessageModel)
+            ) as MessageModel;
+            
+            return "Updated successfully".Ok(message = status);
         }
         catch (ArgumentNullException)
         {

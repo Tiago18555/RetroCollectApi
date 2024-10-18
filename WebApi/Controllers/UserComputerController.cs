@@ -61,9 +61,9 @@ public class UserComputerController : ControllerBase
     [SwaggerResponse(200, "Deleted successfully")]
     [SwaggerResponse(406, "Invalid format of request")]
     [SwaggerResponse(500, "Internal server error")]
-    public IActionResult DeleteComputer([FromRoute] Guid user_computer_id)
+    public async Task<IActionResult> DeleteComputer([FromRoute] Guid user_computer_id)
     {
-        var result = manageComputerCollectionService.DeleteComputer(user_computer_id, HttpContext.User);
+        var result = await manageComputerCollectionService.DeleteComputer(user_computer_id, HttpContext.User);
 
         Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
         Response.StatusCode = result.StatusCode;

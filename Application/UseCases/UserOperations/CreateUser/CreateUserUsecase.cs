@@ -1,7 +1,6 @@
 ﻿using System.Data;
 using BCryptNet = BCrypt.Net.BCrypt;
 using Domain;
-using Microsoft.Extensions.Configuration;
 using System.Text.Json;
 using Domain.Broker;
 using Domain.Repositories;
@@ -15,7 +14,6 @@ public class CreateUserUsecase : ICreateUserUsecase
     private readonly IProducerService _producer;
     public CreateUserUsecase (
         IUserRepository repository, 
-        IConfiguration config, 
         IProducerService producer
     )
     {

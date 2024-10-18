@@ -18,7 +18,7 @@ public interface IManageConsoleCollectionUsecase
     /// </summary>
     /// <param name="id"></param>
     /// <returns></returns>
-    public ResponseModel DeleteConsole(Guid id, ClaimsPrincipal user);
+    public Task<ResponseModel> DeleteConsole(Guid id, ClaimsPrincipal user);
 
     /// <summary>
     /// 

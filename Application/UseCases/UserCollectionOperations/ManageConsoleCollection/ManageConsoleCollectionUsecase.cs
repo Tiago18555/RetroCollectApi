@@ -1,8 +1,6 @@
 ﻿using Domain;
-using Application.UseCases.IgdbIntegrationOperations.SearchConsole;
 using Application.UseCases.UserCollectionOperations.Shared;
 using Domain.Entities;
-using Domain.Enums;
 using Domain.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
@@ -10,28 +8,27 @@ using System.Security.Claims;
 using Console = Domain.Entities.Console;
 using Domain.Repositories;
 using CrossCutting;
+using Domain.Broker;
+using System.Text.Json;
 
 namespace Application.UseCases.UserCollectionOperations.ManageConsoleCollection;
 
 public class ManageConsoleCollectionUsecase : IManageConsoleCollectionUsecase
 {
     private readonly IUserRepository _userRepository;
-    private readonly IConsoleRepository _consoleRepository;
     private readonly IUserConsoleRepository _userConsoleRepository;
-    private readonly ISearchConsoleUsecase _searchConsoleService;
+    private readonly IProducerService _producer;
+
     public ManageConsoleCollectionUsecase(
-        IUserRepository userRepository,
-        IConsoleRepository consoleRepository,
-        IUserConsoleRepository userConsoleRepository,
-        ISearchConsoleUsecase searchConsoleService
+        IUserRepository userRepository, 
+        IUserConsoleRepository userConsoleRepository, 
+        IProducerService producer
     )
     {
-        this._userRepository = userRepository;
-        this._consoleRepository = consoleRepository;
-        this._userConsoleRepository = userConsoleRepository;
-        this._searchConsoleService = searchConsoleService;
+        _userRepository = userRepository;
+        _userConsoleRepository = userConsoleRepository;
+        _producer = producer;
     }
-
 
     public async Task<ResponseModel> AddConsole(AddItemRequestModel requestBody, ClaimsPrincipal requestToken)
     {
@@ -40,59 +37,20 @@ public class ManageConsoleCollectionUsecase : IManageConsoleCollectionUsecase
         var user = _userRepository.Any(u => u.UserId == user_id);
         if (!user) { return ResponseFactory.NotFound("User not found"); }
 
-        if (!_consoleRepository.Any(g => g.ConsoleId == requestBody.Item_id))
-        {
-            //Função adicionar console na entity Console=>
-            var result = await _searchConsoleService.RetrieveConsoleInfoAsync(requestBody.Item_id);
-
-            var consoleInfo = result.Single();
-
-            Console console = new()
-            {
-                ConsoleId = consoleInfo.ConsoleId,
-                Description = consoleInfo.Description,
-                ImageUrl = consoleInfo.ImageUrl,
-                Name = consoleInfo.Name,
-                IsPortable = consoleInfo.IsPortable
-            };
-
-            try
-            {
-                var res = _consoleRepository.Add(console);
-            }
-            catch (InvalidOperationException)
-            {
-                throw;
-            }
-            catch (ArgumentNullException)
-            {
-                throw;
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                throw;
-            }
-            catch (DbUpdateException)
-            {
-                throw;
-            }
-        }
 
 
         try
         {
-            UserConsole userConsole = new()
-            {
-                ConsoleId = requestBody.Item_id,
-                UserId = requestBody.User_id,
-                Condition = Enum.Parse<Condition>(requestBody.Condition.ToCapitalize(typeof(Condition))),
-                OwnershipStatus = Enum.Parse<OwnershipStatus>(requestBody.OwnershipStatus.ToCapitalize(typeof(OwnershipStatus))),
-                Notes = requestBody.Notes == null ? null : requestBody.Notes,
-                PurchaseDate = requestBody.PurchaseDate == DateTime.MinValue ? DateTime.MinValue : requestBody.PurchaseDate
-            };
+            var messageObject = new MessageModel{ Message = requestBody, SourceType = "add-console" };
 
-            var res = _userConsoleRepository.Add(userConsole);
-            return res.MapObjectsTo(new AddConsoleResponseModel()).Created();
+            var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject));
+
+            var data = JsonSerializer.Deserialize (
+                message, 
+                typeof(MessageModel)
+            ) as MessageModel;
+            
+            return "Success".Created(message = status);
         }
         catch (DBConcurrencyException)
         {
@@ -116,7 +74,7 @@ public class ManageConsoleCollectionUsecase : IManageConsoleCollectionUsecase
         }
 
     }
-    public ResponseModel DeleteConsole(Guid user_console_id, ClaimsPrincipal requestToken)
+    public async Task<ResponseModel> DeleteConsole(Guid user_console_id, ClaimsPrincipal requestToken)
     {
         try
         {
@@ -125,14 +83,16 @@ public class ManageConsoleCollectionUsecase : IManageConsoleCollectionUsecase
             var foundItem = _userConsoleRepository.SingleOrDefault(r => r.UserId == user_id && r.UserConsoleId == user_console_id);
             if (foundItem == null) { return ResponseFactory.NotFound(); }
 
-            if (_userConsoleRepository.Delete(foundItem))
-            {
-                return ResponseFactory.Ok("Console deleted");
-            }
-            else
-            {
-                return ResponseFactory.Ok("Not deleted");
-            }
+            var messageObject = new MessageModel{ Message = foundItem, SourceType = "delete-console" };
+
+            var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject));
+
+            var data = JsonSerializer.Deserialize (
+                message, 
+                typeof(MessageModel)
+            ) as MessageModel;
+            
+            return "Deleted successfully".Ok(message = status);
         }
         catch (ArgumentNullException)
         {
@@ -155,29 +115,18 @@ public class ManageConsoleCollectionUsecase : IManageConsoleCollectionUsecase
             if (!foundUser) { return ResponseFactory.NotFound("User not found"); }
 
             var foundConsole = _userConsoleRepository.Any(x => x.UserConsoleId == requestBody.UserConsoleId);
-            if (!foundConsole) { return ResponseFactory.NotFound("Item Not Found"); }
+            if (!foundConsole) { return ResponseFactory.NotFound("Console Not Found"); }
 
-            if (!_consoleRepository.Any(g => g.ConsoleId == requestBody.Item_id) && requestBody.Item_id != 0)
-            {
-                var result = await _searchConsoleService.RetrieveConsoleInfoAsync(requestBody.Item_id);
+            var messageObject = new MessageModel{ Message = foundConsole, SourceType = "update-console" };
 
-                var consoleInfo = result.Single();
+            var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject));
 
-                Console console = new()
-                {
-                    ConsoleId = consoleInfo.ConsoleId,
-                    Description = consoleInfo.Description,
-                    ImageUrl = consoleInfo.ImageUrl,
-                    Name= consoleInfo.Name,
-                    IsPortable= consoleInfo.IsPortable                        
-                };
-                _consoleRepository.Add(console);
-
-            }
-
-            var res = this._userConsoleRepository.Update(foundConsole.MapAndFill<UserConsole, UpdateConsoleRequestModel>(requestBody));
-
-            return res.MapObjectsTo(new UpdateConsoleResponseModel()).Ok();
+            var data = JsonSerializer.Deserialize (
+                message, 
+                typeof(MessageModel)
+            ) as MessageModel;
+            
+            return "Updated successfully".Ok(message = status);
         }
         catch (ArgumentNullException)
         {

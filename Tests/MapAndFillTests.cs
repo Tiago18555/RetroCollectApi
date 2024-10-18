@@ -12,9 +12,7 @@ public class MapAndFillTests
     public MapAndFillTests()
     {
         _timeProvider = new DateTimeProvider();
-    }
-
-    
+    }    
 
     [Fact]
     public void MapAndFill_ShouldFillUserFields_WhenUpdateUserRequestModelHasValues()

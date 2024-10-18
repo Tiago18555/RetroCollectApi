@@ -61,9 +61,9 @@ public class UserConsoleController : ControllerBase
     [SwaggerResponse(200, "Deleted successfully")]
     [SwaggerResponse(406, "Invalid format of request")]
     [SwaggerResponse(500, "Internal server error")]
-    public IActionResult DeleteConsole([FromRoute] Guid user_console_id)
+    public async Task<IActionResult> DeleteConsole([FromRoute] Guid user_console_id)
     {
-        var result = manageConsoleCollectionService.DeleteConsole(user_console_id, HttpContext.User);
+        var result = await manageConsoleCollectionService.DeleteConsole(user_console_id, HttpContext.User);
 
         Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
         Response.StatusCode = result.StatusCode;

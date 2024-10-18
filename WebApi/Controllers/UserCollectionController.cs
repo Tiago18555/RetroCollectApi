@@ -63,9 +63,9 @@ public class UserCollectionController : ControllerBase
     [SwaggerResponse(200, "Deleted successfully")]
     [SwaggerResponse(406, "Invalid format of request")]
     [SwaggerResponse(500, "Internal server error")]
-    public IActionResult DeleteGame([FromRoute] Guid user_collection_id)
+    public async Task<IActionResult> DeleteGame([FromRoute] Guid user_collection_id)
     {
-        var result = manageGameCollectionService.DeleteGame(user_collection_id, HttpContext.User);
+        var result = await manageGameCollectionService.DeleteGame(user_collection_id, HttpContext.User);
 
         Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
         Response.StatusCode = result.StatusCode;
