@@ -36,16 +36,23 @@ public partial class VerifyAndRecoverUserUsecase : IVerifyAndRecoverUserUsecase
         _producer = producer;
     }
 
-    public async Task<ResponseModel> VerifyUser(Guid userId)
+    public async Task<ResponseModel> VerifyUser(string username)
     {
-        var user = _userRepository.SingleOrDefault(r => r.UserId == userId);
+        var user = _userRepository.SingleOrDefault(r => r.Username == username);
+
+        if (String.IsNullOrEmpty(username))
+            return ResponseFactory.BadRequest($"User not found");
+
+        if (user == null)
+            return ResponseFactory.NotFound($"User {username} not found");
+
         if (user.VerifiedAt != DateTime.MinValue)
             return "This user is already verified".Ok();
 
         var messageObject = new MessageModel 
         { 
             Message = user,
-            SourceType = "recover-user" 
+            SourceType = "verify-user" 
         };
 
         var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject));
@@ -58,7 +65,7 @@ public partial class VerifyAndRecoverUserUsecase : IVerifyAndRecoverUserUsecase
         return "Verified".Ok(message = status);     
     }
 
-    public async Task<ResponseModel> SendEmail(SendEmailRequestModel request)
+    public async Task<ResponseModel> SendEmail(SendEmailRequestModel request, CancellationToken cts)
     {
         if (string.IsNullOrEmpty(request.Email) && string.IsNullOrEmpty(request.UserName))
         {
@@ -83,7 +90,7 @@ public partial class VerifyAndRecoverUserUsecase : IVerifyAndRecoverUserUsecase
         if (!IsValidTimestampHash(timestampHash))            
             return ResponseFactory.NotFound("Hash expired or invalid");        
 
-        (bool canAttempt, int timeToWait) = CanAttemptPasswordRecovery(foundUser.UserId);
+        (bool canAttempt, int timeToWait) = await CanAttemptPasswordRecovery(foundUser.Username, cts);
 
         if (canAttempt == false)          
             return ResponseFactory.BadRequest($"This operation cannot be run now. Wait {timeToWait} seconds");
@@ -95,11 +102,10 @@ public partial class VerifyAndRecoverUserUsecase : IVerifyAndRecoverUserUsecase
                 Message = new SendEmailInfo 
                 { 
                     TimeStampHash = timestampHash, 
-                    UserId = foundUser.UserId, 
                     Email = foundUser.Email, 
                     Username = foundUser.Username 
                 }, 
-                SourceType = "verify-recover-user" 
+                SourceType = "recover-user" 
             };
 
             var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject));
@@ -109,7 +115,7 @@ public partial class VerifyAndRecoverUserUsecase : IVerifyAndRecoverUserUsecase
                 typeof(MessageModel)
             ) as MessageModel;
             
-            return "Success".Created(message = status);
+            return "Success".Ok(message = status);
         }
         catch (DBConcurrencyException)
         {
@@ -130,9 +136,9 @@ public partial class VerifyAndRecoverUserUsecase : IVerifyAndRecoverUserUsecase
     private string GenerateTimestampHash()
     {
         long timestamp = _timeProvider.GetCurrentTimestampSeconds();
-        string uniqueIdentifier = Guid.NewGuid().ToString();
+        string id = Guid.NewGuid().ToString();
 
-        string combinedString = $"{timestamp}-{uniqueIdentifier}";
+        string combinedString = $"{timestamp}-{id}";
 
         return combinedString;
     }
@@ -166,17 +172,17 @@ public partial class VerifyAndRecoverUserUsecase : IVerifyAndRecoverUserUsecase
         return false;
     }
 
-    public (bool CanAttempt, int WaitTimeRequired) CanAttemptPasswordRecovery(Guid userId)
+    public async Task<(bool CanAttempt, int WaitTimeRequired)> CanAttemptPasswordRecovery(string username, CancellationToken cts)
     {
         int waitTimeRequired = 0;
         double baseTimeAcumulator = double.Parse(_config.GetSection("RecoverConfigs:PasswordChangeTries:InitialBackoffInSeconds").Value);
         int maxTimeAcumulated = int.Parse(_config.GetSection("RecoverConfigs:PasswordChangeTries:MaxBackoffInSeconds").Value);
 
-        var lastAttempt = _recoverRepository.FindDocument("RecoverCollection", "UserId", userId);
+        var lastAttempt = await _recoverRepository.FindDocument("RecoverCollection", "Username", username, cts);
 
         if (lastAttempt != null)
         {
-            var timestampString = lastAttempt["Timestamphash"].ToString().Split('-')[0];
+            var timestampString = lastAttempt["TimeStampHash"].ToString().Split('-')[0];
 
             if (long.TryParse(timestampString, out var timestamp))
             {
@@ -184,7 +190,7 @@ public partial class VerifyAndRecoverUserUsecase : IVerifyAndRecoverUserUsecase
                 var timeSinceLastAttempt = _timeProvider.UtcNow - attemptTime;
 
                 int secondsSinceLastAttempt = (int)timeSinceLastAttempt.TotalSeconds;
-                int failedAttempts = GetFailedAttemptsCount(userId);
+                int failedAttempts = GetFailedAttemptsCount(username);
 
                 int nextWait = (int)Math.Min(Math.Pow(baseTimeAcumulator, failedAttempts) * 60, maxTimeAcumulated);
 
@@ -199,15 +205,15 @@ public partial class VerifyAndRecoverUserUsecase : IVerifyAndRecoverUserUsecase
         return (true, 0);
     }
 
-    private int GetFailedAttemptsCount(Guid userId) =>   
-        _recoverRepository.CountFailedAttemptsSinceLastSuccess(userId);
+    private int GetFailedAttemptsCount(string username) =>   
+        _recoverRepository.CountFailedAttemptsSinceLastSuccess(username);
     
 
     #endregion
 
-    public ResponseModel ChangePasswordTemplate(Guid userId, string timestampHash)
+    public ResponseModel ChangePasswordTemplate(string username, string timestampHash)
     {
-        var foundUser = _userRepository.SingleOrDefault(u => u.UserId == userId);
+        var foundUser = _userRepository.SingleOrDefault(u => u.Username == username);
         if (foundUser == null) return ResponseFactory.NotFound("User not found");
 
         string host = _config.GetSection("Host").Value;
@@ -222,22 +228,20 @@ public partial class VerifyAndRecoverUserUsecase : IVerifyAndRecoverUserUsecase
             )
 
         );
-        var resetLink = $"{host}auth/update/{foundUser.UserId}/{timestampHash}";
+        var resetLink = $"{host}auth/update/{foundUser.Username}/{timestampHash}";
 
         var res = template
             .Replace("#userName", foundUser.Username)
             .Replace("#url*", resetLink);
 
-        System.Console.ForegroundColor = ConsoleColor.Green;
-        System.Console.WriteLine(res);
-        System.Console.ForegroundColor = ConsoleColor.White;
+        StdOut.Info(res);
 
         return res.Ok();
     }
 
-    public async Task<ResponseModel> ChangePassword(Guid userId, UpdatePasswordRequestModel pwd, string timestampHash)
+    public async Task<ResponseModel> ChangePassword(string username, UpdatePasswordRequestModel pwd, string timestampHash)
     {
-        var foundUser = _userRepository.SingleOrDefault(u => u.UserId == userId);
+        var foundUser = _userRepository.SingleOrDefault(u => u.Username == username);
 
         if (foundUser == null)            
             return ResponseFactory.NotFound("User Not Found");
@@ -248,8 +252,6 @@ public partial class VerifyAndRecoverUserUsecase : IVerifyAndRecoverUserUsecase
         if (BCryptNet.Verify(pwd.Password, foundUser.Password))            
             return "New password cannot be equal to the old one".Ok();
 
-        //TODO: prevent duplicate tracking
-
         try
         {
             var messageObject = new MessageModel
@@ -257,7 +259,7 @@ public partial class VerifyAndRecoverUserUsecase : IVerifyAndRecoverUserUsecase
                 Message = new ChangePasswordInfo 
                 { 
                     timestampHash = timestampHash, 
-                    userId = foundUser.UserId, 
+                    username = foundUser.Username, 
                     password = pwd.Password
                 }, 
                 SourceType = "change-password" 

@@ -7,8 +7,8 @@ public interface IRecoverRepository
 {
     BsonDocument InsertDocument(string collectionName, BsonDocument document);
     BsonDocument UpdateDocument<TValue>(string collectionName, string idFieldName, TValue idValue, string fieldNameToUpdate, BsonValue newValue);
-    int CountFailedAttemptsSinceLastSuccess(Guid userId);
+    int CountFailedAttemptsSinceLastSuccess(string username);
     bool Any(string collectionName, FilterDefinition<BsonDocument> filter);
-    BsonDocument FindDocument<T>(string collectionName, string fieldName, T value);
+    Task<BsonDocument> FindDocument<T>(string collectionName, string fieldName, T value, CancellationToken cts);
     void DeleteDocument(string collectionName, string fieldName, string value);
 }

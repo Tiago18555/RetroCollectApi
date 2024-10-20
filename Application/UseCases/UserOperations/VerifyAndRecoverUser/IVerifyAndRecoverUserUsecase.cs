@@ -4,9 +4,9 @@ namespace Application.UseCases.UserOperations.VerifyAndRecoverUser;
 
 public interface IVerifyAndRecoverUserUsecase
 {
-    Task<ResponseModel> SendEmail(SendEmailRequestModel request);
-    Task<ResponseModel> VerifyUser(Guid userid);
-    ResponseModel ChangePasswordTemplate(Guid userid, string timestamphash);
-    Task<ResponseModel> ChangePassword(Guid user_id, UpdatePasswordRequestModel pwd, string timestamphash);
+    Task<ResponseModel> SendEmail(SendEmailRequestModel request, CancellationToken cts);
+    Task<ResponseModel> VerifyUser(string username);
+    ResponseModel ChangePasswordTemplate(string username, string timestamphash);
+    Task<ResponseModel> ChangePassword(string username, UpdatePasswordRequestModel pwd, string timestamphash);
 }
 

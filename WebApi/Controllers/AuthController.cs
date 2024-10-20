@@ -50,51 +50,51 @@ public class AuthController : ControllerBase
     [SwaggerResponse(400, "Invalid format of request")]
     [SwaggerResponse(404, "User not found")]
     [SwaggerResponse(500, "Internal server error")]
-    public async Task<IActionResult> SendEmail([FromBody] SendEmailRequestModel emailDto)
+    public async Task<IActionResult> SendEmail([FromBody] SendEmailRequestModel emailDto, CancellationToken cts)
     {
-        var result = await Verify.SendEmail(emailDto);
+        var result = await Verify.SendEmail(emailDto, cts);
 
         Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
         Response.StatusCode = result.StatusCode;
         return new ObjectResult(result);
     }
 
-    [HttpGet("recover/{user_id}/{timestamp_hash}")]
+    [HttpGet("recover/{username}/{timestamp_hash}")]
     [SwaggerOperation(
         Summary = "Change password page",
         Description = "Get changing-password page"
     )]
     [SwaggerResponse(404, "User not found")]
     [SwaggerResponse(500, "Internal server error")]
-    public IActionResult ChangePasswordPage([FromRoute] Guid user_id, [FromRoute] string timestamp_hash)
+    public IActionResult ChangePasswordPage([FromRoute] string username, [FromRoute] string timestamp_hash)
     {
-        var result = Verify.ChangePasswordTemplate(user_id, timestamp_hash);
+        var result = Verify.ChangePasswordTemplate(username, timestamp_hash);
 
         Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
         Response.StatusCode = result.StatusCode;
         return Content(result.Data as string, "text/html");
     }
 
-    [HttpPatch("update/{user_id}/{timestamp_hash}")]
+    [HttpPatch("update/{username}/{timestamp_hash}")]
     [SwaggerOperation(
         Summary = "Change password",
         Description = "Update user password"
     )]
     [SwaggerResponse(404, "User not found")]
     [SwaggerResponse(500, "Internal server error")]
-    public async Task<IActionResult> ChangePassword([FromRoute] Guid user_id, [FromBody] UpdatePasswordRequestModel pwd, [FromRoute] string timestamp_hash)
+    public async Task<IActionResult> ChangePassword([FromRoute] string username, [FromBody] UpdatePasswordRequestModel pwd, [FromRoute] string timestamp_hash)
     {
-        var result = await Verify.ChangePassword(user_id, pwd, timestamp_hash);
+        var result = await Verify.ChangePassword(username, pwd, timestamp_hash);
 
         Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
         Response.StatusCode = result.StatusCode;
         return new ObjectResult(result);
     }
 
-    [HttpGet("verify/{user_id}")]
-    public async Task<IActionResult> ValidateUser([FromRoute] Guid user_id)
+    [HttpGet("verify/{username}")]
+    public async Task<IActionResult> ValidateUser([FromRoute] string username)
     {
-        var result = await Verify.VerifyUser(user_id);
+        var result = await Verify.VerifyUser(username);
 
         Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
         Response.StatusCode = result.StatusCode;

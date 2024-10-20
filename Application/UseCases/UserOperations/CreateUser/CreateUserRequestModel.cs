@@ -1,9 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using CrossCutting.Validations;
 
 namespace Application.UseCases.UserOperations.CreateUser;
 
 public class CreateUserRequestModel
 {
+    [IsValidUri]
     [MinLength(3)]
     [MaxLength(255)]
     [Required(ErrorMessage = "O campo \"username\" é obrigatório")]

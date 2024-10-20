@@ -24,7 +24,9 @@ public class CreateUserUsecase : ICreateUserUsecase
     public async Task<ResponseModel> CreateUser(CreateUserRequestModel request)
     {
         if (_repository.Any(x => x.Username == request.Username || x.Email == request.Email))        
-            return ResponseFactory.Conflict();        
+            return ResponseFactory.Conflict();
+
+        request.Username = Uri.EscapeDataString(request.Username);        
 
         try
         {
