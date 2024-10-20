@@ -14,15 +14,6 @@ public class GameRepository : IGameRepository
         _context = context;
     }
 
-    public Game Add(Game game)
-    {
-        _context.Games.Add(game);
-        _context.SaveChanges();
-        _context.Entry(game).State = EntityState.Detached;
-
-        return game;
-    }
-
     public bool Any(Func<Game, bool> predicate)
     {
         return _context

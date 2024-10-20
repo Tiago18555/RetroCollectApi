@@ -92,9 +92,9 @@ public class AuthController : ControllerBase
     }
 
     [HttpGet("verify/{user_id}")]
-    public IActionResult ValidateUser([FromRoute] Guid user_id)
+    public async Task<IActionResult> ValidateUser([FromRoute] Guid user_id)
     {
-        var result = Verify.VerifyUser(user_id);
+        var result = await Verify.VerifyUser(user_id);
 
         Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
         Response.StatusCode = result.StatusCode;

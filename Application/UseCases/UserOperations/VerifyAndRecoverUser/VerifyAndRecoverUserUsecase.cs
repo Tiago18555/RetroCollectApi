@@ -36,16 +36,26 @@ public partial class VerifyAndRecoverUserUsecase : IVerifyAndRecoverUserUsecase
         _producer = producer;
     }
 
-    public ResponseModel VerifyUser(Guid userId)
+    public async Task<ResponseModel> VerifyUser(Guid userId)
     {
         var user = _userRepository.SingleOrDefault(r => r.UserId == userId);
         if (user.VerifiedAt != DateTime.MinValue)
             return "This user is already verified".Ok();
-        user.VerifiedAt = _timeProvider.UtcNow;
-        return _userRepository
-            .Update(user)
-            .MapObjectTo( new VerifyUserResponseModel() )
-            .Ok();        
+
+        var messageObject = new MessageModel 
+        { 
+            Message = user,
+            SourceType = "recover-user" 
+        };
+
+        var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject));
+
+        var data = JsonSerializer.Deserialize (
+            message, 
+            typeof(MessageModel)
+        ) as MessageModel;
+        
+        return "Verified".Ok(message = status);     
     }
 
     public async Task<ResponseModel> SendEmail(SendEmailRequestModel request)
@@ -166,21 +176,25 @@ public partial class VerifyAndRecoverUserUsecase : IVerifyAndRecoverUserUsecase
 
         if (lastAttempt != null)
         {
-            var attemptTime = lastAttempt["Timestamp"].ToUniversalTime();
-            var timeSinceLastAttempt = _timeProvider.UtcNow - attemptTime;
+            var timestampString = lastAttempt["Timestamphash"].ToString().Split('-')[0];
 
-            int secondsSinceLastAttempt = (int)timeSinceLastAttempt.TotalSeconds;
-            int failedAttempts = GetFailedAttemptsCount(userId);
+            if (long.TryParse(timestampString, out var timestamp))
+            {
+                var attemptTime = DateTimeOffset.FromUnixTimeSeconds(timestamp).UtcDateTime;
+                var timeSinceLastAttempt = _timeProvider.UtcNow - attemptTime;
 
-            var nextWait = (int)Math.Pow(baseTimeAcumulator / 60, failedAttempts)*60;
+                int secondsSinceLastAttempt = (int)timeSinceLastAttempt.TotalSeconds;
+                int failedAttempts = GetFailedAttemptsCount(userId);
 
-            waitTimeRequired =
-                nextWait > maxTimeAcumulated
-                ? maxTimeAcumulated
-                : nextWait;
+                int nextWait = (int)Math.Min(Math.Pow(baseTimeAcumulator, failedAttempts) * 60, maxTimeAcumulated);
 
-            if (secondsSinceLastAttempt <= waitTimeRequired)
-                return (false, waitTimeRequired - secondsSinceLastAttempt);
+                waitTimeRequired = nextWait;
+
+                if (secondsSinceLastAttempt <= waitTimeRequired)
+                {
+                    return (false, waitTimeRequired - secondsSinceLastAttempt);
+                }
+            }
         }
         return (true, 0);
     }
@@ -226,13 +240,15 @@ public partial class VerifyAndRecoverUserUsecase : IVerifyAndRecoverUserUsecase
         var foundUser = _userRepository.SingleOrDefault(u => u.UserId == userId);
 
         if (foundUser == null)            
-            return ResponseFactory.NotFound("User Not Found");            
+            return ResponseFactory.NotFound("User Not Found");
 
         if (!IsValidTimestampHash(timestampHash))            
             return "Password reset request has expired or is invalid".Ok();
 
         if (BCryptNet.Verify(pwd.Password, foundUser.Password))            
             return "New password cannot be equal to the old one".Ok();
+
+        //TODO: prevent duplicate tracking
 
         try
         {

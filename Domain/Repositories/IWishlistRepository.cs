@@ -5,14 +5,6 @@ namespace Domain.Repositories;
 
 public interface IWishlistRepository
 {
-    /// <exception cref="DbUpdateConcurrencyException"></exception>
-    /// <exception cref="DbUpdateException"></exception>
-    /// <returns>The entity found, or <see langword="null" />.</returns>
-    Wishlist Add(Wishlist wishlist);
-
-    /// <exception cref="ArgumentNullException"></exception>
-    /// <returns><see langword="true" /> if the entity has deleted successfully</returns>
-    bool Delete(Wishlist wishlist);
     /// <exception cref="ArgumentNullException"></exception>
     /// <exception cref="OperationCanceledException"></exception>
     Task<List<T>> GetWishlistsByUser<T>(Guid userId, Expression<Func<Wishlist, T>> predicate);

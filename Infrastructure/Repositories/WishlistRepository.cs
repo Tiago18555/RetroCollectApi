@@ -14,31 +14,12 @@ public class WishlistRepository : IWishlistRepository
     public WishlistRepository(DataContext context) =>
         _context = context;
 
-    public Wishlist Add(Wishlist wishlist)
-    {
-        _context.Wishlists.Add(wishlist);
-        _context.SaveChanges();
-        _context.Entry(wishlist).Reference(x => x.Game).Load();
-        _context.Entry(wishlist).Reference(x => x.User).Load();
-        _context.Entry(wishlist).State = EntityState.Detached;
-
-        return wishlist;
-    }
-
     public bool Any(Func<Wishlist, bool> predicate)
     {
         return _context
             .Wishlists
             .AsNoTracking()
             .Any(predicate);
-    }
-
-    public bool Delete(Wishlist rating)
-    {
-        _context.Wishlists.Remove(rating);
-        _context.SaveChanges();
-
-        return !_context.Wishlists.Any(x => x.WishlistId == rating.WishlistId);
     }
 
     public async Task<List<T>> GetWishlistsByGame<T>(int gameId, Expression<Func<Wishlist, T>> predicate)

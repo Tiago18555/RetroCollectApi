@@ -14,15 +14,6 @@ public class ComputerRepository : IComputerRepository
         _context = context;
     }
 
-    public Computer Add(Computer computer)
-    {
-        _context.Computers.Add(computer);
-        _context.SaveChanges();
-        _context.Entry(computer).State = EntityState.Detached;
-
-        return computer;
-    }
-
     public bool Any(Func<Computer, bool> predicate)
     {
         return _context.Computers.AsNoTracking().Any(predicate);

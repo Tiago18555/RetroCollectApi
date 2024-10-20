@@ -16,15 +16,6 @@ public class UserRepository : IUserRepository
         _context = context;
     }
 
-    public User Add(User user)
-    {
-        _context.Users.Add(user);
-        _context.SaveChanges();
-        _context.Entry(user).State = EntityState.Detached;
-
-        return user;
-    }
-
     public async Task<List<T>> GetAll<T>(Expression<Func<User, T>> predicate)
     {
         return await _context.Users
@@ -46,15 +37,6 @@ public class UserRepository : IUserRepository
             .AsQueryable()
             .AsNoTracking()
             .SingleOrDefault();
-    }
-
-    public User Update(User user)
-    {
-        _context.Users.Update(user);
-        _context.Entry(user).State = EntityState.Modified;
-        _context.SaveChanges();
-
-        return user;
     }
 
     public async Task<List<T>> GetAllComputersByUser<T>(Guid userId, Expression<Func<UserComputer, T>> predicate)

@@ -12,19 +12,7 @@ public class RatingRepository : IRatingRepository
     private readonly DataContext _context;
 
     public RatingRepository(DataContext context) =>        
-        _context = context;
-    
-
-    public Rating Add(Rating rating)
-    {
-        _context.Ratings.Add(rating);
-        _context.SaveChanges();
-        _context.Entry(rating).Reference(x => x.Game).Load();
-        _context.Entry(rating).Reference(x => x.User).Load();
-        _context.Entry(rating).State = EntityState.Detached;
-
-        return rating;
-    }    
+        _context = context;  
 
     public bool Any(Func<Rating, bool> predicate)
     {
@@ -32,15 +20,6 @@ public class RatingRepository : IRatingRepository
             .Ratings
             .AsNoTracking()
             .Any(predicate);
-    }
-
-
-    public bool Delete(Rating rating)
-    {
-        _context.Ratings.Remove(rating);
-        _context.SaveChanges();
-
-        return !_context.Ratings.Any(x => x.RatingId == rating.RatingId);
     }
 
     public async Task<List<T>> GetRatingsByGame<T>(int gameId, Expression<Func<Rating, T>> predicate)
@@ -99,15 +78,5 @@ public class RatingRepository : IRatingRepository
             .AsQueryable()
             .AsNoTracking()
             .SingleOrDefault();
-    }
-
-    public Rating Update(Rating rating)
-    {
-        _context.Ratings.Update(rating);
-        _context.Entry(rating).Reference(x => x.Game).Load();
-        _context.Entry(rating).Reference(x => x.User).Load();
-        _context.SaveChanges();
-
-        return rating;
     }
 }

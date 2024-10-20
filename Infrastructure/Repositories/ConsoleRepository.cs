@@ -14,15 +14,6 @@ public class ConsoleRepository : IConsoleRepository
         _context = context;
     }
 
-    public Console Add(Console console)
-    {
-        _context.Consoles.Add(console);
-        _context.SaveChanges();
-        _context.Entry(console).State = EntityState.Detached;
-
-        return console;
-    }
-
     public bool Any(Func<Console, bool> predicate)
     {
         return _context.Consoles.AsNoTracking().Any(predicate);
