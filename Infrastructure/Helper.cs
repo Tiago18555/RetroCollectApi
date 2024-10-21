@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using CrossCutting;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 
 namespace Infrastructure;
@@ -7,12 +8,15 @@ public static class Helper
 {
     public static async Task<T> IgdbPostAsync<T>(this HttpClient httpClient, string query, string endpoint)
     {
-        await Console.Out.WriteLineAsync(AppContext.BaseDirectory);
+        var environment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+
+        StdOut.Warning($"ENVIROMENT NAME: {environment}");
+
         var config = new ConfigurationBuilder()
-        .SetBasePath(AppContext.BaseDirectory)
-        .AddJsonFile("appsettings.Development.json")
-        .AddJsonFile("appsettings.Docker.json")
-        .Build();
+            .SetBasePath(AppContext.BaseDirectory)
+            .AddJsonFile($"appsettings.{environment}.json", optional: true)
+            .Build();;
+
 
         var content = new StringContent(query);
 
@@ -25,7 +29,7 @@ public static class Helper
         httpClient.DefaultRequestHeaders.Add("Client-ID", clientId);
         httpClient.DefaultRequestHeaders.Add("Authorization", token);
 
-        Console.ForegroundColor = ConsoleColor.Red;
+        Console.ForegroundColor = ConsoleColor.DarkGray;
         Console.WriteLine($"Client-ID: {clientId}");
         Console.WriteLine($"Token: {token[..5]}...");
         Console.ForegroundColor = ConsoleColor.White;

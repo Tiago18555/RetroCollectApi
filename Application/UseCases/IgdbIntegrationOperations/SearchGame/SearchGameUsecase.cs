@@ -1,4 +1,5 @@
-﻿using CrossCutting;
+﻿using System.Text.Json;
+using CrossCutting;
 using Domain;
 using Infrastructure;
 
@@ -86,6 +87,8 @@ public class SearchGameUsecase : ISearchGameUsecase
 
         if (limit > 0 && limit < 500)
             queryParams["limit"] = limit.ToString();
+        else
+            queryParams["limit"] = "50";
 
 
         var query = queryParams.BuildSearchQuery(limit);
