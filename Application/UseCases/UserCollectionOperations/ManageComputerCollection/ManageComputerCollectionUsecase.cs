@@ -113,7 +113,17 @@ public class ManageComputerCollectionService : IManageComputerCollectionUsecase
             if (foundComputer == null) 
                 return ResponseFactory.NotFound("Computer Not Found");
                 
-            var messageObject = new MessageModel{ Message = foundComputer, SourceType = "update-computer" };
+            var messageObject = new MessageModel { Message = new
+                {
+                    UserId = user_id,
+                    requestBody.UserComputerId,
+                    requestBody.PurchaseDate,
+                    requestBody.Condition,
+                    requestBody.OwnershipStatus,
+                    requestBody.Notes
+                },
+                SourceType = "update-computer" 
+            };
 
             var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject));
 

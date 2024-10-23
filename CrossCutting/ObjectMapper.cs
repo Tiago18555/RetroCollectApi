@@ -1,14 +1,9 @@
-﻿using System.ComponentModel;
-using System.Dynamic;
-using System.Reflection;
-using System;
-using System.Runtime.ConstrainedExecution;
+﻿using System.Reflection;
 
 namespace CrossCutting;
 
 public static class ObjectMapper
-{
-    
+{    
     /// <summary>
     /// Maps an object to a equal or similar type
     /// </summary>

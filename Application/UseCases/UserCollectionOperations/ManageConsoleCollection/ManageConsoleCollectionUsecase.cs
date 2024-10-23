@@ -83,7 +83,7 @@ public class ManageConsoleCollectionUsecase : IManageConsoleCollectionUsecase
             var foundItem = _userConsoleRepository.SingleOrDefault(r => r.UserId == user_id && r.UserConsoleId == user_console_id);
             if (foundItem == null) { return ResponseFactory.NotFound(); }
 
-            var messageObject = new MessageModel{ Message = foundItem, SourceType = "delete-console" };
+            var messageObject = new MessageModel { Message = foundItem, SourceType = "delete-console" };
 
             var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject));
 
@@ -111,13 +111,22 @@ public class ManageConsoleCollectionUsecase : IManageConsoleCollectionUsecase
         {
             var user_id = requestToken.GetUserId();
 
-            var foundUser = _userRepository.Any(x => x.UserId == requestBody.User_id);
+            var foundUser = _userRepository.Any(x => x.UserId == requestToken.GetUserId());
             if (!foundUser) { return ResponseFactory.NotFound("User not found"); }
 
             var foundConsole = _userConsoleRepository.Any(x => x.UserConsoleId == requestBody.UserConsoleId);
             if (!foundConsole) { return ResponseFactory.NotFound("Console Not Found"); }
 
-            var messageObject = new MessageModel{ Message = foundConsole, SourceType = "update-console" };
+            var messageObject = new MessageModel{ Message = new 
+            {
+                UserId = user_id,
+                requestBody.UserConsoleId,
+                requestBody.PurchaseDate,
+                requestBody.Condition,
+                requestBody.OwnershipStatus,
+                requestBody.Notes
+            }, 
+            SourceType = "update-console" };
 
             var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject));
 

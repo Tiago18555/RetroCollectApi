@@ -102,19 +102,30 @@ public partial class ManageGameCollectionUsecase : IManageGameCollectionUsecase
         }
     }
 
-    public async Task<ResponseModel> UpdateGame(UpdateGameRequestModel updateGameRequestModel, ClaimsPrincipal user)
+    public async Task<ResponseModel> UpdateGame(UpdateGameRequestModel requestBody, ClaimsPrincipal requestToken)
     {
 
         try
         {
-            if (!user.IsTheRequestedOneId(updateGameRequestModel.User_id)) return ResponseFactory.Forbidden();
-            var foundUser = _userRepository.SingleOrDefault(x => x.UserId == updateGameRequestModel.User_id);
+            var user_id = requestToken.GetUserId();
+
+            var foundUser = _userRepository.SingleOrDefault(x => x.UserId == user_id);
             if (foundUser == null) { return ResponseFactory.NotFound("User not found"); }
 
-            var foundGame = _userCollectionRepository.SingleOrDefault(x => x.UserCollectionId == updateGameRequestModel.UserCollection_id);
-            if (foundGame == null) { return ResponseFactory.NotFound("Game Not Found"); }
+            var foundGame = _userCollectionRepository.SingleOrDefault(x => x.UserCollectionId == requestBody.UserCollectionId);
+            if (foundGame == null) { return ResponseFactory.NotFound($"Game Not Found"); }
 
-            var messageObject = new MessageModel{ Message = foundGame, SourceType = "update-game" };
+            var messageObject = new MessageModel { Message = new 
+                {
+                    UserId = user_id,
+                    requestBody.UserCollectionId,
+                    requestBody.PurchaseDate,
+                    requestBody.Condition,
+                    requestBody.OwnershipStatus,
+                    requestBody.Notes
+                },
+                SourceType = "update-game" 
+            };
 
             var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject));
 

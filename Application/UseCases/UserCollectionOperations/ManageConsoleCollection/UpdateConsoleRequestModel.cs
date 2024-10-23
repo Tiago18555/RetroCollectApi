@@ -5,11 +5,6 @@ namespace Application.UseCases.UserCollectionOperations.ManageConsoleCollection;
 
 public class UpdateConsoleRequestModel
 {
-    public int Item_id { get; set; }
-
-    [Required]
-    public Guid User_id { get; set; }
-
     [Required]
     public Guid UserConsoleId { get; set; }
 

@@ -6,10 +6,6 @@ namespace Application.UseCases.UserCollectionOperations.ManageComputerCollection
 public class UpdateComputerRequestModel
 {
     [Required]
-    public Guid User_id { get; set; }
-    public int Item_id { get; set; }
-
-    [Required]
     public Guid UserComputerId { get; set; }
 
     [DataType(DataType.DateTime)]

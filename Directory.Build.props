@@ -13,7 +13,6 @@
 
         <ContainersToolsTargets>1.19.6</ContainersToolsTargets>
         <PostgreSQLColumnEncryption>6.0.2.2</PostgreSQLColumnEncryption>
-
     </PropertyGroup>
 
     <PropertyGroup>
