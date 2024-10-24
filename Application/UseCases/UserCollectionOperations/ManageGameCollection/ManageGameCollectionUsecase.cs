@@ -38,7 +38,20 @@ public partial class ManageGameCollectionUsecase : IManageGameCollectionUsecase
 
         try
         {
-            var messageObject = new MessageModel{ Message = requestBody, SourceType = "add-game" };
+            var messageObject = new MessageModel{ 
+                Message = new 
+                {
+                    UserId = user_id,
+                    requestBody.GameId,
+                    requestBody.PlatformId,
+                    requestBody.PlatformIsComputer,
+                    requestBody.PurchaseDate,
+                    requestBody.Condition,
+                    requestBody.OwnershipStatus,
+                    requestBody.Notes
+                }, 
+                SourceType = "add-game" 
+            };
 
             var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject));
 

@@ -5,7 +5,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace WebApi.Controllers;
 
-[Route("[controller]")]
+[Route("console")]
 [ApiController]
 public class ConsoleController : ControllerBase
 {
@@ -25,7 +25,10 @@ public class ConsoleController : ControllerBase
     [SwaggerResponse(400, "Invalid request")]
     [SwaggerResponse(406, "Invalid format of request")]
     [SwaggerResponse(500, "Internal server error")]
-    public async Task<IActionResult> SearchConsole([FromQuery] string search, [FromQuery] int limit)
+    public async Task<IActionResult> SearchConsole(
+        [FromQuery, SwaggerParameter("The search term for the game")] string search, 
+        [FromQuery, SwaggerParameter("The maximum number of results to return, if not specified the dafault value is 50")] int limit
+    )
     {
         var result = await searchConsoleService.SearchBy(search, limit);
 

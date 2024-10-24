@@ -258,9 +258,9 @@ public partial class VerifyAndRecoverUserUsecase : IVerifyAndRecoverUserUsecase
             { 
                 Message = new ChangePasswordInfo 
                 { 
-                    timestampHash = timestampHash, 
-                    username = foundUser.Username, 
-                    password = pwd.Password
+                    TimestampHash = timestampHash, 
+                    Username = foundUser.Username, 
+                    Password = pwd.Password
                 }, 
                 SourceType = "change-password" 
             };

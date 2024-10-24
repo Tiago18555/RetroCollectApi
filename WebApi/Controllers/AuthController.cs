@@ -6,7 +6,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace WebApi.Controllers;
 
-[Route("[controller]")]
+[Route("auth")]
 [ApiController]
 public class AuthController : ControllerBase
 {
@@ -66,7 +66,10 @@ public class AuthController : ControllerBase
     )]
     [SwaggerResponse(404, "User not found")]
     [SwaggerResponse(500, "Internal server error")]
-    public IActionResult ChangePasswordPage([FromRoute] string username, [FromRoute] string timestamp_hash)
+    public IActionResult ChangePasswordPage(
+        [FromRoute, SwaggerParameter("The username")] string username, 
+        [FromRoute, SwaggerParameter("The hash generated while an attempt of recover was made")] string timestamp_hash
+    )
     {
         var result = Verify.ChangePasswordTemplate(username, timestamp_hash);
 
@@ -82,7 +85,11 @@ public class AuthController : ControllerBase
     )]
     [SwaggerResponse(404, "User not found")]
     [SwaggerResponse(500, "Internal server error")]
-    public async Task<IActionResult> ChangePassword([FromRoute] string username, [FromBody] UpdatePasswordRequestModel pwd, [FromRoute] string timestamp_hash)
+    public async Task<IActionResult> ChangePassword(
+        [FromRoute, SwaggerParameter("The username")] string username, 
+        [FromRoute, SwaggerParameter("The hash generated while an attempt of recover was made")] string timestamp_hash,
+        [FromBody] UpdatePasswordRequestModel pwd
+    )
     {
         var result = await Verify.ChangePassword(username, pwd, timestamp_hash);
 
@@ -92,7 +99,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpGet("verify/{username}")]
-    public async Task<IActionResult> ValidateUser([FromRoute] string username)
+    public async Task<IActionResult> ValidateUser([FromRoute, SwaggerParameter("The username")] string username)
     {
         var result = await Verify.VerifyUser(username);
 

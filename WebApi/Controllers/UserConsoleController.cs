@@ -6,7 +6,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace WebApi.Controllers;
 
-[Route("[controller]")]
+[Route("userconsole")]
 [ApiController]
 public class UserConsoleController : ControllerBase
 {

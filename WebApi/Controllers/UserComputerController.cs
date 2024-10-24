@@ -6,7 +6,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace WebApi.Controllers;
 
-[Route("[controller]")]
+[Route("usercomputer")]
 [ApiController]
 public class UserComputerController : ControllerBase
 {

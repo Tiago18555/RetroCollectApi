@@ -6,7 +6,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace WebApi.Controllers;
 
-[Route("[controller]")]
+[Route("rating")]
 [ApiController]
 public class RatingController : ControllerBase
 {
@@ -40,7 +40,7 @@ public class RatingController : ControllerBase
     [HttpPut("")]
     [SwaggerOperation(
         Summary = "Edit rating",
-        Description = "Edit one or more info os rating"
+        Description = "Edit one or more info of a rating"
     )]
     [SwaggerResponse(200, "Rating updated")]
     [SwaggerResponse(400, "Resource not found")]

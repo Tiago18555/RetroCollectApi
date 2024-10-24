@@ -31,13 +31,13 @@ public class ManageComputerCollectionService : IManageComputerCollectionUsecase
 
     public async Task<ResponseModel> AddComputer(AddItemRequestModel requestBody, ClaimsPrincipal requestToken)
     {
-        var user_id = requestToken.GetUserId();
-
-        var user = _userRepository.Any(u => u.UserId == user_id);
-        if (!user) { return ResponseFactory.NotFound("User not found"); }
-
         try
         {
+            var user_id = requestToken.GetUserId();
+
+            var user = _userRepository.Any(u => u.UserId == user_id);
+            if (!user) { return ResponseFactory.NotFound("User not found"); }
+            
             var messageObject = new MessageModel{ Message = requestBody, SourceType = "add-computer" };
 
             var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject));
@@ -99,7 +99,6 @@ public class ManageComputerCollectionService : IManageComputerCollectionUsecase
 
     public async Task<ResponseModel> UpdateComputer(UpdateComputerRequestModel requestBody, ClaimsPrincipal requestToken)
     {
-
         try
         {
             var user_id = requestToken.GetUserId();

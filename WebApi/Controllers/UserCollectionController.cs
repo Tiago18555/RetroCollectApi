@@ -5,7 +5,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace WebApi.Controllers;
 
-[Route("[controller]")]
+[Route("usercollection")]
 [ApiController]
 public class UserCollectionController : ControllerBase
 {

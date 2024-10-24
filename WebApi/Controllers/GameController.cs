@@ -5,7 +5,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace WebApi.Controllers;
 
-[Route("[controller]")]
+[Route("game")]
 [ApiController]
 public class GameController : ControllerBase
 {
@@ -25,14 +25,14 @@ public class GameController : ControllerBase
     [SwaggerResponse(406, "Invalid format of request")]
     [SwaggerResponse(500, "Internal server error")]
     public async Task<IActionResult> SearchGame(
-        [FromQuery] string search,
-        [FromQuery] string genre,
-        [FromQuery] string keyword,
-        [FromQuery] string companie,
-        [FromQuery] string language,
-        [FromQuery] string theme,
-        [FromQuery] string releaseyear,
-        [FromQuery] int limit
+        [FromQuery, SwaggerParameter("The search term for the game")] string search,
+        [FromQuery, SwaggerParameter("The genre of the game")] string genre,
+        [FromQuery, SwaggerParameter("Keywords related to the game")] string keyword,
+        [FromQuery, SwaggerParameter("The company that developed the game")] string companie,
+        [FromQuery, SwaggerParameter("The language version of the game")] string language,
+        [FromQuery, SwaggerParameter("The theme of the game")] string theme,
+        [FromQuery, SwaggerParameter("The year that this game was released")] string releaseyear,
+        [FromQuery, SwaggerParameter("The maximum number of results to return, if not specified the dafault value is 50")] int limit
     )
     {
         var result = await searchGameService.SearchBy(search, genre, keyword, companie, language, theme, releaseyear, limit);

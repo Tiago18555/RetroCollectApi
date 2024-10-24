@@ -1,27 +1,30 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using CrossCutting.Validations;
 
 namespace Application.UseCases.UserCollectionOperations.Shared;
 
 public class AddItemRequestModel
 {
+    [JsonPropertyName("item_id")]
     [Required]
-    public int Item_id { get; set; }
+    public int ItemId { get; set; }
 
-    [Required]
-    public Guid User_id { get; set; }
-
+    [JsonPropertyName("purchase_date")]
     [DataType(DataType.DateTime)]
     [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy-MM-dd}")]
     [CustomDate(ErrorMessage = "Invalid date format.")]
     [NotFutureDate(ErrorMessage = "Date cannot be in the future.")]
     public DateTime PurchaseDate { get; set; }
 
+    [JsonPropertyName("condition")]
     [IsValidCondition]
     public string Condition { get; set; }
 
+    [JsonPropertyName("ownership_status")]
     [IsValidOwnershipStatus]
     public string OwnershipStatus { get; set; }
 
+    [JsonPropertyName("notes")]
     public string Notes { get; set; }
 }

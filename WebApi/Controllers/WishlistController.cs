@@ -5,7 +5,7 @@ using Swashbuckle.AspNetCore.Annotations;
 
 namespace WebApi.Controllers;
 
-[Route("[controller]")]
+[Route("wishlist")]
 [ApiController]
 public class WishlistController : ControllerBase
 {
