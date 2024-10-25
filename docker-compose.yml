@@ -70,10 +70,26 @@ services:
     ports:
       - "8080:5000" # HTTP
     volumes:
-      - ./RetroCollect:/home/app
+      - ./:/home/app
     networks:
       - broker-kafka
     depends_on:
+      - postgres
+      - mongo
+
+  retrocollectconsumer:
+    image: ${DOCKER_REGISTRY-}retrocollectconsumer
+    build:
+      context: ../KafkaConsumer
+      dockerfile: Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+    volumes:
+      - ./:/home/app
+    networks:
+      - broker-kafka
+    depends_on:
+      - kafka
       - postgres
       - mongo
 

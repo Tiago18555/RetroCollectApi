@@ -1,20 +1,16 @@
-FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
-
-WORKDIR /app/publish
-EXPOSE 8080
-#EXPOSE 8081
-#USER app
-
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
+
 ARG BUILD_CONFIGURATION=Release
 
 # COPY SRC
 WORKDIR /src/RetroCollect
 COPY ["./RetroCollect.sln", "./"]
+COPY ["./Directory.Build.props", "./"]
 
 RUN mkdir /WebApi /Domain /CrossCutting /Infrastructure /Application /Static
 
 COPY ["./WebApi/appsettings.Docker.json", "./Infrastructure/"]
+
 
 COPY ["./WebApi/WebApi.csproj", "./WebApi/"]
 COPY ["./Domain/Domain.csproj", "./Domain/"]
@@ -61,6 +57,5 @@ COPY --from=build /src /src
 COPY run-migrations.sh ./
 
 RUN chmod 777 ./run-migrations.sh
-
 
 ENTRYPOINT ["/bin/sh", "-c", "./run-migrations.sh && dotnet WebApi.dll"]
