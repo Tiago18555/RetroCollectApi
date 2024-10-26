@@ -25,7 +25,7 @@ public class UserController : ControllerBase
         Summary = "Register a new user",
         Description = "Registers a new user in the system."
     )]
-    [SwaggerResponse(201, "User created successfully", typeof(CreateUserResponseModel))]
+    [SwaggerResponse(201, "User created successfully")]
     [SwaggerResponse(400, "Invalid request")]
     [SwaggerResponse(406, "Invalid format of request")]
     [SwaggerResponse(409, "Username or Email is already registered")]
@@ -44,7 +44,7 @@ public class UserController : ControllerBase
         Summary = "Update user",
         Description = "Update data from any user registered on system"
     )]
-    [SwaggerResponse(200, "User updated successfully", typeof(CreateUserResponseModel))]
+    [SwaggerResponse(200, "User updated successfully")]
     [SwaggerResponse(400, "Invalid request")]
     [SwaggerResponse(406, "Invalid format of request")]
     [SwaggerResponse(409, "Username or Email is already registered")]
