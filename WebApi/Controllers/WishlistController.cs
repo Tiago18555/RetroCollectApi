@@ -9,7 +9,7 @@ namespace WebApi.Controllers;
 [ApiController]
 public class WishlistController : ControllerBase
 {
-    private IWishlistUsecase wishlistService { get; set; }
+    private readonly IWishlistUsecase wishlistService;
 
     public WishlistController(IWishlistUsecase wishlistService)
     {

@@ -1,7 +1,7 @@
 {
   "profiles": {
     
-    "Local": {
+    "local": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "swagger/index.html",
@@ -11,7 +11,7 @@
       "applicationUrl": "https://localhost:55621;http://localhost:55622"
     },
 
-    "Docker": {
+    "docker": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "swagger/index.html",

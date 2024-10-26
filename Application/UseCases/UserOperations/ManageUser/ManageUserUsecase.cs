@@ -1,12 +1,8 @@
-﻿using CrossCutting;
-using CrossCutting.Providers;
-using Domain;
+﻿using Domain;
 using Domain.Broker;
 using Domain.Exceptions;
 using Domain.Repositories;
-using MongoDB.Driver.Core.Authentication;
-using Org.BouncyCastle.Bcpg;
-using System.ComponentModel.DataAnnotations;
+using CrossCutting;
 using System.Security.Claims;
 using System.Text.Json;
 

@@ -10,8 +10,8 @@ namespace WebApi.Controllers;
 [ApiController]
 public class AuthController : ControllerBase
 {
-    private IAuthenticateUsecase Authenticate { get; set; }
-    private IVerifyAndRecoverUserUsecase Verify { get; set; }
+    private readonly IAuthenticateUsecase Authenticate;
+    private readonly IVerifyAndRecoverUserUsecase Verify;
 
     public AuthController(IAuthenticateUsecase authenticate, IVerifyAndRecoverUserUsecase verify)
     {

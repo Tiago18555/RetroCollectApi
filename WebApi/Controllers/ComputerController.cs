@@ -9,7 +9,7 @@ namespace WebApi.Controllers;
 [ApiController]
 public class ComputerController : ControllerBase
 {
-    private ISearchComputerUsecase searchComputerService { get; set; }
+    private readonly ISearchComputerUsecase searchComputerService;
 
     public ComputerController(ISearchComputerUsecase _searchComputerService)
     {

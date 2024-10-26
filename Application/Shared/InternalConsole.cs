@@ -6,6 +6,7 @@ public struct InternalConsole
 {
     [JsonPropertyName("id")]
     public int ConsoleId { get; set; }
+    
     [JsonPropertyName("consoleName")]
     public string Name { get; set; }
 }

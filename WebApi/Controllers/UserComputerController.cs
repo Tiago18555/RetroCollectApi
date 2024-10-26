@@ -10,7 +10,7 @@ namespace WebApi.Controllers;
 [ApiController]
 public class UserComputerController : ControllerBase
 {
-    private IManageComputerCollectionUsecase manageComputerCollectionService { get; set; }
+    private readonly IManageComputerCollectionUsecase manageComputerCollectionService;
     public UserComputerController(IManageComputerCollectionUsecase manageComputerCollectionService)
     {
         this.manageComputerCollectionService = manageComputerCollectionService;

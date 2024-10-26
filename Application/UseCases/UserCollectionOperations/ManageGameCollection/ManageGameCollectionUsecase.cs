@@ -4,7 +4,6 @@ using Domain.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 using System.Security.Claims;
-using Game = Domain.Entities.Game;
 using Domain.Repositories;
 using CrossCutting;
 using Domain.Broker;

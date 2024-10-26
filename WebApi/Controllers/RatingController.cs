@@ -10,8 +10,8 @@ namespace WebApi.Controllers;
 [ApiController]
 public class RatingController : ControllerBase
 {
-    private IAddRatingUsecase addRating { get; set; }
-    private IManageRatingUsecase manageRating { get; set; }
+    private readonly IAddRatingUsecase addRating;
+    private readonly IManageRatingUsecase manageRating;
     public RatingController(IAddRatingUsecase addRating, IManageRatingUsecase manageRating)
     {
         this.addRating = addRating;

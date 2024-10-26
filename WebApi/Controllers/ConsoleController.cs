@@ -9,7 +9,7 @@ namespace WebApi.Controllers;
 [ApiController]
 public class ConsoleController : ControllerBase
 {
-    private ISearchConsoleUsecase searchConsoleService { get; set; }
+    private readonly ISearchConsoleUsecase searchConsoleService;
 
     public ConsoleController(ISearchConsoleUsecase _searchConsoleService)
     {

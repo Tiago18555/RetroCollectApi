@@ -1,5 +1,4 @@
 using Xunit;
-using Domain;
 using CrossCutting;
 
 namespace Tests;

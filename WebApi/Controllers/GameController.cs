@@ -9,7 +9,7 @@ namespace WebApi.Controllers;
 [ApiController]
 public class GameController : ControllerBase
 {
-    private ISearchGameUsecase searchGameService { get; set; }
+    private readonly ISearchGameUsecase searchGameService;
     public GameController(ISearchGameUsecase _searchGameService)
     {
         this.searchGameService = _searchGameService;

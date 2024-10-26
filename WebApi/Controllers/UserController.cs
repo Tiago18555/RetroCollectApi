@@ -10,8 +10,8 @@ namespace WebApi.Controllers;
 [ApiController]
 public class UserController : ControllerBase
 {
-    private ICreateUserUsecase CreateUserService { get; set; }
-    private IManageUserUsecase ManageUserService { get; set; }
+    private readonly ICreateUserUsecase CreateUserService;
+    private readonly IManageUserUsecase ManageUserService;
 
 
     public UserController(ICreateUserUsecase createUser, IManageUserUsecase manageUser)
