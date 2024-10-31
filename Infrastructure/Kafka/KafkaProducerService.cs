@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Confluent.Kafka;
+using CrossCutting;
 using Domain.Broker;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -25,13 +26,8 @@ public class KafkaProducerService: IProducerService
         };
     }
 
-    public async Task<(string Status, string Message)> SendMessage(string message)
-    {
-        
-        var topic = _configuration
-            .GetSection("KafkaConfig")
-            .GetSection("TopicName").Value;
-        
+    public async Task<(string Status, string Message)> SendMessage(string message, string topic)
+    {       
 
         try
         {
@@ -42,9 +38,9 @@ public class KafkaProducerService: IProducerService
 
             return (result.Status.ToString(), message);
         }
-        catch
+        catch (Exception e)
         {
-            _logger.LogError("Erro ao enviar mensagem");
+            StdOut.Error($"Erro ao enviar mensagem: {e.Message}");
             return ("Error", "Erro ao enviar mensagem");
         }
     }

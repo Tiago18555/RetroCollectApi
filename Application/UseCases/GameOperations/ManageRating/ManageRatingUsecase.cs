@@ -3,8 +3,6 @@ using Domain;
 using Domain.Broker;
 using Domain.Exceptions;
 using Domain.Repositories;
-using Microsoft.EntityFrameworkCore;
-using System.Data;
 using System.Security.Claims;
 using System.Text.Json;
 
@@ -45,9 +43,13 @@ public class ManageRatingUsecase : IManageRatingUsecase
             if (foundRating.UserId != user_id)
                 return ResponseFactory.Forbidden($"This rating {rating_id} is invalid");
 
-            var messageObject = new MessageModel{ Message = requestBody, SourceType = "edit-rating" };
+            var messageObject = new MessageModel{ Message = new {
+                requestBody.Review,
+                requestBody.RatingValue,
+                requestBody.RatingId
+            }, SourceType = "edit-rating" };
 
-            var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject));
+            var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject), "rating");
 
             var data = JsonSerializer.Deserialize (
                 message, 
@@ -56,14 +58,7 @@ public class ManageRatingUsecase : IManageRatingUsecase
             
             return "Updated successfully".Ok(message = status);
         }
-        catch (DBConcurrencyException)
-        {
-            throw;
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            throw;
-        }
+
         catch (NullClaimException msg)
         {
             return ResponseFactory.BadRequest(msg.ToString());
@@ -122,7 +117,7 @@ public class ManageRatingUsecase : IManageRatingUsecase
 
             var messageObject = new MessageModel{ Message = foundRating, SourceType = "edit-rating" };
 
-            var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject));
+            var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject), "rating");
 
             var data = JsonSerializer.Deserialize (
                 message, 
@@ -131,17 +126,17 @@ public class ManageRatingUsecase : IManageRatingUsecase
             
             return "Deleted successfully".Ok(message = status);
         }
-        catch (ArgumentNullException e)
+        catch (ArgumentNullException err)
         {
-            return ResponseFactory.ServiceUnavailable(e.Message);
+            return ResponseFactory.ServiceUnavailable(err.Message);
         }
-        catch (InvalidOperationException e)
+        catch (InvalidOperationException err)
         {
-            return ResponseFactory.ServiceUnavailable(e.Message);
+            return ResponseFactory.ServiceUnavailable(err.Message);
         }
-        catch (Exception)
+        catch (Exception err)
         {
-            throw;
+            return ResponseFactory.ServiceUnavailable(err.Message);
         }
     }
 }

@@ -55,7 +55,7 @@ public partial class VerifyAndRecoverUserUsecase : IVerifyAndRecoverUserUsecase
             SourceType = "verify-user" 
         };
 
-        var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject));
+        var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject), "recover");
 
         var data = JsonSerializer.Deserialize (
             message, 
@@ -108,7 +108,7 @@ public partial class VerifyAndRecoverUserUsecase : IVerifyAndRecoverUserUsecase
                 SourceType = "recover-user" 
             };
 
-            var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject));
+            var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject), "recover");
 
             var data = JsonSerializer.Deserialize (
                 message, 
@@ -172,7 +172,7 @@ public partial class VerifyAndRecoverUserUsecase : IVerifyAndRecoverUserUsecase
         return false;
     }
 
-    public async Task<(bool CanAttempt, int WaitTimeRequired)> CanAttemptPasswordRecovery(string username, CancellationToken cts)
+    private async Task<(bool CanAttempt, int WaitTimeRequired)> CanAttemptPasswordRecovery(string username, CancellationToken cts)
     {
         int waitTimeRequired = 0;
         double baseTimeAcumulator = double.Parse(_config.GetSection("RecoverConfigs:PasswordChangeTries:InitialBackoffInSeconds").Value);
@@ -265,7 +265,7 @@ public partial class VerifyAndRecoverUserUsecase : IVerifyAndRecoverUserUsecase
                 SourceType = "change-password" 
             };
 
-            var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject));
+            var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject), "recover");
 
             var data = JsonSerializer.Deserialize(
                 message, 

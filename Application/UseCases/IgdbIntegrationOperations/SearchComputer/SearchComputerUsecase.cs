@@ -21,7 +21,6 @@ public class SearchComputerUsecase : ISearchComputerUsecase
         var res = await _httpClient.IgdbPostAsync<List<PlatformResponseModel>>(query, "platforms");
 
         return res.Ok();
-        throw new NotImplementedException();
     }
 
     public async Task<ResponseModel> SearchBy(string name, int limit)

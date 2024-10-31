@@ -2,10 +2,7 @@
 using Application.UseCases.UserCollectionOperations.Shared;
 using Domain.Entities;
 using Domain.Exceptions;
-using Microsoft.EntityFrameworkCore;
-using System.Data;
 using System.Security.Claims;
-using Console = Domain.Entities.Console;
 using Domain.Repositories;
 using CrossCutting;
 using Domain.Broker;
@@ -41,9 +38,15 @@ public class ManageConsoleCollectionUsecase : IManageConsoleCollectionUsecase
 
         try
         {
-            var messageObject = new MessageModel{ Message = requestBody, SourceType = "add-console" };
+            var messageObject = new MessageModel{ Message = new {
+                requestBody.ItemId,
+                requestBody.Condition,
+                requestBody.Notes,
+                requestBody.OwnershipStatus,
+                requestBody.PurchaseDate
+            }, SourceType = "add-console" };
 
-            var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject));
+            var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject), "collection");
 
             var data = JsonSerializer.Deserialize (
                 message, 
@@ -52,25 +55,21 @@ public class ManageConsoleCollectionUsecase : IManageConsoleCollectionUsecase
             
             return "Success".Created(message = status);
         }
-        catch (DBConcurrencyException)
+        catch (InvalidEnumTypeException err)
         {
-            throw;
+            return ResponseFactory.UnsupportedMediaType("Invalid type for Condition or OwnershipStatus: " + err.Message);
         }
-        catch (DbUpdateConcurrencyException)
+        catch (InvalidEnumValueException err)
         {
-            throw;
+            return ResponseFactory.BadRequest("Invalid value for Condition or OwnershipStatus: " + err.Message);
         }
-        catch (InvalidEnumTypeException msg)
+        catch (NullClaimException err)
         {
-            return ResponseFactory.UnsupportedMediaType("Invalid type for Condition or OwnershipStatus: " + msg);
+            return ResponseFactory.BadRequest(err.Message);
         }
-        catch (InvalidEnumValueException msg)
+        catch (Exception err)
         {
-            return ResponseFactory.BadRequest("Invalid value for Condition or OwnershipStatus: " + msg);
-        }
-        catch (NullClaimException msg)
-        {
-            return ResponseFactory.BadRequest(msg.ToString());
+            return ResponseFactory.ServiceUnavailable(err.Message);
         }
 
     }
@@ -85,7 +84,7 @@ public class ManageConsoleCollectionUsecase : IManageConsoleCollectionUsecase
 
             var messageObject = new MessageModel { Message = foundItem, SourceType = "delete-console" };
 
-            var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject));
+            var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject), "collection");
 
             var data = JsonSerializer.Deserialize (
                 message, 
@@ -94,13 +93,17 @@ public class ManageConsoleCollectionUsecase : IManageConsoleCollectionUsecase
             
             return "Deleted successfully".Ok(message = status);
         }
-        catch (ArgumentNullException)
+        catch (ArgumentNullException err)
         {
-            throw;
+            return ResponseFactory.ServiceUnavailable(err.Message);
         }
-        catch (NullClaimException msg)
+        catch (NullClaimException err)
         {
-            return ResponseFactory.BadRequest(msg.ToString());
+            return ResponseFactory.BadRequest(err.Message);
+        }
+        catch (Exception err)
+        {
+            return ResponseFactory.ServiceUnavailable(err.Message);
         }
     }
 
@@ -128,7 +131,7 @@ public class ManageConsoleCollectionUsecase : IManageConsoleCollectionUsecase
             }, 
             SourceType = "update-console" };
 
-            var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject));
+            var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject), "collection");
 
             var data = JsonSerializer.Deserialize (
                 message, 
@@ -137,33 +140,21 @@ public class ManageConsoleCollectionUsecase : IManageConsoleCollectionUsecase
             
             return "Updated successfully".Ok(message = status);
         }
-        catch (ArgumentNullException)
+        catch (ArgumentNullException err)
         {
-            throw;
-            //return GenericResponses.NotAcceptable("Formato de dados inválido");
+            return ResponseFactory.NotAcceptable($"Formato de dados inválido: {err.Message}");
         }
-        catch (DBConcurrencyException)
+        catch (InvalidOperationException err)
         {
-            throw;
-            //return GenericResponses.NotAcceptable("Formato de dados inválido");
+            return ResponseFactory.NotAcceptable($"Formato de dados inválido.: {err.Message}");;
         }
-        catch (DbUpdateException)
+        catch (NullClaimException err)
         {
-            throw;
-            //return GenericResponses.NotAcceptable("Formato de dados inválido");
+            return ResponseFactory.BadRequest(err.Message);
         }
-        catch (InvalidOperationException)
+        catch (Exception err)
         {
-            throw;
-            //return GenericResponses.NotAcceptable("Formato de dados inválido.");
-        }
-        catch (NullClaimException msg)
-        {
-            return ResponseFactory.BadRequest(msg.ToString());
-        }
-        catch (Exception)
-        {
-            throw;
+            return ResponseFactory.ServiceUnavailable(err.Message);
         }
     }
 
@@ -186,14 +177,13 @@ public class ManageConsoleCollectionUsecase : IManageConsoleCollectionUsecase
             res.ForEach(x => x.MapObjectsTo(new GetAllConsolesByUserResponseModel()));
             return res.Ok();
         }
-        catch (ArgumentNullException)
+        catch (ArgumentNullException err)
         {
-            throw;
-            //return GenericResponses.NotAcceptable("Formato de dados inválido");
+            return ResponseFactory.NotAcceptable($"Formato de dados inválido: {err.Message}");
         }
-        catch (NullClaimException msg)
+        catch (NullClaimException err)
         {
-            return ResponseFactory.BadRequest(msg.ToString());
+            return ResponseFactory.BadRequest(err.Message);
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using Domain;
 using Domain.Exceptions;
-using Microsoft.EntityFrameworkCore;
+
 using System.Security.Claims;
 using Domain.Repositories;
 using CrossCutting;
@@ -49,7 +49,7 @@ public class AddRatingUsecase : IAddRatingUsecase
             }, 
             SourceType = "add-rating" };
 
-            var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject));
+            var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject), "rating");
 
             var data = JsonSerializer.Deserialize (
                 message, 
@@ -62,25 +62,17 @@ public class AddRatingUsecase : IAddRatingUsecase
         {
             return ResponseFactory.BadRequest(msg.ToString());
         }
-        catch (InvalidOperationException)
+        catch (InvalidOperationException err)
         {
-            throw;
+            return ResponseFactory.ServiceUnavailable(err.ToString());
         }
-        catch (ArgumentNullException)
+        catch (ArgumentNullException err)
         {
-            throw;
+            return ResponseFactory.ServiceUnavailable(err.ToString());
         }
-        catch (DbUpdateConcurrencyException)
+        catch (Exception err)
         {
-            throw;
-        }
-        catch (DbUpdateException)
-        {
-            throw;
-        }
-        catch (Exception)
-        {
-            throw;
+            return ResponseFactory.ServiceUnavailable(err.ToString());
         }
     }
 }

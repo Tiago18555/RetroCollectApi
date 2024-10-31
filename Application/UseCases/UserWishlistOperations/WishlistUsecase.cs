@@ -43,7 +43,7 @@ public class WishlistUsecase : IWishlistUsecase
                 GameId = item_id
             }, SourceType = "add-wishlist" };
 
-            var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject));
+            var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject), "wishlist");
 
             var data = JsonSerializer.Deserialize (
                 message, 
@@ -52,9 +52,9 @@ public class WishlistUsecase : IWishlistUsecase
             
             return "Success".Created(message = status);
         }
-        catch (Exception)
+        catch (Exception err)
         {
-            return ResponseFactory.NotFound();
+            return ResponseFactory.ServiceUnavailable(err.Message);
         }
 
     }
@@ -110,7 +110,7 @@ public class WishlistUsecase : IWishlistUsecase
                 GameId = game_id
             }, SourceType = "remove-wishlist" };
 
-            var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject));
+            var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject), "wishlist");
 
             var data = JsonSerializer.Deserialize (
                 message, 

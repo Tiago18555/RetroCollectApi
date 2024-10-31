@@ -1,8 +1,6 @@
 ﻿using Domain;
 using Domain.Entities;
 using Domain.Exceptions;
-using Microsoft.EntityFrameworkCore;
-using System.Data;
 using System.Security.Claims;
 using Domain.Repositories;
 using CrossCutting;
@@ -52,7 +50,7 @@ public partial class ManageGameCollectionUsecase : IManageGameCollectionUsecase
                 SourceType = "add-game" 
             };
 
-            var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject));
+            var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject), "collection");
 
             var data = JsonSerializer.Deserialize (
                 message, 
@@ -61,25 +59,21 @@ public partial class ManageGameCollectionUsecase : IManageGameCollectionUsecase
             
             return "Success".Created(message = status);
         }
-        catch (NullClaimException msg)
+        catch (NullClaimException err)
         {
-            return ResponseFactory.BadRequest(msg.ToString());
+            return ResponseFactory.BadRequest(err.Message);
         }
-        catch (DBConcurrencyException)
+        catch (InvalidEnumTypeException err)
         {
-            throw;
+            return ResponseFactory.UnsupportedMediaType("Invalid type for Condition or OwnershipStatus: " + err.Message);
         }
-        catch (DbUpdateConcurrencyException)
+        catch (InvalidEnumValueException err)
         {
-            throw;
+            return ResponseFactory.BadRequest("Invalid value for Condition or OwnershipStatus: " + err.Message);
         }
-        catch (InvalidEnumTypeException msg)
+        catch (Exception err)
         {
-            return ResponseFactory.UnsupportedMediaType("Invalid type for Condition or OwnershipStatus: " + msg);
-        }
-        catch (InvalidEnumValueException msg)
-        {
-            return ResponseFactory.BadRequest("Invalid value for Condition or OwnershipStatus: " + msg);
+            return ResponseFactory.ServiceUnavailable(err.Message);
         }
         
     }
@@ -95,7 +89,7 @@ public partial class ManageGameCollectionUsecase : IManageGameCollectionUsecase
 
             var messageObject = new MessageModel{ Message = foundItem, SourceType = "delete-game" };
 
-            var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject));
+            var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject), "collection");
 
             var data = JsonSerializer.Deserialize (
                 message, 
@@ -104,13 +98,17 @@ public partial class ManageGameCollectionUsecase : IManageGameCollectionUsecase
             
             return "Deleted".Ok(message = status);
         }
-        catch (ArgumentNullException)
+        catch (ArgumentNullException err)
         {
-            throw;
+            return ResponseFactory.ServiceUnavailable(err.Message);
         }
-        catch (NullClaimException msg)
+        catch (NullClaimException err)
         {
-            return ResponseFactory.BadRequest(msg.ToString());
+            return ResponseFactory.BadRequest(err.Message);
+        }
+        catch (Exception err)
+        {
+            return ResponseFactory.ServiceUnavailable(err.Message);
         }
     }
 
@@ -139,7 +137,7 @@ public partial class ManageGameCollectionUsecase : IManageGameCollectionUsecase
                 SourceType = "update-game" 
             };
 
-            var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject));
+            var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject), "collection");
 
             var data = JsonSerializer.Deserialize (
                 message, 
@@ -148,33 +146,21 @@ public partial class ManageGameCollectionUsecase : IManageGameCollectionUsecase
             
             return "Updated successfully".Ok(message = status);
         }
-        catch (ArgumentNullException)
+        catch (ArgumentNullException err)
         {
-            throw;
-            //return GenericResponses.NotAcceptable("Formato de dados inválido");
+            return ResponseFactory.NotAcceptable($"Formato de dados inválido: {err.Message}");
         }
-        catch (DBConcurrencyException)
+        catch (InvalidOperationException err)
         {
-            throw;
-            //return GenericResponses.NotAcceptable("Formato de dados inválido");
+            return ResponseFactory.NotAcceptable($"Formato de dados inválido: {err.Message}.");
         }
-        catch (DbUpdateException)
+        catch (NullClaimException err)
         {
-            throw;
-            //return GenericResponses.NotAcceptable("Formato de dados inválido");
+            return ResponseFactory.BadRequest(err.Message);
         }
-        catch (InvalidOperationException)
+        catch (Exception err)
         {
-            throw;
-            //return GenericResponses.NotAcceptable("Formato de dados inválido.");
-        }
-        catch (NullClaimException msg)
-        {
-            return ResponseFactory.BadRequest(msg.ToString());
-        }
-        catch (Exception)
-        {
-            throw;
+            return ResponseFactory.ServiceUnavailable(err.Message);
         }
     }
 
@@ -198,30 +184,17 @@ public partial class ManageGameCollectionUsecase : IManageGameCollectionUsecase
 
             return res.Ok();
         }
-        catch (ArgumentNullException)
+        catch (ArgumentNullException err)
         {
-            throw;
-            //return GenericResponses.NotAcceptable("Formato de dados inválido");
+            return ResponseFactory.NotAcceptable($"Formato de dados inválido: {err.Message}");
         }
-        catch (NullClaimException msg)
+        catch (NullClaimException err)
         {
-            return ResponseFactory.BadRequest(msg.ToString());
+            return ResponseFactory.BadRequest(err.Message);
+        }
+        catch (Exception err)
+        {
+            return ResponseFactory.ServiceUnavailable(err.Message);
         }
     }
-
-    /*
-                     var user_id = requestToken.GetUserId();
-            var res = await userRepository.GetAllConsolesByUser(user_id, x => new UserConsole()
-            {
-                UserConsoleId = x.UserConsoleId,
-                Console = x.Console,
-                Condition = x.Condition,
-                PurchaseDate = x.PurchaseDate,
-                Notes = x.Notes,
-                OwnershipStatus = x.OwnershipStatus
-            });
-
-            res.ForEach(x => x.MapObjectsTo(new GetAllConsolesByUserResponseModel()));
-            return res.Ok();
-     */
 }

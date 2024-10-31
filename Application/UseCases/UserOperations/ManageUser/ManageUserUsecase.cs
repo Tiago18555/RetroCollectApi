@@ -41,7 +41,7 @@ public class ManageUserUsecase : IManageUserUsecase
                 }, SourceType = "update-user" 
             };
 
-            var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject));
+            var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject), "user");
 
             var data = JsonSerializer.Deserialize(
                 message, 
@@ -50,17 +50,17 @@ public class ManageUserUsecase : IManageUserUsecase
 
             return "Success".Ok();
         }
-        catch (ArgumentNullException)
+        catch (ArgumentNullException err)
         {
-            return ResponseFactory.NotAcceptable("Formato de dados inválido");
+            return ResponseFactory.NotAcceptable($"Formato de dados inválido {err.Message}");
         }
-        catch (NullClaimException msg)
+        catch (NullClaimException err)
         {
-            return ResponseFactory.BadRequest(msg.Message.ToString());
+            return ResponseFactory.BadRequest(err.Message);
         }
-        catch (Exception)       
+        catch (Exception err)       
         {
-            throw;
+            return ResponseFactory.ServiceUnavailable(err.Message);
         }
     }
 

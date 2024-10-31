@@ -1,5 +1,4 @@
 ﻿using System.Data;
-using BCryptNet = BCrypt.Net.BCrypt;
 using Domain;
 using System.Text.Json;
 using Domain.Broker;
@@ -30,9 +29,19 @@ public class CreateUserUsecase : ICreateUserUsecase
 
         try
         {
-            var messageObject = new MessageModel{ Message = request, SourceType = "create-user" };
+            var messageObject = new MessageModel{ Message = new 
+            {
+                request.Username,
+                request.Email,
+                request.Password,
+                request.ConfirmPassword,
+                request.FirstName,
+                request.LastName
+            }, SourceType = "create-user" };
 
-            var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject));
+            var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject), "user");
+
+            StdOut.Error($"X: {JsonSerializer.Serialize(messageObject)}");
 
             var data = JsonSerializer.Deserialize (
                 message, 
@@ -49,9 +58,9 @@ public class CreateUserUsecase : ICreateUserUsecase
         {
             return ResponseFactory.NotAcceptable("Formato de dados inválido.");
         }
-        catch (Exception)
+        catch (Exception err)
         {
-            throw;
+            return ResponseFactory.ServiceUnavailable(err.Message);
         }
     }
 }
