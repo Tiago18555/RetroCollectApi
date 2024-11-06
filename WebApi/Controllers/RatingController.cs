@@ -1,5 +1,5 @@
-﻿using Application.UseCases.GameOperations.AddRating;
-using Application.UseCases.GameOperations.ManageRating;
+﻿using Application.UseCases.RatingOperations.AddRating;
+using Application.UseCases.RatingOperations.ManageRating;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;

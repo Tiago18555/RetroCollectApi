@@ -1,13 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace Application.UseCases.GameOperations.ManageRating;
+namespace Application.UseCases.RatingOperations.AddRating;
 
-public class EditRatingRequestModel
+public class AddRatingRequestModel
 {
-    [JsonPropertyName("rating_id")]
-    [Required]
-    public Guid RatingId { get; set; }
+    [JsonPropertyName("game_id")]
+    [Required(ErrorMessage = "Field \"game_id\" is required")]
+    public int GameId { get; set; }
 
     [JsonPropertyName("rating_value")]
     [Range(0, 100)]

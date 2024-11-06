@@ -59,17 +59,23 @@ public class WishlistUsecase : IWishlistUsecase
 
     }
 
-    public async Task<ResponseModel> GetAllByGame(int gameId, int limit, int page)
+    public async Task<ResponseModel> GetAllByGame(int game_id, int limit, int page)
     {
-        if (_gameRepository.Any(u => u.GameId == gameId))
+        if (! _gameRepository.Any(u => u.GameId == game_id))
             return ResponseFactory.NotFound("Game not found");
 
-        List<WishlistResponseModel> result;
+        List<object> result;
 
-        if (limit == 0)
-            result = await _wishlistRepository.GetWishlistsByGame(gameId, x => x.MapObjectTo(new WishlistResponseModel()));
+        if(limit == 0)            
+            result = await _wishlistRepository.GetWishlistsByGame(game_id, x => new {
+                id = x.WishlistId,
+                user = x.User.Username ?? ""
+            } as object);
         else
-            result = await _wishlistRepository.GetWishlistsByGame(gameId, x => x.MapObjectTo(new WishlistResponseModel()), page, limit);
+            result = await _wishlistRepository.GetWishlistsByGame(game_id, x => new {
+                id = x.WishlistId,
+                user = x.User.Username ?? ""
+            } as object, page, limit);
 
         return result.Ok();
     }
@@ -78,15 +84,21 @@ public class WishlistUsecase : IWishlistUsecase
     {
         var user_id = RequestToken.GetUserId();
 
-        if (_userRepository.Any(u => u.UserId == user_id))
+        if (! _userRepository.Any(u => u.UserId == user_id))
             return ResponseFactory.NotFound("User not found");
 
-        List<WishlistResponseModel> result;
+        List<object> result;
 
         if(limit == 0)            
-            result = await _wishlistRepository.GetWishlistsByUser(user_id, x => x.MapObjectTo(new WishlistResponseModel()));
+            result = await _wishlistRepository.GetWishlistsByUser(user_id, x => new {
+                id = x.WishlistId,
+                game = x.Game.Title ?? ""
+            } as object);
         else
-            result = await _wishlistRepository.GetWishlistsByUser(user_id, x => x.MapObjectTo(new WishlistResponseModel()), page, limit);
+            result = await _wishlistRepository.GetWishlistsByUser(user_id, x => new {
+                id = x.WishlistId,
+                game = x.Game.Title ?? ""
+            } as object, page, limit);
 
         return result.Ok();
     }

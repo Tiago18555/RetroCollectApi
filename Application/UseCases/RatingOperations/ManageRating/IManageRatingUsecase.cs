@@ -1,7 +1,7 @@
 ﻿using Domain;
 using System.Security.Claims;
 
-namespace Application.UseCases.GameOperations.ManageRating;
+namespace Application.UseCases.RatingOperations.ManageRating;
 
 public interface IManageRatingUsecase
 {

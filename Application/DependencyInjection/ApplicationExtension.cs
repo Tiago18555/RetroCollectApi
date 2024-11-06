@@ -1,7 +1,5 @@
 using Domain.Broker;
 using Infrastructure.Kafka;
-using Application.UseCases.GameOperations.AddRating;
-using Application.UseCases.GameOperations.ManageRating;
 using Application.UseCases.IgdbIntegrationOperations.SearchGame;
 using Application.UseCases.IgdbIntegrationOperations.SearchConsole;
 using Application.UseCases.IgdbIntegrationOperations.SearchComputer;
@@ -15,6 +13,8 @@ using Application.UseCases.UserWishlistOperations;
 using Application.UseCases.UserCollectionOperations.ManageGameCollection;
 
 using Microsoft.Extensions.DependencyInjection;
+using Application.UseCases.RatingOperations.AddRating;
+using Application.UseCases.RatingOperations.ManageRating;
 
 namespace Application.DependencyInjection;
 

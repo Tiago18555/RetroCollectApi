@@ -6,7 +6,7 @@ using Domain.Repositories;
 using System.Security.Claims;
 using System.Text.Json;
 
-namespace Application.UseCases.GameOperations.ManageRating;
+namespace Application.UseCases.RatingOperations.ManageRating;
 
 public class ManageRatingUsecase : IManageRatingUsecase
 {

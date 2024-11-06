@@ -7,7 +7,7 @@ using CrossCutting;
 using Domain.Broker;
 using System.Text.Json;
 
-namespace Application.UseCases.GameOperations.AddRating;
+namespace Application.UseCases.RatingOperations.AddRating;
 
 public class AddRatingUsecase : IAddRatingUsecase
 {

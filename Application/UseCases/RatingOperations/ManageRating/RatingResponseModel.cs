@@ -1,4 +1,4 @@
-namespace Application.UseCases.GameOperations.ManageRating;
+namespace Application.UseCases.RatingOperations.ManageRating;
 
 public class RatingResponseModel
 {
