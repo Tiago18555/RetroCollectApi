@@ -1,32 +1,32 @@
-﻿using Application.UseCases.UserCollectionOperations.ManageComputerCollection;
-using Application.UseCases.UserCollectionOperations.Shared;
+﻿using Application.UseCases.CollectionOperations.ManageConsoleCollection;
+using Application.UseCases.CollectionOperations.Shared;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace WebApi.Controllers;
 
-[Route("usercomputer")]
+[Route("userconsole")]
 [ApiController]
-public class UserComputerController : ControllerBase
+public class ConsoleCollectionController : ControllerBase
 {
-    private readonly IManageComputerCollectionUsecase manageComputerCollectionService;
-    public UserComputerController(IManageComputerCollectionUsecase manageComputerCollectionService)
+    private readonly IManageConsoleCollectionUsecase manageConsoleCollectionService;
+    public ConsoleCollectionController(IManageConsoleCollectionUsecase manageConsoleCollectionService)
     {
-        this.manageComputerCollectionService = manageComputerCollectionService;
+        this.manageConsoleCollectionService = manageConsoleCollectionService;
     }
 
     [HttpGet("{user_id}")]
     [SwaggerOperation(
-        Summary = "List computer collection",
-        Description = "List all computers for a specified user"
+        Summary = "List console collection",
+        Description = "List all consoles for a specified user"
     )]
     [SwaggerResponse(200, "List found")]
     [SwaggerResponse(406, "Invalid format of request")]
     [SwaggerResponse(500, "Internal server error")]
-    public async Task<IActionResult> GetAllComputerByUser([FromRoute] Guid user_id)
+    public async Task<IActionResult> GetAllConsoleByUser([FromRoute] Guid user_id)
     {
-        var result = await manageComputerCollectionService.GetAllComputersByUser(HttpContext.User);
+        var result = await manageConsoleCollectionService.GetAllConsolesByUser(HttpContext.User);
 
         Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
         Response.StatusCode = result.StatusCode;
@@ -35,8 +35,8 @@ public class UserComputerController : ControllerBase
 
     [HttpPost]
     [SwaggerOperation(
-        Summary = "Add computer",
-        Description = "Adds specified computer to the specified user collection, and register this item if is not found on database"
+        Summary = "Add console",
+        Description = "Adds specified console to the specified user collection, and register this item if is not found on database"
     )]
     [SwaggerResponse(201, "Item added to collection")]
     [SwaggerResponse(400, "Invalid format of request")]
@@ -44,26 +44,26 @@ public class UserComputerController : ControllerBase
     [SwaggerResponse(406, "Invalid format of request")]
     [SwaggerResponse(415, "Unsupported media type")]
     [SwaggerResponse(500, "Internal server error")]
-    public async Task<IActionResult> AddComputer([FromBody] AddItemRequestModel item)
+    public async Task<IActionResult> AddConsole([FromBody] AddItemRequestModel item)
     {
-        var result = await manageComputerCollectionService.AddComputer(item, HttpContext.User);
+        var result = await manageConsoleCollectionService.AddConsole(item, HttpContext.User);
 
         Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
         Response.StatusCode = result.StatusCode;
         return new ObjectResult(result);
     }
 
-    [HttpDelete("{user_computer_id}")]
+    [HttpDelete("{user_console_id}")]
     [SwaggerOperation(
-        Summary = "Delete computer",
-        Description = "Delete computer of a specified user collection"
+        Summary = "Delete console",
+        Description = "Delete console of a specified user collection"
     )]
     [SwaggerResponse(200, "Deleted successfully")]
     [SwaggerResponse(406, "Invalid format of request")]
     [SwaggerResponse(500, "Internal server error")]
-    public async Task<IActionResult> DeleteComputer([FromRoute] Guid user_computer_id)
+    public async Task<IActionResult> DeleteConsole([FromRoute] Guid user_console_id)
     {
-        var result = await manageComputerCollectionService.DeleteComputer(user_computer_id, HttpContext.User);
+        var result = await manageConsoleCollectionService.DeleteConsole(user_console_id, HttpContext.User);
 
         Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
         Response.StatusCode = result.StatusCode;
@@ -72,17 +72,17 @@ public class UserComputerController : ControllerBase
 
     [HttpPut]
     [SwaggerOperation(
-        Summary = "Update computer",
-        Description = "Update computer of a specified user collection"
+        Summary = "Update console",
+        Description = "Update console of a specified user collection"
     )]
-    [SwaggerResponse(200, "Updated successfully")]
+    [SwaggerResponse(200, "Update successfully")]
     [SwaggerResponse(400, "Invalid format of request")]
     [SwaggerResponse(403, "Invalid credentials")]
     [SwaggerResponse(406, "Invalid format of request")]
     [SwaggerResponse(500, "Internal server error")]
-    public async Task<IActionResult> EditComputer([FromBody] UpdateComputerRequestModel computer)
+    public async Task<IActionResult> EditConsole([FromBody] UpdateConsoleRequestModel console)
     {
-        var result = await manageComputerCollectionService.UpdateComputer(computer, HttpContext.User);
+        var result = await manageConsoleCollectionService.UpdateConsole(console, HttpContext.User);
 
         Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
         Response.StatusCode = result.StatusCode;

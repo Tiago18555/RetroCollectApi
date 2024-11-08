@@ -1,11 +1,11 @@
 ﻿using Application.Shared;
 using Domain.Enums;
 
-namespace Application.UseCases.UserCollectionOperations.ManageConsoleCollection;
+namespace Application.UseCases.CollectionOperations.ManageConsoleCollection;
 
 public class GetAllConsolesByUserResponseModel
 {
-    public Guid UserConsoleId { get; set; }
+    public Guid Id { get; set; }
 
     private Condition Condition { get; set; }
     public string condition => Enum.GetName(typeof(Condition), Condition);

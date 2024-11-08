@@ -2,13 +2,13 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace Application.UseCases.UserCollectionOperations.ManageComputerCollection;
+namespace Application.UseCases.CollectionOperations.ManageComputerCollection;
 
 public class UpdateComputerRequestModel
 {
-    [JsonPropertyName("user_computer_id")]
+    [JsonPropertyName("id")]
     [Required]
-    public Guid UserComputerId { get; set; }
+    public Guid Id { get; set; }
 
     [JsonPropertyName("purchase_date")]
     [DataType(DataType.DateTime)]

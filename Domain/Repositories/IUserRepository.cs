@@ -20,22 +20,22 @@ public interface IUserRepository
     //Task<List<T>> GetAllComputersByUser<T>(Guid userId, Expression<Func<UserComputer, T>> predicate)
 
     /// <exception cref="ArgumentNullException"></exception>
-    Task<List<T>> GetAllComputersByUser<T>(Guid userId, Expression<Func<UserComputer, T>> predicate);
+    Task<List<T>> GetAllComputersByUser<T>(Guid userId, Expression<Func<ComputerCollectionItem, T>> predicate);
 
     /// <exception cref="ArgumentNullException"></exception>
-    Task<List<T>> GetAllComputersByUser<T>(Guid userId, Expression<Func<UserComputer, T>> predicate, int pageNumber, int pageSize);
+    Task<List<T>> GetAllComputersByUser<T>(Guid userId, Expression<Func<ComputerCollectionItem, T>> predicate, int pageNumber, int pageSize);
 
     /// <exception cref="ArgumentNullException"></exception>
-    Task<List<T>> GetAllConsolesByUser<T>(Guid userId, Expression<Func<UserConsole, T>> predicate);
+    Task<List<T>> GetAllConsolesByUser<T>(Guid userId, Expression<Func<ConsoleCollectionItem, T>> predicate);
 
     /// <exception cref="ArgumentNullException"></exception>
-    Task<List<T>> GetAllConsolesByUser<T>(Guid userId, Expression<Func<UserConsole, T>> predicate, int pageNumber, int pageSize);
+    Task<List<T>> GetAllConsolesByUser<T>(Guid userId, Expression<Func<ConsoleCollectionItem, T>> predicate, int pageNumber, int pageSize);
 
     /// <exception cref="ArgumentNullException"></exception>
-    Task<List<T>> GetAllCollectionsByUser<T>(Guid userId, Expression<Func<UserCollection, T>> predicate);
+    Task<List<T>> GetAllCollectionsByUser<T>(Guid userId, Expression<Func<GameCollectionItem, T>> predicate);
 
     /// <exception cref="ArgumentNullException"></exception>
-    Task<List<T>> GetAllCollectionsByUser<T>(Guid userId, Expression<Func<UserCollection, T>> predicate, int pageNumber, int pageSize);
+    Task<List<T>> GetAllCollectionsByUser<T>(Guid userId, Expression<Func<GameCollectionItem, T>> predicate, int pageNumber, int pageSize);
 
     #endregion
 

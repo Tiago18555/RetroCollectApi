@@ -1,7 +1,7 @@
 ﻿using Domain;
 using System.Security.Claims;
 
-namespace Application.UseCases.UserCollectionOperations.ManageGameCollection;
+namespace Application.UseCases.CollectionOperations.ManageGameCollection;
 
 
 public interface IManageGameCollectionUsecase

@@ -2,7 +2,7 @@
 using System.Text.Json.Serialization;
 using CrossCutting.Validations;
 
-namespace Application.UseCases.UserCollectionOperations.Shared;
+namespace Application.UseCases.CollectionOperations.Shared;
 
 public class AddItemRequestModel
 {

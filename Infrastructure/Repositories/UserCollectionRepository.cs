@@ -14,27 +14,27 @@ public class UserCollectionRepository : IUserCollectionRepository
         _context = context;
     }
 
-    public bool Any(Func<UserCollection, bool> predicate)
+    public bool Any(Func<GameCollectionItem, bool> predicate)
     {
         return _context
-            .UserCollections
+            .GameCollectionItems
             .AsNoTracking()
             .Any(predicate);
     }
 
-    public T GetById<T>(Guid id, Func<UserCollection, T> predicate) where T : class
+    public T GetById<T>(Guid id, Func<GameCollectionItem, T> predicate) where T : class
     {
-        return _context.UserCollections
-            .Where(x => x.UserCollectionId == id)
+        return _context.GameCollectionItems
+            .Where(x => x.Id == id)
             .AsNoTracking()
             .Select(predicate)
             .FirstOrDefault();
     }
 
-    public UserCollection SingleOrDefault(Func<UserCollection, bool> predicate)
+    public GameCollectionItem SingleOrDefault(Func<GameCollectionItem, bool> predicate)
     {
         return _context
-            .UserCollections
+            .GameCollectionItems
             .Where(predicate)
             .AsQueryable()
             .AsNoTracking()

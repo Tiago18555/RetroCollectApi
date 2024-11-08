@@ -14,27 +14,27 @@ public class UserComputerRepository : IUserComputerRepository
         _context = context;
     }
 
-    public bool Any(Func<UserComputer, bool> predicate)
+    public bool Any(Func<ComputerCollectionItem, bool> predicate)
     {
         return _context
-            .UserComputers
+            .ComputerCollectionItems
             .AsNoTracking()
             .Any(predicate);
     }
 
-    public T GetById<T>(Guid id, Func<UserComputer, T> predicate) where T : class
+    public T GetById<T>(Guid id, Func<ComputerCollectionItem, T> predicate) where T : class
     {
-        return _context.UserComputers
-            .Where(x => x.UserComputerId == id)
+        return _context.ComputerCollectionItems
+            .Where(x => x.Id == id)
             .AsNoTracking()
             .Select(predicate)
             .FirstOrDefault();
     }
 
-    public UserComputer SingleOrDefault(Func<UserComputer, bool> predicate)
+    public ComputerCollectionItem SingleOrDefault(Func<ComputerCollectionItem, bool> predicate)
     {
         return _context
-            .UserComputers
+            .ComputerCollectionItems
             .Where(predicate)
             .AsQueryable()
             .AsNoTracking()

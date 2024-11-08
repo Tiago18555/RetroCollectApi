@@ -1,4 +1,5 @@
 ﻿using Domain;
+using Application.UseCases.CollectionOperations.Shared;
 using Domain.Entities;
 using Domain.Exceptions;
 using System.Security.Claims;
@@ -7,48 +8,41 @@ using CrossCutting;
 using Domain.Broker;
 using System.Text.Json;
 
-namespace Application.UseCases.UserCollectionOperations.ManageGameCollection;
+namespace Application.UseCases.CollectionOperations.ManageComputerCollection;
 
-public partial class ManageGameCollectionUsecase : IManageGameCollectionUsecase
+public class ManageComputerCollectionService : IManageComputerCollectionUsecase
 {
     private readonly IUserRepository _userRepository;
-    private readonly IUserCollectionRepository _userCollectionRepository;
+    private readonly IUserComputerRepository _userComputerRepository;
     private readonly IProducerService _producer;
 
-    public ManageGameCollectionUsecase(
+    public ManageComputerCollectionService(
         IUserRepository userRepository, 
-        IUserCollectionRepository userCollectionRepository, 
+        IUserComputerRepository userComputerRepository, 
         IProducerService producer
     )
     {
         _userRepository = userRepository;
-        _userCollectionRepository = userCollectionRepository;
+        _userComputerRepository = userComputerRepository;
         _producer = producer;
     }
 
-    public async Task<ResponseModel> AddGame(AddGameRequestModel requestBody, ClaimsPrincipal requestToken)
+    public async Task<ResponseModel> AddComputer(AddItemRequestModel requestBody, ClaimsPrincipal requestToken)
     {
-        var user_id = requestToken.GetUserId();
-
-        var user = _userRepository.Any(u => u.UserId == user_id);
-        if (!user) { return ResponseFactory.NotFound("User not found"); }
-
         try
         {
-            var messageObject = new MessageModel{ 
-                Message = new 
-                {
-                    UserId = user_id,
-                    requestBody.GameId,
-                    requestBody.PlatformId,
-                    requestBody.PlatformIsComputer,
-                    requestBody.PurchaseDate,
-                    requestBody.Condition,
-                    requestBody.OwnershipStatus,
-                    requestBody.Notes
-                }, 
-                SourceType = "add-game" 
-            };
+            var user_id = requestToken.GetUserId();
+
+            var user = _userRepository.Any(u => u.UserId == user_id);
+            if (!user) { return ResponseFactory.NotFound("User not found"); }
+            
+            var messageObject = new MessageModel{ Message = new {
+                requestBody.ItemId,
+                requestBody.Condition,
+                requestBody.Notes,
+                requestBody.PurchaseDate,
+                requestBody.OwnershipStatus
+            }, SourceType = "add-computer" };
 
             var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject), "collection");
 
@@ -58,10 +52,6 @@ public partial class ManageGameCollectionUsecase : IManageGameCollectionUsecase
             ) as MessageModel;
             
             return "Success".Created(message = status);
-        }
-        catch (NullClaimException err)
-        {
-            return ResponseFactory.BadRequest(err.Message);
         }
         catch (InvalidEnumTypeException err)
         {
@@ -75,19 +65,18 @@ public partial class ManageGameCollectionUsecase : IManageGameCollectionUsecase
         {
             return ResponseFactory.ServiceUnavailable(err.Message);
         }
-        
     }
 
-    public async Task<ResponseModel> DeleteGame(Guid user_collection_id, ClaimsPrincipal requestToken)
+    public async Task<ResponseModel> DeleteComputer(Guid user_computer_id, ClaimsPrincipal requestToken)
     {
         try
         {
             var user_id = requestToken.GetUserId();
 
-            var foundItem = _userCollectionRepository.SingleOrDefault(x => x.UserId == user_id && x.UserCollectionId == user_collection_id);
+            var foundItem = _userComputerRepository.SingleOrDefault(r => r.UserId == user_id && r.Id == user_computer_id);
             if (foundItem == null) { return ResponseFactory.NotFound(); }
-
-            var messageObject = new MessageModel{ Message = foundItem, SourceType = "delete-game" };
+            
+            var messageObject = new MessageModel{ Message = foundItem, SourceType = "delete-computer" };
 
             var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject), "collection");
 
@@ -96,7 +85,7 @@ public partial class ManageGameCollectionUsecase : IManageGameCollectionUsecase
                 typeof(MessageModel)
             ) as MessageModel;
             
-            return "Deleted".Ok(message = status);
+            return "Deleted".Created(message = status);
         }
         catch (ArgumentNullException err)
         {
@@ -112,29 +101,31 @@ public partial class ManageGameCollectionUsecase : IManageGameCollectionUsecase
         }
     }
 
-    public async Task<ResponseModel> UpdateGame(UpdateGameRequestModel requestBody, ClaimsPrincipal requestToken)
+    public async Task<ResponseModel> UpdateComputer(UpdateComputerRequestModel requestBody, ClaimsPrincipal requestToken)
     {
-
         try
         {
             var user_id = requestToken.GetUserId();
 
-            var foundUser = _userRepository.SingleOrDefault(x => x.UserId == user_id);
-            if (foundUser == null) { return ResponseFactory.NotFound("User not found"); }
+            var foundComputer = _userComputerRepository.SingleOrDefault(x => x.Id == requestBody.Id);
+            var foundUser = _userRepository.Any(x => x.UserId == user_id);
 
-            var foundGame = _userCollectionRepository.SingleOrDefault(x => x.UserCollectionId == requestBody.UserCollectionId);
-            if (foundGame == null) { return ResponseFactory.NotFound($"Game Not Found"); }
+            if (!foundUser) 
+                return ResponseFactory.NotFound("User not found");
 
-            var messageObject = new MessageModel { Message = new 
+            if (foundComputer == null) 
+                return ResponseFactory.NotFound("Computer Not Found");
+                
+            var messageObject = new MessageModel { Message = new
                 {
                     UserId = user_id,
-                    requestBody.UserCollectionId,
+                    requestBody.Id,
                     requestBody.PurchaseDate,
                     requestBody.Condition,
                     requestBody.OwnershipStatus,
                     requestBody.Notes
                 },
-                SourceType = "update-game" 
+                SourceType = "update-computer" 
             };
 
             var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject), "collection");
@@ -145,6 +136,7 @@ public partial class ManageGameCollectionUsecase : IManageGameCollectionUsecase
             ) as MessageModel;
             
             return "Updated successfully".Ok(message = status);
+
         }
         catch (ArgumentNullException err)
         {
@@ -152,7 +144,11 @@ public partial class ManageGameCollectionUsecase : IManageGameCollectionUsecase
         }
         catch (InvalidOperationException err)
         {
-            return ResponseFactory.NotAcceptable($"Formato de dados inválido: {err.Message}.");
+            return ResponseFactory.NotAcceptable($"Formato de dados inválido.: {err.Message}");
+        }
+        catch (InvalidClassTypeException err)
+        {
+            return ResponseFactory.ServiceUnavailable(err.Message);
         }
         catch (NullClaimException err)
         {
@@ -164,23 +160,23 @@ public partial class ManageGameCollectionUsecase : IManageGameCollectionUsecase
         }
     }
 
-    public async Task<ResponseModel> GetAllGamesByUser(ClaimsPrincipal requestToken)
+    public async Task<ResponseModel> GetAllComputersByUser(ClaimsPrincipal requestToken)
     {
 
         try
         {
-            var user_id = requestToken.GetUserId();
-            var res = await _userRepository.GetAllCollectionsByUser(user_id, x => new UserCollection()
+            var user_id = requestToken.GetUserId(); 
+            var res = await _userRepository.GetAllComputersByUser(user_id, x => new ComputerCollectionItem()
             {
-                UserCollectionId = x.UserCollectionId,
-                Game = x.Game,
+                Id = x.Id,
+                Computer = x.Computer,
                 Condition = x.Condition,
                 PurchaseDate = x.PurchaseDate,
                 Notes = x.Notes,
                 OwnershipStatus = x.OwnershipStatus
             });
 
-            res.ForEach(x => x.MapObjectsTo(new GetAllCollectionsByUserResponseModel()));
+            res.ForEach(x => x.MapObjectsTo(new GetAllComputersByUserResponseModel()));
 
             return res.Ok();
         }

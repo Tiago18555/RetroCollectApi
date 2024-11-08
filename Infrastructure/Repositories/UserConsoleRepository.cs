@@ -14,27 +14,27 @@ public class UserConsoleRepository : IUserConsoleRepository
         _context = context;
     }
 
-    public bool Any(Func<UserConsole, bool> predicate)
+    public bool Any(Func<ConsoleCollectionItem, bool> predicate)
     {
         return _context
-            .UserConsoles
+            .ConsoleCollectionItems
             .AsNoTracking()
             .Any(predicate);
     }
 
-    public T GetById<T>(Func<UserConsole, T> predicate, Guid id) where T : class
+    public T GetById<T>(Func<ConsoleCollectionItem, T> predicate, Guid id) where T : class
     {
-        return _context.UserConsoles
-            .Where(x => x.UserConsoleId == id)
+        return _context.ConsoleCollectionItems
+            .Where(x => x.Id == id)
             .AsNoTracking()
             .Select(predicate)
             .FirstOrDefault();
     }
 
-    public UserConsole SingleOrDefault(Func<UserConsole, bool> predicate)
+    public ConsoleCollectionItem SingleOrDefault(Func<ConsoleCollectionItem, bool> predicate)
     {
         return _context
-            .UserConsoles
+            .ConsoleCollectionItems
             .Where(predicate)
             .AsQueryable()
             .AsNoTracking()

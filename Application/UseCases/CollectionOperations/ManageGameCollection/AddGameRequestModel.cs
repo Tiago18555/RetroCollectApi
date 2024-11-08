@@ -2,13 +2,21 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace Application.UseCases.UserCollectionOperations.ManageConsoleCollection;
+namespace Application.UseCases.CollectionOperations.ManageGameCollection;
 
-public class UpdateConsoleRequestModel
+public class AddGameRequestModel
 {
-    [JsonPropertyName("user_console_id")]
+    [JsonPropertyName("game_id")]
     [Required]
-    public Guid UserConsoleId { get; set; }
+    public int GameId { get; set; }
+
+    [JsonPropertyName("platform_id")]
+    [Required]
+    public int PlatformId { get; set; }
+
+    [JsonPropertyName("platform_is_computer")]
+    [Required]
+    public bool PlatformIsComputer { get; set; }
 
     [JsonPropertyName("purchase_date")]
     [DataType(DataType.DateTime)]

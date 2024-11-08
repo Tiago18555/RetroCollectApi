@@ -1,5 +1,5 @@
 ﻿using Domain;
-using Application.UseCases.UserCollectionOperations.Shared;
+using Application.UseCases.CollectionOperations.Shared;
 using Domain.Entities;
 using Domain.Exceptions;
 using System.Security.Claims;
@@ -8,41 +8,43 @@ using CrossCutting;
 using Domain.Broker;
 using System.Text.Json;
 
-namespace Application.UseCases.UserCollectionOperations.ManageComputerCollection;
+namespace Application.UseCases.CollectionOperations.ManageConsoleCollection;
 
-public class ManageComputerCollectionService : IManageComputerCollectionUsecase
+public class ManageConsoleCollectionUsecase : IManageConsoleCollectionUsecase
 {
     private readonly IUserRepository _userRepository;
-    private readonly IUserComputerRepository _userComputerRepository;
+    private readonly IUserConsoleRepository _userConsoleRepository;
     private readonly IProducerService _producer;
 
-    public ManageComputerCollectionService(
+    public ManageConsoleCollectionUsecase(
         IUserRepository userRepository, 
-        IUserComputerRepository userComputerRepository, 
+        IUserConsoleRepository userConsoleRepository, 
         IProducerService producer
     )
     {
         _userRepository = userRepository;
-        _userComputerRepository = userComputerRepository;
+        _userConsoleRepository = userConsoleRepository;
         _producer = producer;
     }
 
-    public async Task<ResponseModel> AddComputer(AddItemRequestModel requestBody, ClaimsPrincipal requestToken)
+    public async Task<ResponseModel> AddConsole(AddItemRequestModel requestBody, ClaimsPrincipal requestToken)
     {
+        var user_id = requestToken.GetUserId();
+
+        var user = _userRepository.Any(u => u.UserId == user_id);
+        if (!user) { return ResponseFactory.NotFound("User not found"); }
+
+
+
         try
         {
-            var user_id = requestToken.GetUserId();
-
-            var user = _userRepository.Any(u => u.UserId == user_id);
-            if (!user) { return ResponseFactory.NotFound("User not found"); }
-            
             var messageObject = new MessageModel{ Message = new {
                 requestBody.ItemId,
                 requestBody.Condition,
                 requestBody.Notes,
-                requestBody.PurchaseDate,
-                requestBody.OwnershipStatus
-            }, SourceType = "add-computer" };
+                requestBody.OwnershipStatus,
+                requestBody.PurchaseDate
+            }, SourceType = "add-console" };
 
             var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject), "collection");
 
@@ -61,22 +63,26 @@ public class ManageComputerCollectionService : IManageComputerCollectionUsecase
         {
             return ResponseFactory.BadRequest("Invalid value for Condition or OwnershipStatus: " + err.Message);
         }
+        catch (NullClaimException err)
+        {
+            return ResponseFactory.BadRequest(err.Message);
+        }
         catch (Exception err)
         {
             return ResponseFactory.ServiceUnavailable(err.Message);
         }
-    }
 
-    public async Task<ResponseModel> DeleteComputer(Guid user_computer_id, ClaimsPrincipal requestToken)
+    }
+    public async Task<ResponseModel> DeleteConsole(Guid user_console_id, ClaimsPrincipal requestToken)
     {
         try
         {
             var user_id = requestToken.GetUserId();
 
-            var foundItem = _userComputerRepository.SingleOrDefault(r => r.UserId == user_id && r.UserComputerId == user_computer_id);
+            var foundItem = _userConsoleRepository.SingleOrDefault(r => r.UserId == user_id && r.Id == user_console_id);
             if (foundItem == null) { return ResponseFactory.NotFound(); }
-            
-            var messageObject = new MessageModel{ Message = foundItem, SourceType = "delete-computer" };
+
+            var messageObject = new MessageModel { Message = foundItem, SourceType = "delete-console" };
 
             var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject), "collection");
 
@@ -85,7 +91,7 @@ public class ManageComputerCollectionService : IManageComputerCollectionUsecase
                 typeof(MessageModel)
             ) as MessageModel;
             
-            return "Deleted".Created(message = status);
+            return "Deleted successfully".Ok(message = status);
         }
         catch (ArgumentNullException err)
         {
@@ -101,32 +107,29 @@ public class ManageComputerCollectionService : IManageComputerCollectionUsecase
         }
     }
 
-    public async Task<ResponseModel> UpdateComputer(UpdateComputerRequestModel requestBody, ClaimsPrincipal requestToken)
+    public async Task<ResponseModel> UpdateConsole(UpdateConsoleRequestModel requestBody, ClaimsPrincipal requestToken)
     {
+
         try
         {
             var user_id = requestToken.GetUserId();
 
-            var foundComputer = _userComputerRepository.SingleOrDefault(x => x.UserComputerId == requestBody.UserComputerId);
-            var foundUser = _userRepository.Any(x => x.UserId == user_id);
+            var foundUser = _userRepository.Any(x => x.UserId == requestToken.GetUserId());
+            if (!foundUser) { return ResponseFactory.NotFound("User not found"); }
 
-            if (!foundUser) 
-                return ResponseFactory.NotFound("User not found");
+            var foundConsole = _userConsoleRepository.Any(x => x.Id == requestBody.Id);
+            if (!foundConsole) { return ResponseFactory.NotFound("Console Not Found"); }
 
-            if (foundComputer == null) 
-                return ResponseFactory.NotFound("Computer Not Found");
-                
-            var messageObject = new MessageModel { Message = new
-                {
-                    UserId = user_id,
-                    requestBody.UserComputerId,
-                    requestBody.PurchaseDate,
-                    requestBody.Condition,
-                    requestBody.OwnershipStatus,
-                    requestBody.Notes
-                },
-                SourceType = "update-computer" 
-            };
+            var messageObject = new MessageModel{ Message = new 
+            {
+                UserId = user_id,
+                requestBody.Id,
+                requestBody.PurchaseDate,
+                requestBody.Condition,
+                requestBody.OwnershipStatus,
+                requestBody.Notes
+            }, 
+            SourceType = "update-console" };
 
             var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject), "collection");
 
@@ -136,7 +139,6 @@ public class ManageComputerCollectionService : IManageComputerCollectionUsecase
             ) as MessageModel;
             
             return "Updated successfully".Ok(message = status);
-
         }
         catch (ArgumentNullException err)
         {
@@ -144,11 +146,7 @@ public class ManageComputerCollectionService : IManageComputerCollectionUsecase
         }
         catch (InvalidOperationException err)
         {
-            return ResponseFactory.NotAcceptable($"Formato de dados inválido.: {err.Message}");
-        }
-        catch (InvalidClassTypeException err)
-        {
-            return ResponseFactory.ServiceUnavailable(err.Message);
+            return ResponseFactory.NotAcceptable($"Formato de dados inválido.: {err.Message}");;
         }
         catch (NullClaimException err)
         {
@@ -160,24 +158,23 @@ public class ManageComputerCollectionService : IManageComputerCollectionUsecase
         }
     }
 
-    public async Task<ResponseModel> GetAllComputersByUser(ClaimsPrincipal requestToken)
+    public async Task<ResponseModel> GetAllConsolesByUser(ClaimsPrincipal requestToken)
     {
 
         try
         {
-            var user_id = requestToken.GetUserId(); 
-            var res = await _userRepository.GetAllComputersByUser(user_id, x => new UserComputer()
+            var user_id = requestToken.GetUserId();
+            var res = await _userRepository.GetAllConsolesByUser(user_id, x => new ConsoleCollectionItem()
             {
-                UserComputerId = x.UserComputerId,
-                Computer = x.Computer,
+                Id = x.Id,
+                Console = x.Console,
                 Condition = x.Condition,
                 PurchaseDate = x.PurchaseDate,
                 Notes = x.Notes,
                 OwnershipStatus = x.OwnershipStatus
             });
 
-            res.ForEach(x => x.MapObjectsTo(new GetAllComputersByUserResponseModel()));
-
+            res.ForEach(x => x.MapObjectsTo(new GetAllConsolesByUserResponseModel()));
             return res.Ok();
         }
         catch (ArgumentNullException err)
@@ -187,10 +184,6 @@ public class ManageComputerCollectionService : IManageComputerCollectionUsecase
         catch (NullClaimException err)
         {
             return ResponseFactory.BadRequest(err.Message);
-        }
-        catch (Exception err)
-        {
-            return ResponseFactory.ServiceUnavailable(err.Message);
         }
     }
 }

@@ -3,13 +3,13 @@ using Newtonsoft.Json;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 
-namespace Application.UseCases.UserCollectionOperations.ManageGameCollection;
+namespace Application.UseCases.CollectionOperations.ManageGameCollection;
 
 public class UpdateGameRequestModel
 {
-    [JsonPropertyName("user_collection_id")]
+    [JsonPropertyName("id")]
     [Required]
-    public Guid UserCollectionId { get; set; }
+    public Guid Id { get; set; }
 
     [JsonPropertyName("purchase_date")]
     [DataType(DataType.DateTime)]

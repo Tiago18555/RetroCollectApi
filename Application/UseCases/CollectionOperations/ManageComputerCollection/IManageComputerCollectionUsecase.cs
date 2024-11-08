@@ -1,8 +1,8 @@
 ﻿using System.Security.Claims;
 using Domain;
-using Application.UseCases.UserCollectionOperations.Shared;
+using Application.UseCases.CollectionOperations.Shared;
 
-namespace Application.UseCases.UserCollectionOperations.ManageComputerCollection;
+namespace Application.UseCases.CollectionOperations.ManageComputerCollection;
 
 public interface IManageComputerCollectionUsecase
 {

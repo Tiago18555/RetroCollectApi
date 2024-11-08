@@ -1,11 +1,11 @@
-﻿using Application.UseCases.UserCollectionOperations.ManageComputerCollection;
-using Application.UseCases.UserCollectionOperations.ManageConsoleCollection;
-using Application.UseCases.UserCollectionOperations.ManageGameCollection;
+﻿using Application.UseCases.CollectionOperations.ManageComputerCollection;
+using Application.UseCases.CollectionOperations.ManageConsoleCollection;
+using Application.UseCases.CollectionOperations.ManageGameCollection;
 using Domain.Entities;
 using Domain.Enums;
 using Domain.Exceptions;
 
-namespace Application.UseCases.UserCollectionOperations.Shared;
+namespace Application.UseCases.CollectionOperations.Shared;
 
 public static class ManageUserCollectionHelper
 {
@@ -20,9 +20,9 @@ public static class ManageUserCollectionHelper
     /// <exception cref="ArgumentException"></exception>
     public static TTarget MapAndFill<TTarget, TSource>(this object target, TSource source) where TTarget : class //target banco / source request
     {
-        if (typeof(TSource) == typeof(UpdateGameRequestModel) && typeof(TTarget) == typeof(UserCollection))
+        if (typeof(TSource) == typeof(UpdateGameRequestModel) && typeof(TTarget) == typeof(GameCollectionItem))
         {
-            var userCollection = target as UserCollection;
+            var userCollection = target as GameCollectionItem;
             var request = source as UpdateGameRequestModel;
 
             if (request.PurchaseDate != DateTime.MinValue) { userCollection.PurchaseDate = request.PurchaseDate; }
@@ -34,9 +34,9 @@ public static class ManageUserCollectionHelper
             return userCollection as TTarget;
 
         }
-        if (typeof(TSource) == typeof(UpdateComputerRequestModel) && typeof(TTarget) == typeof(UserComputer))
+        if (typeof(TSource) == typeof(UpdateComputerRequestModel) && typeof(TTarget) == typeof(ComputerCollectionItem))
         {
-            var userCollection = target as UserCollection;
+            var userCollection = target as GameCollectionItem;
             var computer = source as UpdateComputerRequestModel;
 
             if (computer.PurchaseDate != DateTime.MinValue) { userCollection.PurchaseDate = computer.PurchaseDate; }
@@ -47,9 +47,9 @@ public static class ManageUserCollectionHelper
 
             return userCollection as TTarget;
         }
-        if (typeof(TSource) == typeof(UpdateConsoleRequestModel) && typeof(TTarget) == typeof(UserConsole))
+        if (typeof(TSource) == typeof(UpdateConsoleRequestModel) && typeof(TTarget) == typeof(ConsoleCollectionItem))
         {
-            var userCollection = target as UserCollection;
+            var userCollection = target as GameCollectionItem;
             var console = source as UpdateConsoleRequestModel;
 
             if (console.PurchaseDate != DateTime.MinValue) { userCollection.PurchaseDate = console.PurchaseDate; }

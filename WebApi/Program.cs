@@ -10,6 +10,8 @@ using Infrastructure.Repositories;
 using Application.DependencyInjection;
 using CrossCutting.Providers;
 using Infrastructure.Data;
+using Npgsql;
+using CrossCutting;
 
 var builder = WebApplication.CreateBuilder(args);
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
@@ -115,6 +117,10 @@ builder.Services.AddCors(c =>
 
 var app = builder.Build();
 
+using var scope = app.Services.CreateScope();
+var context = scope.ServiceProvider.GetRequiredService<DataContext>();
+await RunSqlScriptAsync(context);
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "Docker")
 {
@@ -159,4 +165,20 @@ System.Console.WriteLine("\t __  ___ ___ __   _      _   _          ___  _ ___ \
 System.Console.ForegroundColor = ConsoleColor.White;
 
 
+
 app.Run();
+
+
+async Task RunSqlScriptAsync(DataContext context)
+{
+    var script = await File.ReadAllTextAsync("../create_views.sql");
+    await using var connection = new NpgsqlConnection(context.Database.GetDbConnection().ConnectionString);    
+    await connection.OpenAsync();
+    await using var command = new NpgsqlCommand(script, connection);   
+
+    StdOut.Info(script);
+    int result = await command.ExecuteNonQueryAsync();
+    StdOut.Info(result.ToString());
+
+    await connection.CloseAsync();        
+}

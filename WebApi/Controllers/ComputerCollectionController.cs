@@ -1,31 +1,32 @@
-﻿using Application.UseCases.UserCollectionOperations.ManageGameCollection;
+﻿using Application.UseCases.CollectionOperations.ManageComputerCollection;
+using Application.UseCases.CollectionOperations.Shared;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
 
 namespace WebApi.Controllers;
 
-[Route("usercollection")]
+[Route("computercollection")]
 [ApiController]
-public class UserCollectionController : ControllerBase
+public class ComputerCollectionController : ControllerBase
 {
-    private readonly IManageGameCollectionUsecase manageGameCollectionService;
-    public UserCollectionController(IManageGameCollectionUsecase manageGameCollectionService)
+    private readonly IManageComputerCollectionUsecase manageComputerCollectionService;
+    public ComputerCollectionController(IManageComputerCollectionUsecase manageComputerCollectionService)
     {
-        this.manageGameCollectionService = manageGameCollectionService;
+        this.manageComputerCollectionService = manageComputerCollectionService;
     }
 
     [HttpGet("{user_id}")]
     [SwaggerOperation(
-        Summary = "List game collection",
-        Description = "List all game collection for a specified user"
+        Summary = "List computer collection",
+        Description = "List all computers for a specified user"
     )]
     [SwaggerResponse(200, "List found")]
     [SwaggerResponse(406, "Invalid format of request")]
     [SwaggerResponse(500, "Internal server error")]
-    public async Task<IActionResult> GetAllGamesByUser([FromRoute] Guid user_id)
+    public async Task<IActionResult> GetAllComputerByUser([FromRoute] Guid user_id)
     {
-        var result = await manageGameCollectionService.GetAllGamesByUser(HttpContext.User);
+        var result = await manageComputerCollectionService.GetAllComputersByUser(HttpContext.User);
 
         Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
         Response.StatusCode = result.StatusCode;
@@ -34,10 +35,8 @@ public class UserCollectionController : ControllerBase
 
     [HttpPost]
     [SwaggerOperation(
-        Summary = "Add game",
-        Description = "Adds specified game to the specified user collection, and register this game if is not found on database \n" +
-                      "Propertie Condition can be { new, likenew, used, fair, and poor } \n" +
-                      "Propertie Ownership Status can be { owned, desired, traded, borrowed and sold }"
+        Summary = "Add computer",
+        Description = "Adds specified computer to the specified user collection, and register this item if is not found on database"
     )]
     [SwaggerResponse(201, "Item added to collection")]
     [SwaggerResponse(400, "Invalid format of request")]
@@ -45,27 +44,26 @@ public class UserCollectionController : ControllerBase
     [SwaggerResponse(406, "Invalid format of request")]
     [SwaggerResponse(415, "Unsupported media type")]
     [SwaggerResponse(500, "Internal server error")]
-    public async Task<IActionResult> AddGame([FromBody] AddGameRequestModel item)
+    public async Task<IActionResult> AddComputer([FromBody] AddItemRequestModel item)
     {
-        var result = await manageGameCollectionService.AddGame(item, HttpContext.User);
+        var result = await manageComputerCollectionService.AddComputer(item, HttpContext.User);
 
         Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
         Response.StatusCode = result.StatusCode;
         return new ObjectResult(result);
     }
 
-
-    [HttpDelete("{user_collection_id}")]
+    [HttpDelete("{user_computer_id}")]
     [SwaggerOperation(
-        Summary = "Delete game",
-        Description = "Delete game of a specified user collection"
+        Summary = "Delete computer",
+        Description = "Delete computer of a specified user collection"
     )]
     [SwaggerResponse(200, "Deleted successfully")]
     [SwaggerResponse(406, "Invalid format of request")]
     [SwaggerResponse(500, "Internal server error")]
-    public async Task<IActionResult> DeleteGame([FromRoute] Guid user_collection_id)
+    public async Task<IActionResult> DeleteComputer([FromRoute] Guid user_computer_id)
     {
-        var result = await manageGameCollectionService.DeleteGame(user_collection_id, HttpContext.User);
+        var result = await manageComputerCollectionService.DeleteComputer(user_computer_id, HttpContext.User);
 
         Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
         Response.StatusCode = result.StatusCode;
@@ -74,17 +72,17 @@ public class UserCollectionController : ControllerBase
 
     [HttpPut]
     [SwaggerOperation(
-        Summary = "Update game",
-        Description = "Update game of a specified user collection"
+        Summary = "Update computer",
+        Description = "Update computer of a specified user collection"
     )]
     [SwaggerResponse(200, "Updated successfully")]
     [SwaggerResponse(400, "Invalid format of request")]
     [SwaggerResponse(403, "Invalid credentials")]
     [SwaggerResponse(406, "Invalid format of request")]
     [SwaggerResponse(500, "Internal server error")]
-    public async Task<IActionResult> EditGame([FromBody] UpdateGameRequestModel updateGameRequestModel)
+    public async Task<IActionResult> EditComputer([FromBody] UpdateComputerRequestModel computer)
     {
-        var result = await manageGameCollectionService.UpdateGame(updateGameRequestModel, HttpContext.User);
+        var result = await manageComputerCollectionService.UpdateComputer(computer, HttpContext.User);
 
         Response.HttpContext.Features.Get<IHttpResponseFeature>().ReasonPhrase = result.Message;
         Response.StatusCode = result.StatusCode;

@@ -1,5 +1,4 @@
 ﻿using Domain;
-using Application.UseCases.UserCollectionOperations.Shared;
 using Domain.Entities;
 using Domain.Exceptions;
 using System.Security.Claims;
@@ -8,43 +7,48 @@ using CrossCutting;
 using Domain.Broker;
 using System.Text.Json;
 
-namespace Application.UseCases.UserCollectionOperations.ManageConsoleCollection;
+namespace Application.UseCases.CollectionOperations.ManageGameCollection;
 
-public class ManageConsoleCollectionUsecase : IManageConsoleCollectionUsecase
+public partial class ManageGameCollectionUsecase : IManageGameCollectionUsecase
 {
     private readonly IUserRepository _userRepository;
-    private readonly IUserConsoleRepository _userConsoleRepository;
+    private readonly IUserCollectionRepository _userCollectionRepository;
     private readonly IProducerService _producer;
 
-    public ManageConsoleCollectionUsecase(
+    public ManageGameCollectionUsecase(
         IUserRepository userRepository, 
-        IUserConsoleRepository userConsoleRepository, 
+        IUserCollectionRepository userCollectionRepository, 
         IProducerService producer
     )
     {
         _userRepository = userRepository;
-        _userConsoleRepository = userConsoleRepository;
+        _userCollectionRepository = userCollectionRepository;
         _producer = producer;
     }
 
-    public async Task<ResponseModel> AddConsole(AddItemRequestModel requestBody, ClaimsPrincipal requestToken)
+    public async Task<ResponseModel> AddGame(AddGameRequestModel requestBody, ClaimsPrincipal requestToken)
     {
         var user_id = requestToken.GetUserId();
 
         var user = _userRepository.Any(u => u.UserId == user_id);
         if (!user) { return ResponseFactory.NotFound("User not found"); }
 
-
-
         try
         {
-            var messageObject = new MessageModel{ Message = new {
-                requestBody.ItemId,
-                requestBody.Condition,
-                requestBody.Notes,
-                requestBody.OwnershipStatus,
-                requestBody.PurchaseDate
-            }, SourceType = "add-console" };
+            var messageObject = new MessageModel{ 
+                Message = new 
+                {
+                    UserId = user_id,
+                    requestBody.GameId,
+                    requestBody.PlatformId,
+                    requestBody.PlatformIsComputer,
+                    requestBody.PurchaseDate,
+                    requestBody.Condition,
+                    requestBody.OwnershipStatus,
+                    requestBody.Notes
+                }, 
+                SourceType = "add-game" 
+            };
 
             var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject), "collection");
 
@@ -55,6 +59,10 @@ public class ManageConsoleCollectionUsecase : IManageConsoleCollectionUsecase
             
             return "Success".Created(message = status);
         }
+        catch (NullClaimException err)
+        {
+            return ResponseFactory.BadRequest(err.Message);
+        }
         catch (InvalidEnumTypeException err)
         {
             return ResponseFactory.UnsupportedMediaType("Invalid type for Condition or OwnershipStatus: " + err.Message);
@@ -63,26 +71,23 @@ public class ManageConsoleCollectionUsecase : IManageConsoleCollectionUsecase
         {
             return ResponseFactory.BadRequest("Invalid value for Condition or OwnershipStatus: " + err.Message);
         }
-        catch (NullClaimException err)
-        {
-            return ResponseFactory.BadRequest(err.Message);
-        }
         catch (Exception err)
         {
             return ResponseFactory.ServiceUnavailable(err.Message);
         }
-
+        
     }
-    public async Task<ResponseModel> DeleteConsole(Guid user_console_id, ClaimsPrincipal requestToken)
+
+    public async Task<ResponseModel> DeleteGame(Guid user_collection_id, ClaimsPrincipal requestToken)
     {
         try
         {
             var user_id = requestToken.GetUserId();
 
-            var foundItem = _userConsoleRepository.SingleOrDefault(r => r.UserId == user_id && r.UserConsoleId == user_console_id);
+            var foundItem = _userCollectionRepository.SingleOrDefault(x => x.UserId == user_id && x.Id == user_collection_id);
             if (foundItem == null) { return ResponseFactory.NotFound(); }
 
-            var messageObject = new MessageModel { Message = foundItem, SourceType = "delete-console" };
+            var messageObject = new MessageModel{ Message = foundItem, SourceType = "delete-game" };
 
             var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject), "collection");
 
@@ -91,7 +96,7 @@ public class ManageConsoleCollectionUsecase : IManageConsoleCollectionUsecase
                 typeof(MessageModel)
             ) as MessageModel;
             
-            return "Deleted successfully".Ok(message = status);
+            return "Deleted".Ok(message = status);
         }
         catch (ArgumentNullException err)
         {
@@ -107,29 +112,30 @@ public class ManageConsoleCollectionUsecase : IManageConsoleCollectionUsecase
         }
     }
 
-    public async Task<ResponseModel> UpdateConsole(UpdateConsoleRequestModel requestBody, ClaimsPrincipal requestToken)
+    public async Task<ResponseModel> UpdateGame(UpdateGameRequestModel requestBody, ClaimsPrincipal requestToken)
     {
 
         try
         {
             var user_id = requestToken.GetUserId();
 
-            var foundUser = _userRepository.Any(x => x.UserId == requestToken.GetUserId());
-            if (!foundUser) { return ResponseFactory.NotFound("User not found"); }
+            var foundUser = _userRepository.SingleOrDefault(x => x.UserId == user_id);
+            if (foundUser == null) { return ResponseFactory.NotFound("User not found"); }
 
-            var foundConsole = _userConsoleRepository.Any(x => x.UserConsoleId == requestBody.UserConsoleId);
-            if (!foundConsole) { return ResponseFactory.NotFound("Console Not Found"); }
+            var foundGame = _userCollectionRepository.SingleOrDefault(x => x.Id == requestBody.Id);
+            if (foundGame == null) { return ResponseFactory.NotFound($"Game Not Found"); }
 
-            var messageObject = new MessageModel{ Message = new 
-            {
-                UserId = user_id,
-                requestBody.UserConsoleId,
-                requestBody.PurchaseDate,
-                requestBody.Condition,
-                requestBody.OwnershipStatus,
-                requestBody.Notes
-            }, 
-            SourceType = "update-console" };
+            var messageObject = new MessageModel { Message = new 
+                {
+                    UserId = user_id,
+                    requestBody.Id,
+                    requestBody.PurchaseDate,
+                    requestBody.Condition,
+                    requestBody.OwnershipStatus,
+                    requestBody.Notes
+                },
+                SourceType = "update-game" 
+            };
 
             var (status, message) = await _producer.SendMessage(JsonSerializer.Serialize(messageObject), "collection");
 
@@ -146,7 +152,7 @@ public class ManageConsoleCollectionUsecase : IManageConsoleCollectionUsecase
         }
         catch (InvalidOperationException err)
         {
-            return ResponseFactory.NotAcceptable($"Formato de dados inválido.: {err.Message}");;
+            return ResponseFactory.NotAcceptable($"Formato de dados inválido: {err.Message}.");
         }
         catch (NullClaimException err)
         {
@@ -158,23 +164,24 @@ public class ManageConsoleCollectionUsecase : IManageConsoleCollectionUsecase
         }
     }
 
-    public async Task<ResponseModel> GetAllConsolesByUser(ClaimsPrincipal requestToken)
+    public async Task<ResponseModel> GetAllGamesByUser(ClaimsPrincipal requestToken)
     {
 
         try
         {
             var user_id = requestToken.GetUserId();
-            var res = await _userRepository.GetAllConsolesByUser(user_id, x => new UserConsole()
+            var res = await _userRepository.GetAllCollectionsByUser(user_id, x => new GameCollectionItem()
             {
-                UserConsoleId = x.UserConsoleId,
-                Console = x.Console,
+                Id = x.Id,
+                Game = x.Game,
                 Condition = x.Condition,
                 PurchaseDate = x.PurchaseDate,
                 Notes = x.Notes,
                 OwnershipStatus = x.OwnershipStatus
             });
 
-            res.ForEach(x => x.MapObjectsTo(new GetAllConsolesByUserResponseModel()));
+            res.ForEach(x => x.MapObjectsTo(new GetAllGamesByUserResponseModel()));
+
             return res.Ok();
         }
         catch (ArgumentNullException err)
@@ -184,6 +191,10 @@ public class ManageConsoleCollectionUsecase : IManageConsoleCollectionUsecase
         catch (NullClaimException err)
         {
             return ResponseFactory.BadRequest(err.Message);
+        }
+        catch (Exception err)
+        {
+            return ResponseFactory.ServiceUnavailable(err.Message);
         }
     }
 }

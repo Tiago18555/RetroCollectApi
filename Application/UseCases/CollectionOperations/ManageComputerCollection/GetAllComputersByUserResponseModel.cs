@@ -1,11 +1,11 @@
 ﻿using Application.Shared;
 using Domain.Enums;
 
-namespace Application.UseCases.UserCollectionOperations.ManageComputerCollection;
+namespace Application.UseCases.CollectionOperations.ManageComputerCollection;
 
 public class GetAllComputersByUserResponseModel
 {
-    public Guid UserComputerId { get; set; }
+    public Guid Id { get; set; }
 
     private Condition Condition { get; set; }
     public string condition => Enum.GetName(typeof(Condition), Condition);

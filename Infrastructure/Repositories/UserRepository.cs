@@ -39,9 +39,9 @@ public class UserRepository : IUserRepository
             .SingleOrDefault();
     }
 
-    public async Task<List<T>> GetAllComputersByUser<T>(Guid userId, Expression<Func<UserComputer, T>> predicate)
+    public async Task<List<T>> GetAllComputersByUser<T>(Guid userId, Expression<Func<ComputerCollectionItem, T>> predicate)
     {
-        return await _context.UserComputers
+        return await _context.ComputerCollectionItems
             .Include(x => x.Computer)
             .AsNoTracking()
             .Where(x => x.UserId == userId)
@@ -49,11 +49,11 @@ public class UserRepository : IUserRepository
             .ToListAsync();
     }
 
-    public async Task<List<T>> GetAllComputersByUser<T>(Guid userId, Expression<Func<UserComputer, T>> predicate, int pageNumber, int pageSize)
+    public async Task<List<T>> GetAllComputersByUser<T>(Guid userId, Expression<Func<ComputerCollectionItem, T>> predicate, int pageNumber, int pageSize)
     {
         var offset = (pageNumber - 1) * pageSize;
 
-        return await _context.UserComputers
+        return await _context.ComputerCollectionItems
                     .Include(x => x.Computer)
                     .AsNoTracking()
                     .Where(x => x.UserId == userId)
@@ -63,9 +63,9 @@ public class UserRepository : IUserRepository
                     .ToListAsync();
     }
 
-    public async Task<List<T>> GetAllConsolesByUser<T>(Guid userId, Expression<Func<UserConsole, T>> predicate)
+    public async Task<List<T>> GetAllConsolesByUser<T>(Guid userId, Expression<Func<ConsoleCollectionItem, T>> predicate)
     {
-        return await Task.FromResult(_context.UserConsoles
+        return await Task.FromResult(_context.ConsoleCollectionItems
             .Include(x => x.Console)
             .AsNoTracking()
             .Where(x => x.UserId == userId)
@@ -73,11 +73,11 @@ public class UserRepository : IUserRepository
             .ToList());
     }
 
-    public async Task<List<T>> GetAllConsolesByUser<T>(Guid userId, Expression<Func<UserConsole, T>> predicate, int pageNumber, int pageSize)
+    public async Task<List<T>> GetAllConsolesByUser<T>(Guid userId, Expression<Func<ConsoleCollectionItem, T>> predicate, int pageNumber, int pageSize)
     {
         var offset = (pageNumber - 1) * pageSize;
 
-        return await Task.FromResult(_context.UserConsoles
+        return await Task.FromResult(_context.ConsoleCollectionItems
             .Include(x => x.Console)
             .AsNoTracking()
             .Where(x => x.UserId == userId)
@@ -87,9 +87,9 @@ public class UserRepository : IUserRepository
             .ToList());
     }
 
-    public async Task<List<T>> GetAllCollectionsByUser<T>(Guid userId, Expression<Func<UserCollection, T>> predicate)
+    public async Task<List<T>> GetAllCollectionsByUser<T>(Guid userId, Expression<Func<GameCollectionItem, T>> predicate)
     {
-        return await Task.FromResult(_context.UserCollections
+        return await Task.FromResult(_context.GameCollectionItems
              .Include(x => x.Game)
              .AsNoTracking()
              .Where(x => x.UserId == userId)
@@ -97,11 +97,11 @@ public class UserRepository : IUserRepository
              .ToList());
     }
 
-    public async Task<List<T>> GetAllCollectionsByUser<T>(Guid userId, Expression<Func<UserCollection, T>> predicate, int pageNumber, int pageSize)
+    public async Task<List<T>> GetAllCollectionsByUser<T>(Guid userId, Expression<Func<GameCollectionItem, T>> predicate, int pageNumber, int pageSize)
     {
         var offset = (pageNumber - 1) * pageSize;
 
-        return await Task.FromResult(_context.UserCollections
+        return await Task.FromResult(_context.GameCollectionItems
              .Include(x => x.Game)
              .AsNoTracking()
              .Where(x => x.UserId == userId)

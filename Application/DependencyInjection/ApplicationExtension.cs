@@ -3,14 +3,14 @@ using Infrastructure.Kafka;
 using Application.UseCases.IgdbIntegrationOperations.SearchGame;
 using Application.UseCases.IgdbIntegrationOperations.SearchConsole;
 using Application.UseCases.IgdbIntegrationOperations.SearchComputer;
-using Application.UseCases.UserCollectionOperations.ManageConsoleCollection;
-using Application.UseCases.UserCollectionOperations.ManageComputerCollection;
+using Application.UseCases.CollectionOperations.ManageConsoleCollection;
+using Application.UseCases.CollectionOperations.ManageComputerCollection;
 using Application.UseCases.UserOperations.CreateUser;
 using Application.UseCases.UserOperations.ManageUser;
 using Application.UseCases.UserOperations.Authenticate;
 using Application.UseCases.UserOperations.VerifyAndRecoverUser;
 using Application.UseCases.UserWishlistOperations;
-using Application.UseCases.UserCollectionOperations.ManageGameCollection;
+using Application.UseCases.CollectionOperations.ManageGameCollection;
 
 using Microsoft.Extensions.DependencyInjection;
 using Application.UseCases.RatingOperations.AddRating;

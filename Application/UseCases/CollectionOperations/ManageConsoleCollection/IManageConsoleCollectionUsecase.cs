@@ -1,8 +1,8 @@
 ﻿using Domain;
-using Application.UseCases.UserCollectionOperations.Shared;
+using Application.UseCases.CollectionOperations.Shared;
 using System.Security.Claims;
 
-namespace Application.UseCases.UserCollectionOperations.ManageConsoleCollection;
+namespace Application.UseCases.CollectionOperations.ManageConsoleCollection;
 
 public interface IManageConsoleCollectionUsecase
 {
