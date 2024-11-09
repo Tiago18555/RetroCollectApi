@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Entities;
 
-[Table("rating")]
+[Table("ratings")]
 public class Rating
 {
     [Column("rating_id")]

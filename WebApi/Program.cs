@@ -1,16 +1,17 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Infrastructure.Repositories;
+
+using Npgsql;
+using System.Text;
+using MongoDB.Driver;
+using Domain.Repositories;
+using Infrastructure.Data;
+using CrossCutting.Providers;
+using Microsoft.EntityFrameworkCore;
 using System.Text.Json.Serialization;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.EntityFrameworkCore;
-using MongoDB.Driver;
-using System.Text;
-using Microsoft.Extensions.FileProviders;
-using Domain.Repositories;
-using Infrastructure.Repositories;
 using Application.DependencyInjection;
-using CrossCutting.Providers;
-using Infrastructure.Data;
-using Npgsql;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using CrossCutting;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,7 +20,6 @@ var configuration = builder.Configuration;
 var version = configuration.GetSection("Version").Value.ToString();
 var connectionString = configuration.GetConnectionString("Local");
 
-//JWT
 var symmetricalKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["Jwt:SecretKey"]));
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opt =>
 {
@@ -34,7 +34,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
     };
 });
 
-// Add services to the container.
 builder.Services.AddControllers().AddJsonOptions(x =>
     x.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles);
 
@@ -42,16 +41,15 @@ builder.Services.AddControllers().AddJsonOptions(x =>
 
 #region DEPENDENCY INJECTION SETUP
 
-//Repositories
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 
-builder.Services.AddScoped<IUserCollectionRepository, UserCollectionRepository>();
-builder.Services.AddScoped<IUserComputerRepository, UserComputerRepository>();
 builder.Services.AddScoped<IUserConsoleRepository, UserConsoleRepository>();
+builder.Services.AddScoped<IUserComputerRepository, UserComputerRepository>();
+builder.Services.AddScoped<IUserCollectionRepository, UserCollectionRepository>();
 
+builder.Services.AddScoped<IGameRepository, GameRepository>();
 builder.Services.AddScoped<IConsoleRepository, ConsoleRepository>();
 builder.Services.AddScoped<IComputerRepository, ComputerRepository>();
-builder.Services.AddScoped<IGameRepository, GameRepository>();
 
 builder.Services.AddScoped<IRecoverRepository, MongoRepository>();
 builder.Services.AddScoped<IRatingRepository, RatingRepository>();
@@ -74,8 +72,6 @@ builder.Services.AddScoped<MongoDBContext>();
 
 #endregion
 
-
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 
 builder.Services.AddDbContext<DataContext>(o =>
@@ -121,13 +117,13 @@ using var scope = app.Services.CreateScope();
 var context = scope.ServiceProvider.GetRequiredService<DataContext>();
 await RunSqlScriptAsync(context);
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "Docker")
 {
     app.UseSwagger();
     app.UseSwaggerUI(x => 
     {
         x.SwaggerEndpoint($"/swagger/RetroCollect_v{version}/swagger.json", $"RetroCollect v{version}");
+        x.InjectStylesheet("/swagger-ui/SwaggerDark.css");
     });
 }
 
@@ -139,6 +135,7 @@ if (app.Environment.IsDevelopment())
     );
 }
 
+app.UseStaticFiles();
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(builder.Configuration["BasePath"]),
@@ -153,32 +150,38 @@ app.UseCors(x => x
     .SetIsOriginAllowed(origin => true)
     .AllowCredentials());
 
-
 app.UseAuthentication();
-
 app.UseAuthorization();
-
 app.MapControllers();
 
 System.Console.ForegroundColor = ConsoleColor.Green;
 System.Console.WriteLine("\t __  ___ ___ __   _      _   _          ___  _ ___ \r\n\t )_) )_   )  )_) / )    / ` / ) )   )   )_  / ` )  \r\n\t/ \\ (__  (  / \\ (_/    (_. (_/ (__ (__ (__ (_. (  \n\n");
 System.Console.ForegroundColor = ConsoleColor.White;
 
-
-
 app.Run();
 
 
 async Task RunSqlScriptAsync(DataContext context)
 {
-    var script = await File.ReadAllTextAsync("../create_views.sql");
+    StdOut.Warning(        
+        Path.Combine(
+            configuration["BasePath"],
+            "Static",
+            "create_views.sql"
+        ));
+
+    var script = await File.ReadAllTextAsync(
+        Path.Combine(
+            configuration["BasePath"],
+            "Static",
+            "create_views.sql"
+        )
+    );
     await using var connection = new NpgsqlConnection(context.Database.GetDbConnection().ConnectionString);    
     await connection.OpenAsync();
     await using var command = new NpgsqlCommand(script, connection);   
 
-    StdOut.Info(script);
     int result = await command.ExecuteNonQueryAsync();
-    StdOut.Info(result.ToString());
 
     await connection.CloseAsync();        
 }

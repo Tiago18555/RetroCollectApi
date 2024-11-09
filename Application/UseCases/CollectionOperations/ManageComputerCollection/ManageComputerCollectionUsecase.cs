@@ -37,6 +37,7 @@ public class ManageComputerCollectionService : IManageComputerCollectionUsecase
             if (!user) { return ResponseFactory.NotFound("User not found"); }
             
             var messageObject = new MessageModel{ Message = new {
+                UserId = user_id,
                 requestBody.ItemId,
                 requestBody.Condition,
                 requestBody.Notes,

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Entities;
 
-[Table("computer_collection")]
+[Table("computer_collections")]
 public class ComputerCollectionItem
 {
     [Column("id")]
@@ -23,11 +23,13 @@ public class ComputerCollectionItem
     [Column("ownership_status")]
     public OwnershipStatus OwnershipStatus { get; set; }
 
+
     [Column("user_id")]
     public Guid UserId { get; set; }
+    public User User { get; set; }
+    
 
     [Column("computer_id")]
     public int ComputerId { get; set; }
-    public User User { get; set; }
     public Computer Computer { get; set; }
 }

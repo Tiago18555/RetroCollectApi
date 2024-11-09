@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Entities;
 
-[Table("wishlist")]
+[Table("wishlists")]
 public class Wishlist
 {
     [Column("wishlist_id")]

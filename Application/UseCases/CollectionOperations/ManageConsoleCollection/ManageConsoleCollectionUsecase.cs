@@ -39,6 +39,7 @@ public class ManageConsoleCollectionUsecase : IManageConsoleCollectionUsecase
         try
         {
             var messageObject = new MessageModel{ Message = new {
+                UserId = user_id,
                 requestBody.ItemId,
                 requestBody.Condition,
                 requestBody.Notes,

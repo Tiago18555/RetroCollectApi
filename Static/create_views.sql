@@ -12,7 +12,7 @@ BEGIN
             "last_name",
             "created_at",
             "updated_at"
-        FROM "user";
+        FROM "users";
     END IF;
     IF NOT EXISTS (SELECT FROM pg_views WHERE viewname = 'user_view_clean') THEN
         -- except timestamp / binary type, password
@@ -22,6 +22,6 @@ BEGIN
             "email",
             "first_name",
             "last_name"
-        FROM "user";
+        FROM "users";
     END IF;
 END $$;

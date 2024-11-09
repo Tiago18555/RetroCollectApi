@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Entities;
 
-[Table("game_collection")]
+[Table("game_collections")]
 public class GameCollectionItem
 {
 
@@ -35,7 +35,7 @@ public class GameCollectionItem
     
     [Column("console_id")] 
     public int ConsoleId { get; set; }
-    
+
     public User User { get; set; }
     public Game Game { get; set; }
 }

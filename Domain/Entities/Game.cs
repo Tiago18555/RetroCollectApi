@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Entities;
 
-[Table("game")]
+[Table("games")]
 public class Game
 {
     [Column("game_id")]

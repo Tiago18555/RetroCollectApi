@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Entities;
 
-[Table("console")]
+[Table("consoles")]
 public class Console
 {
     [Column("console_id")]

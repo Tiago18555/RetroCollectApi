@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Entities;
 
-[Table("console_collection")]
+[Table("console_collections")]
 public class ConsoleCollectionItem
 {
     [Column("id")]

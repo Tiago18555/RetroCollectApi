@@ -3,10 +3,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Domain.Entities;
 
-[Table("computer")]
+[Table("computers")]
 public class Computer
 {
-    [Column("id")]
+    [Column("computer_id")]
     [Key]
     public int ComputerId { get; set; }
 
